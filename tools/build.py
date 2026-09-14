@@ -128,6 +128,10 @@ while i < len(src):
     flush_list()
     if not line.strip():
         continue
+    if line.startswith("流れ:"):
+        steps = [s.strip() for s in line[3:].split("→")]
+        out.append('<div class="flow">' + "<i>→</i>".join(f"<span>{inline(s)}</span>" for s in steps) + "</div>")
+        continue
     out.append(f"<p>{inline(line)}</p>")
 
 flush_table(); flush_list()

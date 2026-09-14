@@ -45,6 +45,10 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:6px 10px;font-size:.
 #msg{color:#b00020;min-height:1.4em;font-size:.9rem}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:#fff;border-radius:50%;width:46px;height:46px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;text-decoration:none;opacity:.85}
 @media (min-width:480px){#gate{margin:12vh auto}}
+.flow{display:flex;flex-direction:column;align-items:stretch;gap:4px;margin:10px 0}
+.flow span{background:var(--card);border:2px solid var(--accent);border-radius:8px;padding:10px 12px;font-weight:bold;text-align:center}
+.flow i{font-style:normal;font-weight:bold;color:var(--accent);text-align:center;transform:rotate(90deg);line-height:1}
+@media (min-width:560px){.flow{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}.flow i{transform:none}}
 </style>
 </head>
 <body>
