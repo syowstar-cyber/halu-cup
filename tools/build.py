@@ -1,0 +1,141 @@
+# -*- coding: utf-8 -*-
+"""fp/events/第20回_四麻Halu杯.md → 幹部向けHTML断片(body.html)。
+除外: 冒頭の手元資料メモ／ゲスト表の依頼ルート・出身／出典／主催マター。"""
+import re, html, sys, io
+from pathlib import Path
+
+here = Path(__file__).resolve().parents[1] / ".work"; here.mkdir(exist_ok=True)
+SRC = Path(__file__).resolve().parents[2] / "fp" / "events" / "第20回_四麻Halu杯.md"
+src = SRC.read_text(encoding="utf-8-sig").splitlines()
+
+def inline(s):
+    s = html.escape(s, quote=False)
+    s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
+    s = re.sub(r"`(.+?)`", r"<code>\1</code>", s)
+    s = s.replace("※要確定", '<span class="warn">※要確定</span>')
+    return s
+
+out = []
+i = 0
+# 冒頭は "## 1." まで読み飛ばす
+while i < len(src) and not src[i].startswith("## 1."):
+    i += 1
+
+section = ""      # 現在の "## n" 番号
+skip_owner = False
+in_code = False
+table = []
+lst = None        # ("ul"|"ol", items)
+
+def flush_table():
+    global table
+    if not table:
+        return
+    rows = [r for r in table if not re.match(r"^\|\s*-", r)]
+    h = ['<div class="tw"><table>']
+    for k, r in enumerate(rows):
+        cells = [c.strip() for c in r.strip().strip("|").split("|")]
+        tag = "th" if k == 0 else "td"
+        h.append("<tr>" + "".join(f"<{tag}>{inline(c)}</{tag}>" for c in cells) + "</tr>")
+    h.append("</table></div>")
+    out.append("\n".join(h))
+    table = []
+
+def flush_list():
+    global lst
+    if not lst:
+        return
+    kind, items = lst
+    todo = section in ("11", "12", "13")
+    h = [f'<{kind}{" class=todo" if todo else ""}>']
+    for it in items:
+        if todo and kind == "ul":
+            key = html.escape(re.sub(r"\W+", "", it)[:40])
+            h.append(f'<li><label><input type="checkbox" data-k="{key}"><span>{inline(it)}</span></label></li>')
+        else:
+            h.append(f"<li>{inline(it)}</li>")
+    h.append(f"</{kind}>")
+    out.append("\n".join(h))
+    lst = None
+
+while i < len(src):
+    line = src[i]
+    i += 1
+    if in_code:
+        if line.startswith("```"):
+            in_code = False
+            out.append("</pre>")
+        else:
+            out.append(html.escape(line, quote=False))
+        continue
+    if line.startswith("```"):
+        flush_table(); flush_list()
+        in_code = True
+        out.append('<pre class="box">')
+        continue
+    m = re.match(r"^(#{2,3})\s+(.*)", line)
+    if m:
+        flush_table(); flush_list()
+        level = len(m.group(1))
+        title = m.group(2)
+        if level == 2:
+            section = re.match(r"(\d+)", title).group(1) if re.match(r"\d", title) else ""
+            skip_owner = False
+        if level == 3 and title.startswith("主催マター"):
+            skip_owner = True
+            continue
+        if skip_owner:
+            continue
+        out.append(f"<h{level} id=\"s{section}\">{inline(title)}</h{level}>" if level == 2
+                   else f"<h{level}>{inline(title)}</h{level}>")
+        continue
+    if skip_owner:
+        continue
+    if line.startswith("出典:"):
+        while i < len(src) and src[i].strip() and not src[i].startswith("---"):
+            i += 1
+        continue
+    if line.startswith("|"):
+        flush_list()
+        if re.match(r"^\|\s*(依頼ルート|出身)\s*\|", line):
+            continue
+        table.append(line)
+        continue
+    flush_table()
+    if line.strip() == "---":
+        flush_list()
+        continue
+    m = re.match(r"^- (.*)", line)
+    if m:
+        if lst and lst[0] != "ul":
+            flush_list()
+        if not lst:
+            lst = ("ul", [])
+        lst[1].append(m.group(1))
+        continue
+    m = re.match(r"^\d+\. (.*)", line)
+    if m:
+        if lst and lst[0] != "ol":
+            flush_list()
+        if not lst:
+            lst = ("ol", [])
+        lst[1].append(m.group(1))
+        continue
+    m = re.match(r"^  - (.*)", line)
+    if m and lst:
+        lst[1].append("　" + m.group(1))
+        continue
+    flush_list()
+    if not line.strip():
+        continue
+    out.append(f"<p>{inline(line)}</p>")
+
+flush_table(); flush_list()
+lead = "<p class=\"lead\">主催: トミーさん・由子ママ。料金・収支・支払いは主催マターのため、このページでは扱いません。</p>\n"
+body = lead + "\n".join(out)
+# 15章のLINE用テキストは折りたたみに
+body = re.sub(r'<h3>(参加者向け|運営・幹部向け)</h3>\n<pre class="box">(.*?)</pre>',
+              r'<details><summary>\1（タップで開く／長押しでコピー）</summary><pre class="box">\2</pre></details>',
+              body, flags=re.S)
+(here / "body.html").write_text(body, encoding="utf-8")
+print("OK", len(body))

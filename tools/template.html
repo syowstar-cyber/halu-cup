@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#8a1c1c">
+<title>Halu杯 幹部用</title>
+<style>
+:root{--bg:#f7f6f2;--fg:#1f1f1f;--muted:#6b6b6b;--line:#ddd8cc;--accent:#8a1c1c;--card:#fff;--soft:#f1ede2;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:16px;line-height:1.75;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:12px 14px 72px}
+header{border-bottom:2px solid var(--accent);margin-bottom:12px;padding-bottom:8px}
+header h1{font-size:1.3rem;margin:0;line-height:1.35}
+header .sub{color:var(--muted);font-size:.85rem}
+.lead{background:var(--soft);border-radius:6px;padding:8px 10px;font-size:.95rem}
+h2{font-size:1.15rem;margin:28px 0 8px;padding:8px 12px;background:var(--accent);color:#fff;border-radius:6px;position:sticky;top:0;z-index:2;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+h3{font-size:1.05rem;margin:20px 0 6px;border-left:4px solid var(--accent);padding-left:8px}
+p{margin:6px 0}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
+th,td{border:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top;line-height:1.5}
+td:first-child,th:first-child{white-space:nowrap}
+tr:nth-child(even) td{background:#fbfaf7}
+th{background:var(--soft);white-space:nowrap}
+pre.box{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px;overflow-x:auto;font-size:.95rem;line-height:1.55;white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,"Consolas","Noto Sans Mono CJK JP",monospace}
+ul,ol{padding-left:1.4em;margin:6px 0}
+li{margin:4px 0}
+ul.todo{list-style:none;padding-left:0}
+ul.todo li label{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;margin:6px 0}
+ul.todo input{margin-top:3px;flex:0 0 auto;width:22px;height:22px}
+ul.todo input:checked + span{color:var(--muted);text-decoration:line-through}
+.warn{color:#b00020;font-weight:bold}
+details{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:8px 0}
+summary{cursor:pointer;font-weight:bold}
+code{background:var(--soft);padding:1px 4px;border-radius:3px}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:12px 0}
+nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:6px 10px;font-size:.9rem;color:var(--accent);background:var(--soft);border-radius:999px;text-decoration:none}
+#gate{max-width:420px;margin:12vh 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px}
+#gate h1{font-size:1.2rem;margin:0 0 6px}
+#gate p{color:var(--muted);font-size:.9rem}
+#gate input{width:100%;font-size:1.4rem;letter-spacing:.3em;text-align:center;padding:12px;border:1px solid var(--line);border-radius:6px;margin:10px 0}
+#gate button{width:100%;font-size:1.05rem;padding:14px;background:var(--accent);color:#fff;border:0;border-radius:6px}
+#msg{color:#b00020;min-height:1.4em;font-size:.9rem}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:#fff;border-radius:50%;width:46px;height:46px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;text-decoration:none;opacity:.85}
+@media (min-width:480px){#gate{margin:12vh auto}}
+</style>
+</head>
+<body>
+<div id="gate">
+  <h1>🀄 Halu杯 幹部用ページ</h1>
+  <p>幹部LINEで共有した数字6桁のパスワードを入れてください。</p>
+  <form id="f">
+    <input id="pw" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" placeholder="数字6桁" autofocus>
+    <button type="submit">開く</button>
+  </form>
+  <div id="msg"></div>
+</div>
+<div class="wrap" id="page" hidden>
+  <header>
+    <h1>第20回 四麻 Halu杯 幹部用ページ</h1>
+    <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: __UPDATED__</div>
+  </header>
+  <nav class="toc" id="toc"></nav>
+  <main id="content"></main>
+  <a class="top" href="#" title="上へ">↑</a>
+</div>
+<script id="blob" type="application/json">__CIPHER__</script>
+<script>
+const B = JSON.parse(document.getElementById('blob').textContent);
+const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function unlock(pw){
+  const enc = new TextEncoder();
+  const base = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2', hash:'SHA-256', salt:b64(B.salt), iterations:B.iter}, base, 512));
+  const aesKey = await crypto.subtle.importKey('raw', bits.slice(0,32), {name:'AES-CBC'}, false, ['decrypt']);
+  const macKey = await crypto.subtle.importKey('raw', bits.slice(32,64), {name:'HMAC', hash:'SHA-256'}, false, ['verify']);
+  const iv = b64(B.iv), ct = b64(B.ct);
+  const joined = new Uint8Array(iv.length + ct.length); joined.set(iv); joined.set(ct, iv.length);
+  const ok = await crypto.subtle.verify('HMAC', macKey, b64(B.mac), joined);
+  if(!ok) throw new Error('bad');
+  const plain = await crypto.subtle.decrypt({name:'AES-CBC', iv}, aesKey, ct);
+  return new TextDecoder().decode(plain);
+}
+function show(htmlText){
+  const c = document.getElementById('content');
+  c.innerHTML = htmlText;
+  const toc = document.getElementById('toc');
+  c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+  c.querySelectorAll('ul.todo input').forEach(cb => {
+    const k = 'halu:' + cb.dataset.k;
+    try { cb.checked = localStorage.getItem(k) === '1'; } catch(e){}
+    cb.addEventListener('change', () => { try { localStorage.setItem(k, cb.checked ? '1' : '0'); } catch(e){} });
+  });
+  document.getElementById('gate').hidden = true;
+  document.getElementById('page').hidden = false;
+}
+document.getElementById('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw = document.getElementById('pw').value.trim();
+  const msg = document.getElementById('msg');
+  msg.textContent = '確認中…';
+  try { const t = await unlock(pw); try { sessionStorage.setItem('halu:pw', pw); } catch(_){} show(t); }
+  catch(err){ msg.textContent = 'パスワードが違います'; }
+});
+document.getElementById('pw').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('f').requestSubmit(); } });
+(async () => { try { const pw = sessionStorage.getItem('halu:pw'); if(pw){ show(await unlock(pw)); } } catch(e){} })();
+</script>
+</body>
+</html>
