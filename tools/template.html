@@ -40,7 +40,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:6px 10px;font-size:.
 #gate{max-width:420px;margin:12vh 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px}
 #gate h1{font-size:1.2rem;margin:0 0 6px}
 #gate p{color:var(--muted);font-size:.9rem}
-#gate input{width:100%;font-size:1.4rem;letter-spacing:.3em;text-align:center;padding:12px;border:1px solid var(--line);border-radius:6px;margin:10px 0}
+#gate input{width:100%;font-size:1.3rem;text-align:center;padding:12px;border:1px solid var(--line);border-radius:6px;margin:10px 0}
 #gate button{width:100%;font-size:1.05rem;padding:14px;background:var(--accent);color:#fff;border:0;border-radius:6px}
 #msg{color:#b00020;min-height:1.4em;font-size:.9rem}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:#fff;border-radius:50%;width:46px;height:46px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;text-decoration:none;opacity:.85}
@@ -50,9 +50,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:6px 10px;font-size:.
 <body>
 <div id="gate">
   <h1>🀄 Halu杯 幹部用ページ</h1>
-  <p>幹部LINEで共有した数字6桁のパスワードを入れてください。</p>
+  <p>幹部LINEで共有したパスワードを入れてください。</p>
   <form id="f">
-    <input id="pw" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" placeholder="数字6桁" autofocus>
+    <input id="pw" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" placeholder="パスワード" autofocus>
     <button type="submit">開く</button>
   </form>
   <div id="msg"></div>
