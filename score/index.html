@@ -131,11 +131,17 @@ summary{cursor:pointer;font-weight:700}
   <div class="status" id="status"></div>
   <div class="tw">
     <table id="tbl">
-      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th>準決</th><th>決勝</th></tr></thead>
+      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th>6位ライン</th><th>準決</th><th>決勝</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
   <p class="small">順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため順位から外しています。卓の4人がそろうまで、その半荘のポイントは出ません。準決勝・決勝は点棒をそのまま表示します。</p>
+  <h2>6位ライン（準決勝に行ける目安）</h2>
+  <div class="card">
+    <label for="bdplayer">プレイヤー</label>
+    <select id="bdplayer"></select>
+    <div id="bd" style="margin-top:8px"></div>
+  </div>
   <details>
     <summary>点棒（素点）の一覧</summary>
     <div class="tw" style="margin-top:8px">
@@ -203,6 +209,7 @@ function render(d) {
   DATA = d;
   document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
   const pts = calcAll(d);
+  computeTotals(d);
   const rows = PLAYERS.map(p => {
     const q = ['1', '2', '3', '4'].map(k => pts[p][k]);
     const done = q.filter(v => v !== null);
@@ -215,7 +222,8 @@ function render(d) {
   rows.filter(r => r.guest).concat(players).forEach(r => {
     const tr = document.createElement('tr');
     if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
-    const cells = [r.rank ?? '', r.p, ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), fmt(r.S), fmt(r.F)];
+    const bd = r.guest ? '' : borderText(r.p);
+    const cells = [r.rank ?? '', r.p, ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
     cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
     tb.appendChild(tr);
   });
@@ -233,7 +241,60 @@ function render(d) {
     const sp = document.createElement('span'); sp.textContent = r + '半荘目 ' + done + '/' + tables.length + '卓'; if (done === tables.length && tables.length) sp.className = 'done'; st.appendChild(sp);
   }
   fillSeats();
+  renderBorder();
 }
+
+// ---- 6位ライン（準決勝ボーダー） ----
+let TOTALS = {};   // name -> {total, n}
+function computeTotals(d) {
+  const pts = calcAll(d); TOTALS = {};
+  PLAYERS.forEach(p => { const q = ['1','2','3','4'].map(k => pts[p][k]).filter(v => v !== null); TOTALS[p] = { total: q.length ? q.reduce((a, b) => a + b, 0) : null, n: q.length }; });
+}
+// 自分を除いた参加者の合計の上から6番目。6人に満たなければ null
+function borderFor(name) {
+  const others = PLAYERS.filter(p => p.startsWith('P') && p !== name && TOTALS[p] && TOTALS[p].total !== null).map(p => TOTALS[p].total).sort((a, b) => b - a);
+  if (others.length < 6) return null;
+  return others[5];
+}
+function borderText(name) {
+  const me = TOTALS[name]; if (!me || me.total === null) return '';
+  const B = borderFor(name); if (B === null) return '';
+  const D = B - me.total;
+  return D >= 0 ? 'あと ' + fpt(D + 1) : '圏内 (余裕 ' + fpt(-D) + ')';
+}
+// 五捨六入で X 以上に丸まる最小の点棒
+function minRaw(X) { return X > 0 ? X - 400 : X - 500; }
+function renderBorder() {
+  const box = document.getElementById('bd'); const name = document.getElementById('bdplayer').value;
+  const me = TOTALS[name]; if (!me) { box.textContent = ''; return; }
+  const B = borderFor(name);
+  let h = '';
+  if (me.total === null) h += '<p>' + name + ' はまだポイントがありません。</p>';
+  else h += '<p>' + name + ' の現在: 合計 <b>' + fpt(me.total) + '</b>（' + me.n + '/4半荘）</p>';
+  if (B === null) { box.innerHTML = h + '<p class="small">6位ラインは、参加者6人以上のポイントがそろってから出ます。</p>'; return; }
+  const D = B - (me.total ?? 0);
+  h += '<p>6位ライン（自分を除いた6番目の合計）: <b>' + fpt(B) + '</b></p>';
+  if (D < 0) h += '<p>いまは<b>圏内</b>。7位との差は ' + fpt(-D) + ' です。</p>';
+  else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（同点は起家に近い方が上位なので、上回る数字で出しています）。</p>';
+  if (me.n >= 4) { box.innerHTML = h + '<p class="small">予選4半荘は終了しています。</p>'; return; }
+  const need = D + 1;
+  h += '<p>次の半荘で圏内に入る（または残る）目安。順位ごとに、終了時にこの点棒以上ならOK:</p><div class="tw"><table><thead><tr><th style="text-align:left">順位</th><th>必要ポイント</th><th>必要な点棒</th></tr></thead><tbody>';
+  const labels = ['1位', '2位', '3位', '4位'];
+  for (let r = 0; r < 4; r++) {
+    const bonus = UMA[r] + (r === 0 ? OKA : 0);
+    const needPts = Math.max(need, -Infinity);
+    const X = (needPts - bonus) * 1000 + RETURN;
+    const raw = minRaw(X);
+    let cell;
+    if (raw > 100000) cell = '届かない';
+    else if (raw <= -200000) cell = 'どんな点数でもOK';
+    else cell = fmt(raw) + ' 以上';
+    h += '<tr><td style="text-align:left">' + labels[r] + '</td><td>' + fpt(needPts) + '</td><td>' + cell + '</td></tr>';
+  }
+  h += '</tbody></table></div><p class="small">1位は端数の引き受けで数ポイント変わることがあります。他の人の結果でラインも動くので、目安として見てください。</p>';
+  box.innerHTML = h;
+}
+document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
 
 // ---- 卓入力 ----
 const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
@@ -308,6 +369,9 @@ document.getElementById('qclear').addEventListener('click', async () => {
 // ---- 準決勝・決勝 ----
 const sel = document.getElementById('player');
 PLAYERS.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+const bdsel = document.getElementById('bdplayer');
+PLAYERS.filter(p => p.startsWith('P')).forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; bdsel.appendChild(o); });
+try { const v = localStorage.getItem('halu:bdplayer'); if (v) bdsel.value = v; } catch (e) {}
 document.getElementById('f').addEventListener('submit', async e => {
   e.preventDefault();
   if (!API) { say('msg', 'APIが未設定です', false); return; }
