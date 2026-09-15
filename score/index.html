@@ -35,6 +35,7 @@ th{background:#ececE8;font-weight:700;position:sticky;top:0}
 #tbl td:nth-child(1),#tbl td:nth-child(2),#tbl th:nth-child(1),#tbl th:nth-child(2),#raw td:nth-child(1),#raw th:nth-child(1){text-align:left}
 tr:nth-child(even) td{background:var(--card2)}
 tr.top6 td:nth-child(2){font-weight:700;color:var(--accent)}
+tr.line6 td{border-bottom:4px solid #b00020}
 tr.guest td{color:var(--muted)}
 td.neg,.neg{color:var(--ng)}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
@@ -222,6 +223,7 @@ function render(d) {
   rows.filter(r => r.guest).concat(players).forEach(r => {
     const tr = document.createElement('tr');
     if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
+    if (r.rank === 6) tr.classList.add('line6');
     const bd = r.guest ? '' : borderText(r.p);
     const cells = [r.rank ?? '', r.p, ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
     cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
