@@ -92,7 +92,7 @@ summary{cursor:pointer;font-weight:700}
   </div>
   <div class="hint">
     <b>ポイントの計算</b>: 25,000点持ち・30,000点返し。100点台は五捨六入（〜500は切り捨て、600〜は切り上げ）。
-    （点棒−30,000）÷1,000 に順位点 +30／+10／−10／−30 を足し、1位にはオカ +20。同点は起家に近い方が上位。
+    （点棒−30,000）÷1,000 に順位点 +30／+10／−10／−30 を足し、1位にはオカ +20。五捨六入の端数は1位が引き受け、卓の合計は必ず 0。同点は起家に近い方が上位。
   </div>
 
   <h2>準決勝・決勝の報告（1人ずつ）</h2>
@@ -177,6 +177,9 @@ function calcTable(seats) {
     const r = round1000(o.raw);
     res[o.i] = { raw: o.raw, rounded: r, rank: rank + 1, pts: (r - RETURN) / 1000 + UMA[rank] + (rank === 0 ? OKA : 0) };
   });
+  // 端数は1位が引き受ける: 1位 = −(2〜4位の合計) で卓の合計を 0 にする
+  const top = res[order[0].i];
+  top.pts = -order.slice(1).reduce((a, o) => a + res[o.i].pts, 0);
   return res;
 }
 // 全体のポイント表: name -> {1..4: pts|null}
