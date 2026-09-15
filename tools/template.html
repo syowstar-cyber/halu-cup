@@ -4,66 +4,78 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#8a1c1c">
+<meta name="theme-color" content="#0b0b0d">
 <title>Halu杯 幹部用</title>
 <style>
-:root{--bg:#f7f6f2;--fg:#1f1f1f;--muted:#6b6b6b;--line:#ddd8cc;--accent:#8a1c1c;--card:#fff;--soft:#f1ede2;}
+:root{--bg:#0b0b0d;--fg:#f3ecd9;--muted:#b9b09a;--line:#3a3423;--gold:#d9b34a;--gold2:#f3d97a;--red:#b3202a;--card:#17171b;--card2:#1f1f25;--soft:#26231a}
 *{box-sizing:border-box}
+html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:16px;line-height:1.75;-webkit-text-size-adjust:100%}
-.wrap{max-width:760px;margin:0 auto;padding:12px 14px 72px}
-header{border-bottom:2px solid var(--accent);margin-bottom:12px;padding-bottom:8px}
-header h1{font-size:1.3rem;margin:0;line-height:1.35}
+a{color:var(--gold2)}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px 80px}
+.hero{margin:0 -14px 12px;position:relative;background:#000}
+.hero img{display:block;width:100%;max-height:78vh;object-fit:contain;margin:0 auto}
+.hero .badge{position:absolute;left:12px;top:12px;background:var(--red);color:#fff;font-weight:bold;font-size:.8rem;padding:4px 10px;border-radius:999px;letter-spacing:.05em;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+header{border-bottom:2px solid var(--gold);margin-bottom:12px;padding-bottom:10px}
+header h1{font-size:1.3rem;margin:0;line-height:1.35;color:var(--gold2)}
 header .sub{color:var(--muted);font-size:.85rem}
-.lead{background:var(--soft);border-radius:6px;padding:8px 10px;font-size:.95rem}
-h2{font-size:1.15rem;margin:28px 0 8px;padding:8px 12px;background:var(--accent);color:#fff;border-radius:6px;position:sticky;top:0;z-index:2;box-shadow:0 2px 4px rgba(0,0,0,.15)}
-h3{font-size:1.05rem;margin:20px 0 6px;border-left:4px solid var(--accent);padding-left:8px}
+.lead{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:.95rem}
+h2{font-size:1.1rem;margin:30px 0 10px;padding:9px 14px;background:linear-gradient(90deg,var(--gold),#a8842c);color:#1a1405;border-radius:8px;position:sticky;top:0;z-index:2;box-shadow:0 3px 8px rgba(0,0,0,.6)}
+h3{font-size:1.05rem;margin:22px 0 6px;border-left:4px solid var(--gold);padding-left:10px;color:var(--gold2)}
 p{margin:6px 0}
-.tw{overflow-x:auto;margin:8px 0}
+strong{color:var(--gold2)}
+.tw{overflow-x:auto;margin:8px 0;border-radius:8px}
 table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
 th,td{border:1px solid var(--line);padding:8px 8px;text-align:left;vertical-align:top;line-height:1.5}
 td:first-child,th:first-child{white-space:nowrap}
-tr:nth-child(even) td{background:#fbfaf7}
-th{background:var(--soft);white-space:nowrap}
-pre.box{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px;overflow-x:auto;font-size:.95rem;line-height:1.55;white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,"Consolas","Noto Sans Mono CJK JP",monospace}
+tr:nth-child(even) td{background:var(--card2)}
+th{background:#2a2417;color:var(--gold2);white-space:nowrap}
+pre.box{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;overflow-x:auto;font-size:.95rem;line-height:1.55;white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,"Consolas","Noto Sans Mono CJK JP",monospace}
 ul,ol{padding-left:1.4em;margin:6px 0}
 li{margin:4px 0}
 ul.todo{list-style:none;padding-left:0}
-ul.todo li label{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px;margin:6px 0}
-ul.todo input{margin-top:3px;flex:0 0 auto;width:22px;height:22px}
+ul.todo li label{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin:6px 0}
+ul.todo input{margin-top:3px;flex:0 0 auto;width:22px;height:22px;accent-color:var(--gold)}
 ul.todo input:checked + span{color:var(--muted);text-decoration:line-through}
-.warn{color:#b00020;font-weight:bold}
-details{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin:8px 0}
-summary{cursor:pointer;font-weight:bold}
+.warn{color:#ff7b84;font-weight:bold}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin:8px 0}
+summary{cursor:pointer;font-weight:bold;color:var(--gold2)}
 code{background:var(--soft);padding:1px 4px;border-radius:3px}
-nav.toc{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin:12px 0}
-nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:6px 10px;font-size:.9rem;color:var(--accent);background:var(--soft);border-radius:999px;text-decoration:none}
-#gate{max-width:420px;margin:12vh 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px}
-#gate h1{font-size:1.2rem;margin:0 0 6px}
-#gate p{color:var(--muted);font-size:.9rem}
-#gate input{width:100%;font-size:1.3rem;text-align:center;padding:12px;border:1px solid var(--line);border-radius:6px;margin:10px 0}
-#gate button{width:100%;font-size:1.05rem;padding:14px;background:var(--accent);color:#fff;border:0;border-radius:6px}
-#msg{color:#b00020;min-height:1.4em;font-size:.9rem}
-.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:#fff;border-radius:50%;width:46px;height:46px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;text-decoration:none;opacity:.85}
-@media (min-width:480px){#gate{margin:12vh auto}}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:12px 0}
+nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:6px 11px;font-size:.9rem;color:var(--gold2);background:var(--soft);border:1px solid var(--line);border-radius:999px;text-decoration:none}
 .flow{display:flex;flex-direction:column;align-items:stretch;gap:4px;margin:10px 0}
-.flow span{background:var(--card);border:2px solid var(--accent);border-radius:8px;padding:10px 12px;font-weight:bold;text-align:center}
-.flow i{font-style:normal;font-weight:bold;color:var(--accent);text-align:center;transform:rotate(90deg);line-height:1}
+.flow span{background:var(--card);border:2px solid var(--gold);border-radius:10px;padding:10px 12px;font-weight:bold;text-align:center;color:var(--gold2)}
+.flow i{font-style:normal;font-weight:bold;color:var(--gold);text-align:center;transform:rotate(90deg);line-height:1}
 @media (min-width:560px){.flow{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}.flow i{transform:none}}
+#gate{max-width:480px;margin:0 auto;padding:0 0 40px}
+#gate .poster{display:block;width:100%;background:#000}
+#gate .poster img{display:block;width:100%;max-height:70vh;object-fit:contain;margin:0 auto}
+#gate .card{margin:14px 16px 0;background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:20px}
+#gate h1{font-size:1.15rem;margin:0 0 6px;color:var(--gold2)}
+#gate p{color:var(--muted);font-size:.9rem;margin:0 0 6px}
+#gate input{width:100%;font-size:1.3rem;text-align:center;padding:12px;border:1px solid var(--line);border-radius:8px;margin:10px 0;background:#0e0e11;color:var(--fg)}
+#gate button{width:100%;font-size:1.05rem;padding:14px;background:linear-gradient(90deg,var(--gold),#a8842c);color:#1a1405;font-weight:bold;border:0;border-radius:8px}
+#msg{color:#ff7b84;min-height:1.4em;font-size:.9rem}
+.top{position:fixed;right:12px;bottom:12px;background:var(--gold);color:#1a1405;border-radius:50%;width:46px;height:46px;font-size:1.2rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;opacity:.9;box-shadow:0 2px 8px rgba(0,0,0,.6)}
 </style>
 </head>
 <body>
 <div id="gate">
-  <h1>🀄 Halu杯 幹部用ページ</h1>
-  <p>幹部LINEで共有したパスワードを入れてください。</p>
-  <form id="f">
-    <input id="pw" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" placeholder="パスワード" autofocus>
-    <button type="submit">開く</button>
-  </form>
-  <div id="msg"></div>
+  <div class="poster"><img src="poster.jpg" alt="第20回 Halu杯 ポスター"></div>
+  <div class="card">
+    <h1>🀄 幹部用ページ</h1>
+    <p>幹部LINEで共有したパスワードを入れてください。</p>
+    <form id="f">
+      <input id="pw" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" placeholder="パスワード" autofocus>
+      <button type="submit">開く</button>
+    </form>
+    <div id="msg"></div>
+  </div>
 </div>
 <div class="wrap" id="page" hidden>
+  <div class="hero"><img src="poster.jpg" alt="第20回 Halu杯 ポスター"><span class="badge">幹部用</span></div>
   <header>
-    <h1>第20回 四麻 Halu杯 幹部用ページ</h1>
+    <h1>第20回 Halu杯 幹部用ページ</h1>
     <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: __UPDATED__</div>
   </header>
   <nav class="toc" id="toc"></nav>
