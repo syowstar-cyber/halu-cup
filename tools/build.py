@@ -27,6 +27,16 @@ in_code = False
 table = []
 lst = None        # ("ul"|"ol", items)
 
+def keyfn(s):
+    return html.escape(re.sub(r"\W+", "", s)[:40])
+
+# 文言を変えた項目: 新しい本文 → 以前の本文（チェック状態のキー引き継ぎ用。消さずに積む）
+LEGACY_TEXT = {
+    "対戦表4半荘分を全部貼り出す（精算10分で回すため、半荘ごとの発表待ちをなくす）": "卓組表4回戦分を全部貼り出す（精算10分で回すため、回戦ごとの発表待ちをなくす）",
+    "　対戦表 4半荘分": "　卓組表 4回戦分",
+    "　記録用紙（予選8卓×4半荘、準決勝2卓、決勝1卓）": "　記録用紙（予選8卓×4回戦、準決勝2卓、決勝1卓）",
+}
+
 def flush_table():
     global table
     if not table:
@@ -50,8 +60,9 @@ def flush_list():
     h = [f'<{kind}{" class=todo" if todo else ""}>']
     for it in items:
         if todo and kind == "ul":
-            key = html.escape(re.sub(r"\W+", "", it)[:40])
-            h.append(f'<li><label><input type="checkbox" data-k="{key}"><span>{inline(it)}</span></label></li>')
+            key = keyfn(it)
+            legacy = keyfn(LEGACY_TEXT[it]) if it in LEGACY_TEXT else ""
+            h.append(f'<li><label><input type="checkbox" data-k="{key}" data-legacy="{legacy}"><span>{inline(it)}</span></label></li>')
         else:
             h.append(f"<li>{inline(it)}</li>")
     h.append(f"</{kind}>")

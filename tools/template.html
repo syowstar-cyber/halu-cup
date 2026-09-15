@@ -94,7 +94,11 @@ function show(htmlText){
   c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
   c.querySelectorAll('ul.todo input').forEach(cb => {
     const k = 'halu:' + cb.dataset.k;
-    try { cb.checked = localStorage.getItem(k) === '1'; } catch(e){}
+    try {
+      let v = localStorage.getItem(k);
+      if(v === null && cb.dataset.legacy){ v = localStorage.getItem('halu:' + cb.dataset.legacy); if(v !== null) localStorage.setItem(k, v); }
+      cb.checked = v === '1';
+    } catch(e){}
     cb.addEventListener('change', () => { try { localStorage.setItem(k, cb.checked ? '1' : '0'); } catch(e){} });
   });
   document.getElementById('gate').hidden = true;
