@@ -146,7 +146,7 @@ while i < len(src):
     out.append(f"<p>{inline(line)}</p>")
 
 flush_table(); flush_list()
-lead = "<p class=\"lead\">主催: トミーさん・由子ママ。変更の経緯は末尾の「16. 変更履歴」にまとめています。</p>\n"
+lead = "<p class=\"lead\">主催: トミーさん・ゆうこママ。変更の経緯は末尾の「16. 変更履歴」にまとめています。</p>\n"
 body = lead + "\n".join(out)
 # 15章のLINE用テキストは折りたたみに
 body = re.sub(r'<h3>(参加者向け|運営・幹部向け)</h3>\n<pre class="box">(.*?)</pre>',
