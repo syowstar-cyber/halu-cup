@@ -172,7 +172,7 @@ const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 
 let DATA = null;
 
 const fmt = n => (n === null || n === undefined) ? '' : n.toLocaleString('ja-JP');
-const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : '') + n.toFixed(1);
+const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : '') + Math.round(n).toLocaleString('ja-JP');
 function say(id, t, ok) { const m = document.getElementById(id); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
 
 // 五捨六入で1,000点単位に
