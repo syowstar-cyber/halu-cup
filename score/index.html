@@ -17,6 +17,7 @@ header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8
 header h1{font-size:1.3rem;margin:0}
 header .sub{color:var(--muted);font-size:.9rem}
 h2{font-size:1.1rem;margin:26px 0 10px;padding:9px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
+h3{font-size:1.02rem;margin:18px 0 6px;border-left:5px solid var(--accent);padding-left:10px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0}
 label{display:block;font-weight:700;margin:12px 0 4px}
 select,input{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
@@ -35,147 +36,303 @@ td:nth-child(1),td:nth-child(2),th:nth-child(1),th:nth-child(2){text-align:left}
 tr:nth-child(even) td{background:var(--card2)}
 tr.top6 td:nth-child(2){font-weight:700;color:var(--accent)}
 tr.guest td{color:var(--muted)}
-td.neg{color:var(--ng)}
+td.neg,.neg{color:var(--ng)}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
 .small{color:var(--muted);font-size:.9rem}
 .hint{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.95rem}
+/* 卓入力 */
+.seat{display:grid;grid-template-columns:2.2em 1fr 7.5em 6em;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.seat .w{font-weight:700;text-align:center;background:var(--soft);border-radius:6px;padding:6px 0}
+.seat .nm{font-weight:700}
+.seat input{padding:10px;font-size:1.1rem}
+.seat .pt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.sum{display:flex;justify-content:space-between;padding:8px 0;font-weight:700}
+.status span{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:.9rem}
+.status span.done{background:#e3f2e6;border-color:#9fcfa9;color:var(--ok)}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
+summary{cursor:pointer;font-weight:700}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media (max-width:420px){.seat{grid-template-columns:2em 1fr 6.5em 5em;gap:6px}.seat input{padding:8px;font-size:1rem}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>🀄 Halu杯 点数報告</h1>
-    <div class="sub">半荘が終わったら、自分の点数を送ってください。同じ半荘に送り直すと上書きされます。</div>
+    <div class="sub">半荘が終わったら、卓の代表が4人分の点棒を入れて送ってください。ポイントは自動で計算されます。</div>
   </header>
 
-  <div id="setup" class="hint" hidden>点数報告の受け口（API）がまだ設定されていません。幹部が gas/README.md の手順で設定すると使えるようになります。</div>
+  <div id="setup" class="hint" hidden>点数報告の受け口（API）がまだ設定されていません。</div>
 
+  <h2>予選の報告（卓ごと）</h2>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="qround">半荘</label>
+        <select id="qround">
+          <option value="1">予選 1半荘目</option>
+          <option value="2">予選 2半荘目</option>
+          <option value="3">予選 3半荘目</option>
+          <option value="4">予選 4半荘目</option>
+        </select>
+      </div>
+      <div>
+        <label for="qtable">卓</label>
+        <select id="qtable"></select>
+      </div>
+    </div>
+    <div id="seats"></div>
+    <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
+    <div id="qwarn" class="small neg"></div>
+    <label for="qkey">報告キー（受付で伝えた数字）</label>
+    <input id="qkey" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+    <button class="primary" type="button" id="qsend">この卓の4人分を送信する</button>
+    <div id="qmsg" class="msg" aria-live="polite"></div>
+    <div class="tools"><button class="ghost" type="button" id="qclear">この卓の点数を取り消す</button></div>
+  </div>
+  <div class="hint">
+    <b>ポイントの計算</b>: 25,000点持ち・30,000点返し。100点台は五捨六入（〜500は切り捨て、600〜は切り上げ）。
+    （点棒−30,000）÷1,000 に順位点 +30／+10／−10／−30 を足し、1位にはオカ +20。同点は起家に近い方が上位。
+  </div>
+
+  <h2>準決勝・決勝の報告（1人ずつ）</h2>
   <div class="card">
     <form id="f">
       <label for="player">プレイヤー</label>
       <select id="player" required></select>
       <div class="row">
         <div>
-          <label for="round">半荘</label>
+          <label for="round">対局</label>
           <select id="round" required>
-            <option value="1">予選 1半荘目</option>
-            <option value="2">予選 2半荘目</option>
-            <option value="3">予選 3半荘目</option>
-            <option value="4">予選 4半荘目</option>
             <option value="S">準決勝</option>
             <option value="F">決勝</option>
           </select>
         </div>
         <div>
-          <label for="score">点数（終了時の持ち点）</label>
+          <label for="score">点棒（終了時）</label>
           <input id="score" type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="例 32000" required>
         </div>
       </div>
-      <label for="key">報告キー（受付で伝えた数字）</label>
+      <label for="key">報告キー</label>
       <input id="key" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
       <button class="primary" type="submit">送信する</button>
       <div id="msg" class="msg" aria-live="polite"></div>
     </form>
-    <div class="tools">
-      <button class="ghost" type="button" id="clearBtn">この半荘の点数を取り消す</button>
-    </div>
   </div>
 
-  <h2>集計（予選は4半荘の合計点）</h2>
+  <h2>集計（予選は4半荘の合計ポイント）</h2>
   <div class="tools">
     <button class="ghost" type="button" id="reload">最新に更新</button>
     <span class="small" id="updated"></span>
   </div>
+  <div class="status" id="status"></div>
   <div class="tw">
     <table id="tbl">
-      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計</th><th>準決</th><th>決勝</th></tr></thead>
+      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th>準決</th><th>決勝</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
-  <p class="small">順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため順位から外しています。同点の並びは起家順で決まるため、表の順は仮です。</p>
+  <p class="small">順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため順位から外しています。卓の4人がそろうまで、その半荘のポイントは出ません。準決勝・決勝は点棒をそのまま表示します。</p>
+  <details>
+    <summary>点棒（素点）の一覧</summary>
+    <div class="tw" style="margin-top:8px">
+      <table id="raw">
+        <thead><tr><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>準決</th><th>決勝</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </details>
+  <details>
+    <summary>組み合わせ表（予選）</summary>
+    <div id="sched"></div>
+  </details>
   <div class="tools">
     <button class="ghost" type="button" id="dl">JSONをコピー</button>
-    <span class="small">1つのJSON（P1〜P30・本田プロ・ゆうこママ）がそのままコピーされます</span>
+    <span class="small">点棒のJSON（P1〜P30・本田プロ・ゆうこママ）をそのままコピーします</span>
   </div>
 </div>
 
 <script src="config.js"></script>
+<script src="schedule.js"></script>
 <script>
 const API = (window.HALU_API || '').trim();
-const PLAYERS = ['本田プロ','ゆうこママ'].concat(Array.from({length:30}, (_, i) => 'P' + (i + 1)));
-const sel = document.getElementById('player');
-PLAYERS.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
-try { const last = localStorage.getItem('halu:player'); if (last) sel.value = last; } catch(e) {}
+const SCHED = window.HALU_SCHEDULE || {};
+const WINDS = ['東', '南', '西', '北'];
+const UMA = [30, 10, -10, -30], OKA = 20, RETURN = 30000;
+const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
 let DATA = null;
 
 const fmt = n => (n === null || n === undefined) ? '' : n.toLocaleString('ja-JP');
-function render(d){
+const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : '') + n.toFixed(1);
+function say(id, t, ok) { const m = document.getElementById(id); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
+
+// 五捨六入で1,000点単位に
+function round1000(s) { const sign = s < 0 ? -1 : 1; return sign * Math.floor((Math.abs(s) + 400) / 1000) * 1000; }
+// 1卓4人の点棒 → ポイント。seats: [{name, raw}] 東から順。4人そろっていなければ null
+function calcTable(seats) {
+  if (seats.some(s => s.raw === null || s.raw === undefined || Number.isNaN(s.raw))) return seats.map(() => null);
+  const order = seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i);
+  const res = seats.map(() => null);
+  order.forEach((o, rank) => {
+    const r = round1000(o.raw);
+    res[o.i] = { raw: o.raw, rounded: r, rank: rank + 1, pts: (r - RETURN) / 1000 + UMA[rank] + (rank === 0 ? OKA : 0) };
+  });
+  return res;
+}
+// 全体のポイント表: name -> {1..4: pts|null}
+function calcAll(d) {
+  const pts = {};
+  PLAYERS.forEach(p => pts[p] = { '1': null, '2': null, '3': null, '4': null });
+  for (const r of ['1', '2', '3', '4']) {
+    for (const t of (SCHED[r] || [])) {
+      const res = calcTable(t.seats.map(n => ({ name: n, raw: (d.players[n] || {})[r] ?? null })));
+      t.seats.forEach((n, i) => { pts[n][r] = res[i] ? res[i].pts : null; });
+    }
+  }
+  return pts;
+}
+
+// ---- 集計表 ----
+function render(d) {
   DATA = d;
   document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
+  const pts = calcAll(d);
   const rows = PLAYERS.map(p => {
+    const q = ['1', '2', '3', '4'].map(k => pts[p][k]);
+    const done = q.filter(v => v !== null);
     const s = d.players[p] || {};
-    const q = ['1','2','3','4'].map(k => s[k]);
-    const done = q.filter(v => v !== null && v !== undefined);
-    const total = done.length ? done.reduce((a, b) => a + b, 0) : null;
-    return { p, q, total, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
+    return { p, q, total: done.length ? done.reduce((a, b) => a + b, 0) : null, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
   });
   const players = rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity));
-  let rank = 0;
-  players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
-  const guests = rows.filter(r => r.guest);
-  const tb = document.querySelector('#tbl tbody');
-  tb.innerHTML = '';
-  guests.concat(players).forEach(r => {
+  let rank = 0; players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
+  const tb = document.querySelector('#tbl tbody'); tb.innerHTML = '';
+  rows.filter(r => r.guest).concat(players).forEach(r => {
     const tr = document.createElement('tr');
-    if (r.guest) tr.className = 'guest';
-    else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
-    const cells = [r.rank ?? '', r.p, ...r.q.map(fmt), r.total === null ? '' : fmt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), fmt(r.S), fmt(r.F)];
-    cells.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && c.startsWith('-')) td.className = 'neg'; tr.appendChild(td); });
+    if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
+    const cells = [r.rank ?? '', r.p, ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), fmt(r.S), fmt(r.F)];
+    cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
     tb.appendChild(tr);
   });
+  const rb = document.querySelector('#raw tbody'); rb.innerHTML = '';
+  PLAYERS.forEach(p => {
+    const s = d.players[p] || {}; const tr = document.createElement('tr');
+    [p, s['1'], s['2'], s['3'], s['4'], s.S, s.F].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
+    rb.appendChild(tr);
+  });
+  // 卓の入力状況
+  const st = document.getElementById('status'); st.innerHTML = '';
+  for (const r of ['1', '2', '3', '4']) {
+    const tables = SCHED[r] || [];
+    const done = tables.filter(t => t.seats.every(n => (d.players[n] || {})[r] !== null && (d.players[n] || {})[r] !== undefined)).length;
+    const sp = document.createElement('span'); sp.textContent = r + '半荘目 ' + done + '/' + tables.length + '卓'; if (done === tables.length && tables.length) sp.className = 'done'; st.appendChild(sp);
+  }
+  fillSeats();
 }
-async function load(){
-  if (!API) { document.getElementById('setup').hidden = false; return; }
-  try {
-    const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
-    const j = await r.json();
-    if (j.ok) render(j.data); else say('読み込みに失敗しました', false);
-  } catch(e) { say('読み込みに失敗しました（通信）', false); }
+
+// ---- 卓入力 ----
+const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
+function currentTable() { return (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value); }
+function fillTables() {
+  qtable.innerHTML = '';
+  (SCHED[qround.value] || []).forEach(t => { const o = document.createElement('option'); o.value = t.table; o.textContent = t.table + '卓'; qtable.appendChild(o); });
+  try { const last = localStorage.getItem('halu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
+  fillSeats();
 }
-function say(t, ok){ const m = document.getElementById('msg'); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
-async function send(body){
-  if (!API) { say('APIが未設定です', false); return; }
-  say('送信中…', true);
-  try {
-    const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
-    const j = await r.json();
-    if (j.ok) { render(j.data); return true; }
-    const why = { key: '報告キーが違います', player: 'プレイヤーが不正です', round: '半荘の指定が不正です', score: '点数の値が不正です' }[j.error] || '送信に失敗しました';
-    say(why, false); return false;
-  } catch(e) { say('送信に失敗しました（通信）', false); return false; }
+function fillSeats() {
+  const t = currentTable(); const box = document.getElementById('seats'); box.innerHTML = '';
+  if (!t) return;
+  t.seats.forEach((n, i) => {
+    const row = document.createElement('div'); row.className = 'seat';
+    const cur = DATA ? (DATA.players[n] || {})[qround.value] : null;
+    row.innerHTML = '<div class="w">' + WINDS[i] + '</div><div class="nm">' + n + '</div><input type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="点棒" data-name="' + n + '"><div class="pt"></div>';
+    row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', preview));
+  preview();
 }
+function readSeats() {
+  return [...document.querySelectorAll('#seats input')].map(inp => ({ name: inp.dataset.name, raw: inp.value.trim() === '' ? null : parseInt(inp.value, 10) }));
+}
+function preview() {
+  const seats = readSeats();
+  const res = calcTable(seats);
+  document.querySelectorAll('#seats .pt').forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位 ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
+  const filled = seats.filter(s => s.raw !== null);
+  const sum = filled.reduce((a, s) => a + s.raw, 0);
+  document.getElementById('qsum').textContent = fmt(sum);
+  document.getElementById('qwarn').textContent = (filled.length === 4 && sum !== 100000) ? '合計が100,000になっていません。点棒を確認してください（送信はできます）' : '';
+}
+qround.addEventListener('change', fillTables);
+qtable.addEventListener('change', () => { try { localStorage.setItem('halu:table', qtable.value); } catch (e) {} fillSeats(); });
+
+async function post(body) {
+  const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
+  return r.json();
+}
+const ERR = { key: '報告キーが違います', player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
+document.getElementById('qsend').addEventListener('click', async () => {
+  if (!API) { say('qmsg', 'APIが未設定です', false); return; }
+  const key = document.getElementById('qkey').value.trim(); if (!key) { say('qmsg', '報告キーを入れてください', false); return; }
+  const seats = readSeats().filter(s => s.raw !== null && Number.isInteger(s.raw));
+  if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
+  say('qmsg', '送信中…（' + seats.length + '人分）', true);
+  let last = null;
+  for (const s of seats) {
+    const j = await post({ key, player: s.name, round: qround.value, score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
+    if (!j.ok) { say('qmsg', s.name + ': ' + (ERR[j.error] || '送信に失敗しました'), false); if (last) render(last); return; }
+    last = j.data;
+  }
+  render(last);
+  say('qmsg', qround.value + '半荘目 ' + qtable.value + '卓の ' + seats.length + '人分を記録しました', true);
+});
+document.getElementById('qclear').addEventListener('click', async () => {
+  const key = document.getElementById('qkey').value.trim(); if (!key) { say('qmsg', '報告キーを入れてください', false); return; }
+  const t = currentTable(); if (!t) return;
+  if (!confirm(qround.value + '半荘目 ' + qtable.value + '卓の4人の点数を取り消しますか？')) return;
+  let last = null;
+  for (const n of t.seats) {
+    const j = await post({ key, player: n, round: qround.value, action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
+    if (!j.ok) { say('qmsg', n + ': ' + (ERR[j.error] || '取り消しに失敗しました'), false); if (last) render(last); return; }
+    last = j.data;
+  }
+  render(last); say('qmsg', '取り消しました', true);
+});
+
+// ---- 準決勝・決勝 ----
+const sel = document.getElementById('player');
+PLAYERS.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
 document.getElementById('f').addEventListener('submit', async e => {
   e.preventDefault();
-  const player = sel.value, round = document.getElementById('round').value;
+  if (!API) { say('msg', 'APIが未設定です', false); return; }
   const score = parseInt(document.getElementById('score').value, 10), key = document.getElementById('key').value.trim();
-  if (!Number.isInteger(score)) { say('点数を数字で入れてください', false); return; }
-  try { localStorage.setItem('halu:player', player); } catch(_) {}
-  if (await send({ key, player, round, score })) say(player + ' の ' + roundName(round) + ' を ' + fmt(score) + ' で記録しました', true);
+  if (!Number.isInteger(score)) { say('msg', '点棒を数字で入れてください', false); return; }
+  say('msg', '送信中…', true);
+  const j = await post({ key, player: sel.value, round: document.getElementById('round').value, score }).catch(() => ({ ok: false, error: 'net' }));
+  if (j.ok) { render(j.data); say('msg', sel.value + ' を ' + fmt(score) + ' で記録しました', true); } else say('msg', ERR[j.error] || '送信に失敗しました', false);
 });
-document.getElementById('clearBtn').addEventListener('click', async () => {
-  const player = sel.value, round = document.getElementById('round').value, key = document.getElementById('key').value.trim();
-  if (!key) { say('報告キーを入れてください', false); return; }
-  if (!confirm(player + ' の ' + roundName(round) + ' の点数を取り消しますか？')) return;
-  if (await send({ key, player, round, action: 'clear' })) say('取り消しました', true);
-});
-function roundName(r){ return { '1': '予選1半荘目', '2': '予選2半荘目', '3': '予選3半荘目', '4': '予選4半荘目', 'S': '準決勝', 'F': '決勝' }[r] || r; }
+
+// ---- 読み込み・その他 ----
+async function load() {
+  if (!API) { document.getElementById('setup').hidden = false; return; }
+  try { const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (j.ok) render(j.data); }
+  catch (e) { document.getElementById('updated').textContent = '読み込みに失敗しました（通信）'; }
+}
 document.getElementById('reload').addEventListener('click', load);
 document.getElementById('dl').addEventListener('click', async () => {
   if (!DATA) return;
-  try { await navigator.clipboard.writeText(JSON.stringify(DATA, null, 1)); say('JSONをコピーしました', true); }
-  catch(e) { say('コピーできませんでした', false); }
+  try { await navigator.clipboard.writeText(JSON.stringify(DATA, null, 1)); say('msg', 'JSONをコピーしました', true); } catch (e) { say('msg', 'コピーできませんでした', false); }
 });
+(function renderSched() {
+  const box = document.getElementById('sched'); let h = '';
+  for (const r of ['1', '2', '3', '4']) {
+    h += '<h3>予選' + r + '半荘目</h3><div class="tw"><table><thead><tr><th>卓</th><th>東</th><th>南</th><th>西</th><th>北</th></tr></thead><tbody>';
+    (SCHED[r] || []).forEach(t => { h += '<tr><td>' + t.table + '卓</td>' + t.seats.map(n => '<td style="text-align:left">' + n + '</td>').join('') + '</tr>'; });
+    h += '</tbody></table></div>';
+  }
+  box.innerHTML = h;
+})();
+fillTables();
 load();
 setInterval(load, 60000);
 </script>
