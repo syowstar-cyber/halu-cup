@@ -10,3 +10,8 @@
 3. `git commit` → `git push`。GitHub Pages が数十秒で反映する。
 
 `.work/` は git 対象外（平文とパスワードを置く場所）。`index.html` には暗号文しか入らない。
+
+## 参加者用ページ
+
+`sanka/index.html` は暗号化なしの公開ページ。正典は fp リポの `events/第20回_四麻Halu杯_参加者案内.md`。
+`tools/rebuild.ps1` が幹部用と一緒に作り直す（`tools/build_sanka.py`）。金銭の記述は載せない。
