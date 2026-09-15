@@ -4,10 +4,15 @@
 ・同じ相手とは2度当たらない（GF(4) のアフィン平面の平行類を4つ使う）
 ・4半荘で 東南西北 を1回ずつ
 ・卓はできるだけ違う卓を回る（全員が4卓とも違うのは数学的に不可能なので最善を取る）
+・ゲスト2名は卓を固定（本田プロ=1卓、ゆうこママ=5卓。席は動かず、相手が来る）
+・本田プロとゆうこママは予選で当たらない（1〜4卓と5〜8卓に分かれているので構造上当たらない。検証で保証）
 乱数は固定（seed=20261024）なので、何度作っても同じ表になる。
 出力: score/schedule.js（ページ用）と .work/schedule.md（MD貼り付け用）"""
 import itertools, json, random
 from pathlib import Path
+import sys
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")  # cp932コンソールでの文字化け回避（冪等・二重ラップしない）
 
 random.seed(20261024)
 repo = Path(__file__).resolve().parents[1]
@@ -21,6 +26,9 @@ def line_of(m, x, y):          # 平行類 m で、点(x,y)が乗る直線の番
     return x if c == "v" else (y ^ MUL[c][x])
 
 players = [(x, y) for x in range(4) for y in range(4)]   # 16点
+order = players[:]
+random.shuffle(order)
+GUEST = order[0]                # 固定ゲストの点（本田プロ／ゆうこママ）。卓は常に0（=1卓／5卓）
 
 # 卓割り当て: table[m][b] = 卓番号(0..3)。各選手が4半荘で4つの卓を1回ずつ
 perms = list(itertools.permutations(range(4)))
@@ -32,8 +40,11 @@ def find_tables():
     best, best_key = None, None
     for use in itertools.combinations(CLASSES, 4):
         USE = list(use)
+        gl = [line_of(m, *GUEST) for m in range(4)]
         for tabs in cand:
-            counts = sorted(len({tabs[m][line_of(m, x, y)] for m in range(4)}) for (x, y) in players)
+            if any(tabs[m][gl[m]] != 0 for m in range(4)):
+                continue            # ゲストは毎半荘 卓0（=1卓／5卓）に固定
+            counts = sorted(len({tabs[m][line_of(m, x, y)] for m in range(4)}) for (x, y) in players if (x, y) != GUEST)
             key = (counts[0], sum(counts))
             if best_key is None or key > best_key:
                 best, best_key = (list(use), tabs), key
@@ -76,8 +87,6 @@ def find_seats():
 seats = find_seats()
 
 # 選手番号 → 名前（点(x,y) を 0..15 に並べ、0 が固定ゲスト）
-order = players[:]
-random.shuffle(order)
 def names_for(group):
     guest = "本田プロ" if group == 0 else "ゆうこママ"
     base = 0 if group == 0 else 15
@@ -114,7 +123,10 @@ for r, rows in schedule.items():
             seen_seat.setdefault(nm, set()).add(i)
             seen_table.setdefault(nm, set()).add(row["table"])
 assert all(len(v) == 4 for v in seen_seat.values())
-print("卓の種類数の分布:", sorted(len(v) for v in seen_table.values()))
+assert frozenset(("本田プロ", "ゆうこママ")) not in pairs, "ゲスト同士が予選で当たっている"
+assert seen_table["本田プロ"] == {1} and seen_table["ゆうこママ"] == {5}, "ゲストの卓が固定されていない"
+print("ゲストの卓: 本田プロ=1卓固定 / ゆうこママ=5卓固定 / 予選での直接対戦なし")
+print("卓の種類数の分布（ゲスト除く）:", sorted(len(v) for k, v in seen_table.items() if k not in ("本田プロ", "ゆうこママ")))
 
 (repo / "score" / "schedule.js").write_text(
     "// 予選の組み合わせ表（tools/make_schedule.py が生成。手で直さない）\n"
