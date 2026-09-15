@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a1a1a">
+<title>Halu杯 点数報告</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#fff;--card:#fff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db;--ok:#1b6e2f;--ng:#b00020}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.7;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 84px}
+header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
+header h1{font-size:1.3rem;margin:0}
+header .sub{color:var(--muted);font-size:.9rem}
+h2{font-size:1.1rem;margin:26px 0 10px;padding:9px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0}
+label{display:block;font-weight:700;margin:12px 0 4px}
+select,input{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+input[type=number]{text-align:right}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font-size:1.05rem;padding:14px;border:0;border-radius:8px;font-weight:700;cursor:pointer}
+.primary{width:100%;background:var(--accent);color:var(--accent-fg);margin-top:14px}
+.ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line);padding:8px 12px;font-size:.95rem}
+.msg{min-height:1.5em;margin-top:8px;font-weight:700}
+.msg.ok{color:var(--ok)}.msg.ng{color:var(--ng)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:right;white-space:nowrap}
+th{background:#ececE8;font-weight:700;position:sticky;top:0}
+td:nth-child(1),td:nth-child(2),th:nth-child(1),th:nth-child(2){text-align:left}
+tr:nth-child(even) td{background:var(--card2)}
+tr.top6 td:nth-child(2){font-weight:700;color:var(--accent)}
+tr.guest td{color:var(--muted)}
+td.neg{color:var(--ng)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.small{color:var(--muted);font-size:.9rem}
+.hint{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.95rem}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🀄 Halu杯 点数報告</h1>
+    <div class="sub">半荘が終わったら、自分の点数を送ってください。同じ半荘に送り直すと上書きされます。</div>
+  </header>
+
+  <div id="setup" class="hint" hidden>点数報告の受け口（API）がまだ設定されていません。幹部が gas/README.md の手順で設定すると使えるようになります。</div>
+
+  <div class="card">
+    <form id="f">
+      <label for="player">プレイヤー</label>
+      <select id="player" required></select>
+      <div class="row">
+        <div>
+          <label for="round">半荘</label>
+          <select id="round" required>
+            <option value="1">予選 1半荘目</option>
+            <option value="2">予選 2半荘目</option>
+            <option value="3">予選 3半荘目</option>
+            <option value="4">予選 4半荘目</option>
+            <option value="S">準決勝</option>
+            <option value="F">決勝</option>
+          </select>
+        </div>
+        <div>
+          <label for="score">点数（終了時の持ち点）</label>
+          <input id="score" type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="例 32000" required>
+        </div>
+      </div>
+      <label for="key">報告キー（受付で伝えた数字）</label>
+      <input id="key" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
+      <button class="primary" type="submit">送信する</button>
+      <div id="msg" class="msg" aria-live="polite"></div>
+    </form>
+    <div class="tools">
+      <button class="ghost" type="button" id="clearBtn">この半荘の点数を取り消す</button>
+    </div>
+  </div>
+
+  <h2>集計（予選は4半荘の合計点）</h2>
+  <div class="tools">
+    <button class="ghost" type="button" id="reload">最新に更新</button>
+    <span class="small" id="updated"></span>
+  </div>
+  <div class="tw">
+    <table id="tbl">
+      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計</th><th>準決</th><th>決勝</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="small">順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため順位から外しています。同点の並びは起家順で決まるため、表の順は仮です。</p>
+  <div class="tools">
+    <button class="ghost" type="button" id="dl">JSONをコピー</button>
+    <span class="small">1つのJSON（P1〜P30・本田プロ・ゆうこママ）がそのままコピーされます</span>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+const API = (window.HALU_API || '').trim();
+const PLAYERS = ['本田プロ','ゆうこママ'].concat(Array.from({length:30}, (_, i) => 'P' + (i + 1)));
+const sel = document.getElementById('player');
+PLAYERS.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
+try { const last = localStorage.getItem('halu:player'); if (last) sel.value = last; } catch(e) {}
+let DATA = null;
+
+const fmt = n => (n === null || n === undefined) ? '' : n.toLocaleString('ja-JP');
+function render(d){
+  DATA = d;
+  document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
+  const rows = PLAYERS.map(p => {
+    const s = d.players[p] || {};
+    const q = ['1','2','3','4'].map(k => s[k]);
+    const done = q.filter(v => v !== null && v !== undefined);
+    const total = done.length ? done.reduce((a, b) => a + b, 0) : null;
+    return { p, q, total, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
+  });
+  const players = rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity));
+  let rank = 0;
+  players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
+  const guests = rows.filter(r => r.guest);
+  const tb = document.querySelector('#tbl tbody');
+  tb.innerHTML = '';
+  guests.concat(players).forEach(r => {
+    const tr = document.createElement('tr');
+    if (r.guest) tr.className = 'guest';
+    else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
+    const cells = [r.rank ?? '', r.p, ...r.q.map(fmt), r.total === null ? '' : fmt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), fmt(r.S), fmt(r.F)];
+    cells.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && c.startsWith('-')) td.className = 'neg'; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+}
+async function load(){
+  if (!API) { document.getElementById('setup').hidden = false; return; }
+  try {
+    const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
+    const j = await r.json();
+    if (j.ok) render(j.data); else say('読み込みに失敗しました', false);
+  } catch(e) { say('読み込みに失敗しました（通信）', false); }
+}
+function say(t, ok){ const m = document.getElementById('msg'); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
+async function send(body){
+  if (!API) { say('APIが未設定です', false); return; }
+  say('送信中…', true);
+  try {
+    const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
+    const j = await r.json();
+    if (j.ok) { render(j.data); return true; }
+    const why = { key: '報告キーが違います', player: 'プレイヤーが不正です', round: '半荘の指定が不正です', score: '点数の値が不正です' }[j.error] || '送信に失敗しました';
+    say(why, false); return false;
+  } catch(e) { say('送信に失敗しました（通信）', false); return false; }
+}
+document.getElementById('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const player = sel.value, round = document.getElementById('round').value;
+  const score = parseInt(document.getElementById('score').value, 10), key = document.getElementById('key').value.trim();
+  if (!Number.isInteger(score)) { say('点数を数字で入れてください', false); return; }
+  try { localStorage.setItem('halu:player', player); } catch(_) {}
+  if (await send({ key, player, round, score })) say(player + ' の ' + roundName(round) + ' を ' + fmt(score) + ' で記録しました', true);
+});
+document.getElementById('clearBtn').addEventListener('click', async () => {
+  const player = sel.value, round = document.getElementById('round').value, key = document.getElementById('key').value.trim();
+  if (!key) { say('報告キーを入れてください', false); return; }
+  if (!confirm(player + ' の ' + roundName(round) + ' の点数を取り消しますか？')) return;
+  if (await send({ key, player, round, action: 'clear' })) say('取り消しました', true);
+});
+function roundName(r){ return { '1': '予選1半荘目', '2': '予選2半荘目', '3': '予選3半荘目', '4': '予選4半荘目', 'S': '準決勝', 'F': '決勝' }[r] || r; }
+document.getElementById('reload').addEventListener('click', load);
+document.getElementById('dl').addEventListener('click', async () => {
+  if (!DATA) return;
+  try { await navigator.clipboard.writeText(JSON.stringify(DATA, null, 1)); say('JSONをコピーしました', true); }
+  catch(e) { say('コピーできませんでした', false); }
+});
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>

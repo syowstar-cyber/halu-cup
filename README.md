@@ -15,3 +15,9 @@
 
 `sanka/index.html` は暗号化なしの公開ページ。正典は fp リポの `events/第20回_四麻Halu杯_参加者案内.md`。
 `tools/rebuild.ps1` が幹部用と一緒に作り直す（`tools/build_sanka.py`）。金銭の記述は載せない。
+
+## 点数報告（score/）
+
+`score/index.html` は点数の送信と集計の画面。データは Google Apps Script のウェブアプリ（`gas/Code.gs`）が
+Google ドライブの `halu-cup-scores.json` 1つに保存する。配置手順は `gas/README.md`。
+API の URL は `score/config.js` に書く。報告キーはスクリプト プロパティ側にあり、リポには置かない。
