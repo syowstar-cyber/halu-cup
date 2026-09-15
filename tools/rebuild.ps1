@@ -12,4 +12,5 @@ python (Join-Path $tools "assemble.py") $updated
 Remove-Item (Join-Path $repo ".work\body.html") -ErrorAction SilentlyContinue
 $hit = Select-String -Path (Join-Path $repo "index.html") -Pattern "本田|由子" -Quiet
 if ($hit) { Write-Output "NG 平文が残っています"; exit 1 }
+python (Join-Path $tools "build_sanka.py") $updated
 Write-Output "OK index.html 更新 ($updated)"

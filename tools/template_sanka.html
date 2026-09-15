@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a1a1a">
+<title>第20回 Halu杯 参加者案内</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 84px}
+.hero{margin:0 -16px 14px;background:#111}
+.hero img{display:block;width:100%;max-height:78vh;object-fit:contain;margin:0 auto}
+header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:10px}
+header h1{font-size:1.35rem;margin:0;line-height:1.4}
+header .sub{color:var(--muted);font-size:.9rem}
+.lead{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.98rem}
+h2{font-size:1.15rem;margin:34px 0 12px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px;position:sticky;top:0;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+h3{font-size:1.08rem;margin:24px 0 8px;border-left:5px solid var(--accent);padding-left:10px}
+p{margin:8px 0}
+strong{color:var(--accent);font-weight:700}
+.tw{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.98rem}
+th,td{border-bottom:1px solid var(--line);padding:10px 10px;text-align:left;vertical-align:top;line-height:1.55}
+td + td, th + th{border-left:1px solid var(--line)}
+td:first-child,th:first-child{white-space:nowrap}
+tr:nth-child(even) td{background:var(--card2)}
+th{background:#ececE8;white-space:nowrap;font-weight:700}
+ul,ol{padding-left:1.5em;margin:8px 0}
+li{margin:5px 0}
+code{background:var(--card2);padding:1px 5px;border-radius:4px}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:14px 0}
+nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.95rem;color:var(--fg);background:var(--card2);border:1px solid var(--line);border-radius:999px;text-decoration:none}
+.flow{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:12px 0}
+.flow span{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px;font-weight:bold;text-align:center}
+.flow i{font-style:normal;font-weight:bold;color:var(--accent);text-align:center;transform:rotate(90deg);line-height:1;font-size:1.2rem}
+@media (min-width:560px){.flow{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}.flow i{transform:none}}
+.map{display:inline-block;margin-top:4px}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><img src="../poster.jpg" alt="第20回 Halu杯 ポスター"></div>
+  <header>
+    <h1>第20回 Halu杯 参加者案内</h1>
+    <div class="sub">2026年10月24日（土）麻雀First。最終更新: __UPDATED__</div>
+  </header>
+  <p class="lead">会場の地図: <a class="map" href="https://www.google.com/maps/search/?api=1&query=%E7%A6%8F%E5%B2%A1%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%E4%BB%8A%E6%B3%892-4-35" target="_blank" rel="noopener">福岡市中央区今泉2-4-35 今泉セントラルビル5F（Googleマップで開く）</a></p>
+  <nav class="toc" id="toc"></nav>
+  <main id="content">__BODY__</main>
+  <a class="top" href="#" title="上へ">↑</a>
+</div>
+<script>
+const c = document.getElementById('content'), toc = document.getElementById('toc');
+c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+</script>
+</body>
+</html>
