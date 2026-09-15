@@ -260,7 +260,7 @@ function borderText(name) {
   const me = TOTALS[name]; if (!me || me.total === null) return '';
   const B = borderFor(name); if (B === null) return '';
   const D = B - me.total;
-  return D >= 0 ? 'あと ' + fpt(D + 1) : '圏内 (余裕 ' + fpt(-D) + ')';
+  return D >= 0 ? 'あと ' + fpt(D + 1) : '圏内 (' + fpt(-D) + ')';
 }
 // 五捨六入で X 以上に丸まる最小の点棒
 function minRaw(X) { return X > 0 ? X - 400 : X - 500; }
