@@ -39,6 +39,9 @@ ul.todo{list-style:none;padding-left:0}
 ul.todo li label{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0}
 ul.todo input{margin-top:4px;flex:0 0 auto;width:24px;height:24px;accent-color:var(--accent)}
 ul.todo input:checked + span{color:var(--muted);text-decoration:line-through}
+table.todo td label{display:flex;gap:8px;align-items:center;white-space:nowrap}
+table.todo input{width:22px;height:22px;accent-color:var(--accent);flex:0 0 auto}
+table.todo tr:has(input:checked) td{color:var(--muted);text-decoration:line-through}
 .warn{color:#b00020;font-weight:bold}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:bold}
@@ -108,7 +111,7 @@ function show(htmlText){
   c.innerHTML = htmlText;
   const toc = document.getElementById('toc');
   c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
-  c.querySelectorAll('ul.todo input').forEach(cb => {
+  c.querySelectorAll('ul.todo input, table.todo input').forEach(cb => {
     const k = 'halu:' + cb.dataset.k;
     try {
       let v = localStorage.getItem(k);

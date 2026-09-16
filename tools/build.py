@@ -27,6 +27,9 @@ in_code = False
 table = []
 lst = None        # ("ul"|"ol", items)
 
+TODO_LIST_SECTIONS = ("11", "12", "13")    # 設営・手配物・出発前チェック（箇条書きにチェック）
+TODO_TABLE_SECTIONS = ("14",)              # 確認事項一覧（表の行にチェック）
+
 def keyfn(s):
     return html.escape(re.sub(r"\W+", "", s)[:40])
 
@@ -42,11 +45,16 @@ def flush_table():
     if not table:
         return
     rows = [r for r in table if not re.match(r"^\|\s*-", r)]
-    h = ['<div class="tw"><table>']
+    todo = section in TODO_TABLE_SECTIONS
+    h = ['<div class="tw"><table' + (' class="todo"' if todo else '') + '>']
     for k, r in enumerate(rows):
         cells = [c.strip() for c in r.strip().strip("|").split("|")]
         tag = "th" if k == 0 else "td"
-        h.append("<tr>" + "".join(f"<{tag}>{inline(c)}</{tag}>" for c in cells) + "</tr>")
+        tds = [f"<{tag}>{inline(c)}</{tag}>" for c in cells]
+        if todo and tag == "td" and len(cells) >= 2:
+            key = keyfn(section + cells[0] + cells[1])
+            tds[0] = f'<td><label><input type="checkbox" data-k="{key}" data-legacy=""><span>{inline(cells[0])}</span></label></td>'
+        h.append("<tr>" + "".join(tds) + "</tr>")
     h.append("</table></div>")
     out.append("\n".join(h))
     table = []
@@ -56,7 +64,7 @@ def flush_list():
     if not lst:
         return
     kind, items = lst
-    todo = section in ("11", "12", "13")
+    todo = section in TODO_LIST_SECTIONS
     h = [f'<{kind}{" class=todo" if todo else ""}>']
     for it in items:
         if todo and kind == "ul":
