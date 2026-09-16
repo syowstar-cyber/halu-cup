@@ -126,7 +126,7 @@ function applyChecks(c){
   c.querySelectorAll('ul.todo input, table.todo input').forEach(cb => {
     const k = cb.dataset.k;
     let on = false, meta = '';
-    if (SHARED && CHECKS) { const v = CHECKS[k]; on = !!v; meta = v ? '✓ ' + (v.by || '') + ' ' + fmtTs(v.ts) : ''; }
+    if (SHARED && CHECKS) { const v = CHECKS[k]; on = !!v; meta = v ? '✓ ' + (v.by ? v.by + ' ' : '') + fmtTs(v.ts) : ''; }
     else { try { on = localStorage.getItem('halu:' + k) === '1'; } catch(e){} }
     cb.checked = on;
     let m = cb.parentElement.querySelector('.meta');
@@ -153,7 +153,7 @@ function setupChecks(c){
   // 名前欄（最初のチェック節の h2 の直後に1つ）
   let h = first; while (h && h.tagName !== 'H2') h = h.previousElementSibling;
   const who = document.createElement('div'); who.className = 'who';
-  who.innerHTML = '<label for="who">あなたの名前（チェックした人として記録されます）</label><input id="who" maxlength="20" placeholder="例: トミー"><div class="st"></div><button type="button" id="resync">最新に更新</button>';
+  who.innerHTML = '<label for="who">名前（任意・1回入れれば記憶。チェックした人として残ります）</label><input id="who" maxlength="20" placeholder="空でもチェックできます"><div class="st"></div><button type="button" id="resync">最新に更新</button>';
   (h || first).insertAdjacentElement('afterend', who);
   const name = who.querySelector('#who');
   try { name.value = localStorage.getItem('halu:who') || ''; } catch(e){}
@@ -165,7 +165,6 @@ function setupChecks(c){
       try { localStorage.setItem('halu:' + k, v ? '1' : '0'); } catch(e){}
       if (!SHARED) return;
       const by = name.value.trim();
-      if (v && !by) { cb.checked = false; setStatus('先に名前を入れてください', true); name.focus(); return; }
       let pw = ''; try { pw = sessionStorage.getItem('halu:pw') || ''; } catch(e){}
       cb.disabled = true;
       try {
