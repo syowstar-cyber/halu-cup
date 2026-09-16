@@ -1,6 +1,10 @@
 // 第20回 Halu杯 点数報告 API（Google Apps Script ウェブアプリ）
 // ドライブは使わない。スクリプト プロパティ（このスクリプト専用の保存領域）に JSON を持つ。
 // 配置手順は gas/README.md を見る。
+//
+// 受け口は2つ:
+//   点数報告（参加者）… REPORT_KEY で守る。{key, player, round, score} / {key, action:'clear', player, round}
+//   チェック共有（幹部）… CHECK_KEY（幹部用ページのパスワードと同じ値）で守る。{key, action:'check', k, v, by}
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -22,12 +26,13 @@ function emptyPlayers_() {
 
 function load_() {
   const p = props_();
-  let players, log;
+  let players, log, checks;
   try { players = JSON.parse(p.getProperty('PLAYERS') || 'null'); } catch (e) { players = null; }
   try { log = JSON.parse(p.getProperty('LOG') || '[]'); } catch (e) { log = []; }
+  try { checks = JSON.parse(p.getProperty('CHECKS') || '{}'); } catch (e) { checks = {}; }
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log };
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {} };
 }
 
 function save_(d) {
@@ -35,6 +40,10 @@ function save_(d) {
   p.setProperty('PLAYERS', JSON.stringify(d.players));
   p.setProperty('LOG', JSON.stringify(d.log.slice(-LOG_MAX)));
   p.setProperty('UPDATED', d.updated || '');
+}
+
+function saveChecks_(checks) {
+  props_().setProperty('CHECKS', JSON.stringify(checks));
 }
 
 function out_(o) {
@@ -53,9 +62,12 @@ function doGet(e) {
 // 書き込み: POST（本文は JSON。報告キーが要る）
 //   {key, player:'P12', round:'1'..'4'|'S'|'F', score: 32000}
 //   {key, action:'clear', player, round}   … 取り消し（null に戻す）
+//   {key, action:'check', k:'項目キー', v:true|false, by:'名前'}   … 幹部のチェック共有（key は CHECK_KEY）
 function doPost(e) {
   let body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad_json' }); }
+
+  if (body.action === 'check') return doCheck_(body);
 
   const key = props_().getProperty('REPORT_KEY') || '';
   if (!key || String(body.key || '') !== key) return out_({ ok: false, error: 'key' });
@@ -85,10 +97,35 @@ function doPost(e) {
   }
 }
 
-// 全消去（エディタから手で実行する用。ウェブからは呼べない）
+// 幹部のチェック共有。checks[k] = {by, ts}（外すと項目ごと消す）
+function doCheck_(body) {
+  const key = props_().getProperty('CHECK_KEY') || '';
+  if (!key || String(body.key || '') !== key) return out_({ ok: false, error: 'key' });
+  const k = String(body.k || '');
+  if (!/^[A-Za-z0-9_　-鿿＀-￯]{1,80}$/.test(k)) return out_({ ok: false, error: 'k' });
+  const by = String(body.by || '').replace(/[<>"'\n\r]/g, '').slice(0, 20);
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const checks = load_().checks;
+    if (body.v) checks[k] = { by: by, ts: now_() }; else delete checks[k];
+    saveChecks_(checks);
+    return out_({ ok: true, checks: checks });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 全消去（エディタから手で実行する用。ウェブからは呼べない）。チェックは消さない
 function resetAll() {
   const p = props_();
   p.deleteProperty('PLAYERS');
   p.deleteProperty('LOG');
   p.deleteProperty('UPDATED');
+}
+
+// 幹部のチェックだけ全消去（エディタから手で実行する用）
+function resetChecks() {
+  props_().deleteProperty('CHECKS');
 }

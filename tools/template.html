@@ -42,6 +42,14 @@ ul.todo input:checked + span{color:var(--muted);text-decoration:line-through}
 table.todo td label{display:flex;gap:8px;align-items:center;white-space:nowrap}
 table.todo input{width:22px;height:22px;accent-color:var(--accent);flex:0 0 auto}
 table.todo tr:has(input:checked) td{color:var(--muted);text-decoration:line-through}
+.meta{display:block;font-size:.8rem;color:var(--muted);text-decoration:none!important;margin-top:2px}
+table.todo .meta{display:inline;margin-left:6px}
+.who{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:10px 12px;margin:12px 0}
+.who label{font-weight:700;display:block;margin-bottom:6px}
+.who input{width:100%;font-size:1.1rem;padding:10px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+.who .st{font-size:.9rem;color:var(--muted);margin-top:6px}
+.who .st.ng{color:#b00020}
+.who button{margin-top:6px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card2);color:var(--fg);font-size:.95rem}
 .warn{color:#b00020;font-weight:bold}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:bold}
@@ -89,6 +97,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
   <main id="content"></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
+<script src="score/config.js"></script>
 <script id="blob" type="application/json">__CIPHER__</script>
 <script>
 const B = JSON.parse(document.getElementById('blob').textContent);
@@ -106,20 +115,81 @@ async function unlock(pw){
   const plain = await crypto.subtle.decrypt({name:'AES-CBC', iv}, aesKey, ct);
   return new TextDecoder().decode(plain);
 }
+
+// ---- チェックの共有（点数報告と同じ受け口 GAS に保存。名前と時刻が残る） ----
+const API = (window.HALU_API || '').trim();
+let CHECKS = null;           // サーバの状態 k -> {by, ts}
+let SHARED = false;          // 受け口につながっているか
+function fmtTs(ts){ return ts ? ts.slice(5, 16).replace('-', '/') : ''; }
+function setStatus(msg, ng){ document.querySelectorAll('.who .st').forEach(el => { el.textContent = msg; el.className = 'st' + (ng ? ' ng' : ''); }); }
+function applyChecks(c){
+  c.querySelectorAll('ul.todo input, table.todo input').forEach(cb => {
+    const k = cb.dataset.k;
+    let on = false, meta = '';
+    if (SHARED && CHECKS) { const v = CHECKS[k]; on = !!v; meta = v ? '✓ ' + (v.by || '') + ' ' + fmtTs(v.ts) : ''; }
+    else { try { on = localStorage.getItem('halu:' + k) === '1'; } catch(e){} }
+    cb.checked = on;
+    let m = cb.parentElement.querySelector('.meta');
+    if (!m) { m = document.createElement('span'); m.className = 'meta'; cb.parentElement.appendChild(m); }
+    m.textContent = meta;
+  });
+}
+async function syncChecks(c){
+  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); applyChecks(c); return; }
+  try {
+    const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j.ok) throw new Error('bad');
+    CHECKS = j.data.checks || {}; SHARED = true;
+    setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
+  } catch (e) {
+    SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
+  }
+  applyChecks(c);
+}
+function setupChecks(c){
+  const first = c.querySelector('ul.todo, table.todo');
+  if (!first) return;
+  // 名前欄（最初のチェック節の h2 の直後に1つ）
+  let h = first; while (h && h.tagName !== 'H2') h = h.previousElementSibling;
+  const who = document.createElement('div'); who.className = 'who';
+  who.innerHTML = '<label for="who">あなたの名前（チェックした人として記録されます）</label><input id="who" maxlength="20" placeholder="例: トミー"><div class="st"></div><button type="button" id="resync">最新に更新</button>';
+  (h || first).insertAdjacentElement('afterend', who);
+  const name = who.querySelector('#who');
+  try { name.value = localStorage.getItem('halu:who') || ''; } catch(e){}
+  name.addEventListener('change', () => { try { localStorage.setItem('halu:who', name.value.trim()); } catch(e){} });
+  who.querySelector('#resync').addEventListener('click', () => syncChecks(c));
+  c.querySelectorAll('ul.todo input, table.todo input').forEach(cb => {
+    cb.addEventListener('change', async () => {
+      const k = cb.dataset.k, v = cb.checked;
+      try { localStorage.setItem('halu:' + k, v ? '1' : '0'); } catch(e){}
+      if (!SHARED) return;
+      const by = name.value.trim();
+      if (v && !by) { cb.checked = false; setStatus('先に名前を入れてください', true); name.focus(); return; }
+      let pw = ''; try { pw = sessionStorage.getItem('halu:pw') || ''; } catch(e){}
+      cb.disabled = true;
+      try {
+        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ key: pw, action: 'check', k, v, by }) });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'ng');
+        CHECKS = j.checks || {};
+        setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
+      } catch (e) {
+        setStatus(e.message === 'key' ? '受け口の CHECK_KEY が幹部用ページのパスワードと違います（gas/README.md）' : '送れませんでした。通信を確認して「最新に更新」', true);
+      } finally { cb.disabled = false; }
+      applyChecks(c);
+    });
+  });
+  syncChecks(c);
+  setInterval(() => { if (!document.hidden) syncChecks(c); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) syncChecks(c); });
+}
 function show(htmlText){
   const c = document.getElementById('content');
   c.innerHTML = htmlText;
   const toc = document.getElementById('toc');
   c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
-  c.querySelectorAll('ul.todo input, table.todo input').forEach(cb => {
-    const k = 'halu:' + cb.dataset.k;
-    try {
-      let v = localStorage.getItem(k);
-      if(v === null && cb.dataset.legacy){ v = localStorage.getItem('halu:' + cb.dataset.legacy); if(v !== null) localStorage.setItem(k, v); }
-      cb.checked = v === '1';
-    } catch(e){}
-    cb.addEventListener('change', () => { try { localStorage.setItem(k, cb.checked ? '1' : '0'); } catch(e){} });
-  });
+  setupChecks(c);
   document.getElementById('gate').hidden = true;
   document.getElementById('page').hidden = false;
 }
