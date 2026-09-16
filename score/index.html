@@ -101,12 +101,10 @@ summary{cursor:pointer;font-weight:700}
     <div class="tools"><button class="ghost" type="button" id="qclear">この卓の点数を取り消す</button></div>
   </div>
   <div class="hint">
-    <b>ポイントの計算</b>（25,000点持ち・30,000点返し）<br>
-    ① まず点棒の100点台を五捨六入（〜500は切り捨て、600〜は切り上げ）<br>
-    ②（点棒−30,000）÷1,000<br>
-    ③ 順位点 +30／+10／−10／−30 を足す<br>
-    ④ 1位にオカ +20<br>
-    <span class="small">順位（1〜4位）は五捨六入する前の点棒で決めます。五捨六入の端数は1位が引き受け、卓の合計は必ず 0。<br>同点は年齢が上の方が上位です（ページは並び順で仮置き＝集計係が確認）。</span>
+    <b>ポイントの計算</b>（25,000点持ち・30,000点返し。Mリーグ公式規定と同じ）<br>
+    ①（点棒−30,000）÷1,000。100点＝0.1ポイント（丸めない）<br>
+    ② 順位点 1位 +50／2位 +10／3位 −10／4位 −30 を足す<br>
+    <span class="small">卓の合計は必ず 0。同じ点棒の人がいたら、その人たちで順位点を分けます（1位と2位が同点なら各 +30）。0.1で割り切れない分は起家（東）に近い方が多く取ります。<br>トビ終了はありません（箱下あり）。マイナスの点棒は「-」を付けてそのまま入れてください。</span>
   </div>
 
   <h2>集計（予選は4半荘の合計ポイント）</h2>
@@ -124,7 +122,7 @@ summary{cursor:pointer;font-weight:700}
   <ul class="small" style="padding-left:1.3em;margin:8px 0">
     <li>順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため、順位から外しています。</li>
     <li>卓の4人がそろうまで、その半荘のポイントは出ません。準決勝・決勝は点棒をそのまま表示します。</li>
-    <li>合計が同点のときは年齢が上の方が上位です。ページでは判定できないので並び順で仮置きし、順位に「同点」と出ます（集計係が確認）。</li>
+    <li>4半荘の合計が同点のときは年齢が上の方が上位です。ページでは判定できないので並び順で仮置きし、順位に「同点」と出ます（集計係が確認）。</li>
   </ul>
   <h2>6位ライン（準決勝に行ける目安）</h2>
   <div class="card">
@@ -159,28 +157,34 @@ summary{cursor:pointer;font-weight:700}
 const API = (window.HALU_API || '').trim();
 const SCHED = window.HALU_SCHEDULE || {};
 const WINDS = ['東', '南', '西', '北'];
-const UMA = [30, 10, -10, -30], OKA = 20, RETURN = 30000;
+// 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0（Mリーグ公式規定）
+const BONUS = [500, 100, -100, -300], RETURN = 30000;
 const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
 let DATA = null;
 
 const fmt = n => (n === null || n === undefined) ? '' : n.toLocaleString('ja-JP');
-const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : '') + Math.round(n).toLocaleString('ja-JP');
+// ポイントは 0.1 単位の整数（tenths）で持ち、表示で小数1桁にする（浮動小数の誤差を出さない）
+const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : n < 0 ? '−' : '') + (Math.abs(n) / 10).toLocaleString('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 function say(id, t, ok) { const m = document.getElementById(id); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
 
-// 五捨六入で1,000点単位に
-function round1000(s) { const sign = s < 0 ? -1 : 1; return sign * Math.floor((Math.abs(s) + 400) / 1000) * 1000; }
-// 1卓4人の点棒 → ポイント。seats: [{name, raw}] 東から順。4人そろっていなければ null
+// 1卓4人の点棒 → ポイント（0.1単位の整数）。seats: [{name, raw}] 東（起家）から順。4人そろっていなければ null
+// Mリーグ公式規定: (点棒−30,000)÷1,000 に順位点を足す。丸めない。
+// 同点は、その人たちで順位点を分ける。0.1で割り切れない分は起家に近い方が多く取る。
 function calcTable(seats) {
   if (seats.some(s => s.raw === null || s.raw === undefined || Number.isNaN(s.raw))) return seats.map(() => null);
   const order = seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i);
   const res = seats.map(() => null);
-  order.forEach((o, rank) => {
-    const r = round1000(o.raw);
-    res[o.i] = { raw: o.raw, rounded: r, rank: rank + 1, pts: (r - RETURN) / 1000 + UMA[rank] + (rank === 0 ? OKA : 0) };
-  });
-  // 端数は1位が引き受ける: 1位 = −(2〜4位の合計) で卓の合計を 0 にする
-  const top = res[order[0].i];
-  top.pts = -order.slice(1).reduce((a, o) => a + res[o.i].pts, 0);
+  let k = 0;
+  while (k < 4) {
+    let j = k; while (j + 1 < 4 && order[j + 1].raw === order[k].raw) j++;
+    const n = j - k + 1, sum = BONUS.slice(k, j + 1).reduce((a, b) => a + b, 0);
+    const base = Math.floor(sum / n), rem = sum - base * n;
+    for (let m = k; m <= j; m++) {
+      const o = order[m];
+      res[o.i] = { raw: o.raw, rank: k + 1, tie: n > 1, pts: (o.raw - RETURN) / 100 + base + (m - k < rem ? 1 : 0) };
+    }
+    k = j + 1;
+  }
   return res;
 }
 // 全体のポイント表: name -> {1..4: pts|null}
@@ -210,7 +214,7 @@ function render(d) {
   });
   const players = rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity));
   let rank = 0; players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
-  // 合計が同点＝年齢が上の方が上位。ページでは判定できないので並び順で仮置きし「同点」を付ける
+  // 4半荘の合計が同点＝年齢が上の方が上位（Mリーグ規定にない部分）。ページでは判定できないので並び順で仮置きし「同点」を付ける
   players.forEach((r, i) => { r.tie = r.total !== null && ((i > 0 && players[i - 1].total === r.total) || (i + 1 < players.length && players[i + 1].total === r.total)); });
   const tb = document.querySelector('#tbl tbody'); tb.innerHTML = '';
   rows.filter(r => r.guest).concat(players).forEach(r => {
@@ -257,8 +261,6 @@ function borderText(name) {
   const D = B - me.total;
   return D >= 0 ? 'あと ' + fpt(D + 1) : '圏内 (' + fpt(-D) + ')';
 }
-// 五捨六入で X 以上に丸まる最小の点棒
-function minRaw(X) { return X > 0 ? X - 400 : X - 500; }
 function renderBorder() {
   const box = document.getElementById('bd'); const name = document.getElementById('bdplayer').value;
   const me = TOTALS[name]; if (!me) { box.textContent = ''; return; }
@@ -270,23 +272,21 @@ function renderBorder() {
   const D = B - (me.total ?? 0);
   h += '<p>6位ライン（自分を除いた6番目の合計）: <b>' + fpt(B) + '</b></p>';
   if (D < 0) h += '<p>いまは<b>圏内</b>。7位との差は ' + fpt(-D) + ' です。</p>';
-  else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（同点は年齢が上の方が上位なので、上回る数字で出しています）。</p>';
+  else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（合計の同点は年齢が上の方が上位なので、上回る数字で出しています）。</p>';
   if (me.n >= 4) { box.innerHTML = h + '<p class="small">予選4半荘は終了しています。</p>'; return; }
   const need = D + 1;
   h += '<p>次の半荘で圏内に入る（または残る）目安。順位ごとに、終了時にこの点棒以上ならOK:</p><div class="tw"><table><thead><tr><th style="text-align:left">順位</th><th>必要ポイント</th><th>必要な点棒</th></tr></thead><tbody>';
   const labels = ['1位', '2位', '3位', '4位'];
   for (let r = 0; r < 4; r++) {
-    const bonus = UMA[r] + (r === 0 ? OKA : 0);
-    const needPts = Math.max(need, -Infinity);
-    const X = (needPts - bonus) * 1000 + RETURN;
-    const raw = minRaw(X);
+    const needPts = need;
+    const raw = (needPts - BONUS[r]) * 100 + RETURN;
     let cell;
     if (raw > 100000) cell = '届かない';
     else if (raw <= -200000) cell = 'どんな点数でもOK';
     else cell = fmt(raw) + ' 以上';
     h += '<tr><td style="text-align:left">' + labels[r] + '</td><td>' + fpt(needPts) + '</td><td>' + cell + '</td></tr>';
   }
-  h += '</tbody></table></div><p class="small">1位は端数の引き受けで数ポイント変わることがあります。他の人の結果でラインも動くので、目安として見てください。</p>';
+  h += '</tbody></table></div><p class="small">同点があると順位点を分けるので変わることがあります。他の人の結果でラインも動くので、目安として見てください。</p>';
   box.innerHTML = h;
 }
 document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
@@ -307,7 +307,7 @@ function semiTables() {
   const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + r[i].p } : null;
   return { S1: [{ p: '本田プロ', label: '本田プロ' }, { p: 'ゆうこママ', label: 'ゆうこママ' }, at(2), at(5)], S2: [at(0), at(1), at(3), at(4)] };
 }
-// 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順）。同点は年齢が上の方が上位で、ページでは判定できない（並び順で仮置き＝集計係が確認）
+// 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順）。同点は起家に近い方が上位で、ページでは判定できない（並び順で仮置き＝集計係が確認）
 function finalTable() {
   const t = semiTables(), top2 = (name, mem) => {
     const done = mem.filter(m => m && DATA && DATA.players[m.p] && DATA.players[m.p].S !== null && DATA.players[m.p].S !== undefined);
@@ -354,7 +354,7 @@ function fillSeats() {
     if (t.missing) note.push(qround.value === 'F' ? '決勝の4名は、準決勝2卓の点棒がそろってから出ます。' : '予選の順位がまだ出ていません。');
     const cnt = prelimRanking().filter(x => x.n === 4).length;
     if (qround.value !== 'F' && cnt < 30) note.push('予選4半荘を終えた参加者は ' + cnt + '/30 名です（メンバーは暫定）。');
-    note.push('準決勝・決勝は素点で順位を決めます（ウマ・オカなし）。席と起家は自動卓のサイコロで決めるので、ここの並びは席順ではありません。同点があったときは年齢が上の方が上位です（ページは並び順で仮置き＝集計係が確認）。');
+    note.push('準決勝・決勝は素点で順位を決めます（ウマ・オカなし）。席と起家は自動卓のサイコロで決めるので、ここの並びは席順ではありません。同点があったときは起家に近い方が上位です（ページは並び順で仮置き＝集計係が確認）。');
     hint.textContent = note.join(' ');
   }
   box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', preview));
@@ -369,7 +369,7 @@ function preview() {
   const pts = document.querySelectorAll('#seats .pt');
   if (isPrelim()) {
     const res = calcTable(seats);
-    pts.forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位 ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
+    pts.forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位' + (res[i].tie ? '(同点)' : '') + ' ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
   } else {
     const all = seats.every(s => s.raw !== null && !Number.isNaN(s.raw));
     const order = all ? seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i) : [];
@@ -380,7 +380,7 @@ function preview() {
   document.getElementById('qsum').textContent = fmt(sum);
   const warn = [];
   if (filled.length === 4 && sum !== 100000) warn.push('合計が100,000になっていません。点棒を確認してください（送信はできます）');
-  if (new Set(filled.map(s => s.raw)).size < filled.length) warn.push('同じ点棒の人がいます。同点は年齢が上の方が上位です（ページの順位は並び順の仮置き。集計係に伝えてください）');
+  if (new Set(filled.map(s => s.raw)).size < filled.length) warn.push(isPrelim() ? '同じ点棒の人がいます。順位点はその人たちで分けています（起家に近い方が多く）。' : '同じ点棒の人がいます。同点は起家に近い方が上位です（ページの順位は並び順の仮置き。集計係に伝えてください）');
   document.getElementById('qwarn').textContent = warn.join(' ');
 }
 qround.addEventListener('change', fillTables);
