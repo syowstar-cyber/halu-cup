@@ -72,7 +72,7 @@ summary{cursor:pointer;font-weight:700}
 
   <div id="setup" class="hint" hidden>点数報告の受け口（API）がまだ設定されていません。</div>
 
-  <h2>予選の報告（卓ごと）</h2>
+  <h2>点数の報告（卓ごと・予選／準決勝／決勝）</h2>
   <div class="card">
     <div class="row">
       <div>
@@ -82,6 +82,9 @@ summary{cursor:pointer;font-weight:700}
           <option value="2">予選 2半荘目</option>
           <option value="3">予選 3半荘目</option>
           <option value="4">予選 4半荘目</option>
+          <option value="S1">準決勝 S1卓</option>
+          <option value="S2">準決勝 S2卓</option>
+          <option value="F">決勝</option>
         </select>
       </div>
       <div>
@@ -90,6 +93,7 @@ summary{cursor:pointer;font-weight:700}
       </div>
     </div>
     <div id="seats"></div>
+    <div id="qhint" class="small"></div>
     <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
     <div id="qwarn" class="small neg"></div>
     <label for="qkey">報告キー（受付で伝えた数字）</label>
@@ -101,31 +105,6 @@ summary{cursor:pointer;font-weight:700}
   <div class="hint">
     <b>ポイントの計算</b>: 25,000点持ち・30,000点返し。100点台は五捨六入（〜500は切り捨て、600〜は切り上げ）。
     （点棒−30,000）÷1,000 に順位点 +30／+10／−10／−30 を足し、1位にはオカ +20。五捨六入の端数は1位が引き受け、卓の合計は必ず 0。同点は起家に近い方が上位。
-  </div>
-
-  <h2>準決勝・決勝の報告（1人ずつ）</h2>
-  <div class="card">
-    <form id="f">
-      <label for="player">プレイヤー</label>
-      <select id="player" required></select>
-      <div class="row">
-        <div>
-          <label for="round">対局</label>
-          <select id="round" required>
-            <option value="S">準決勝</option>
-            <option value="F">決勝</option>
-          </select>
-        </div>
-        <div>
-          <label for="score">点棒（終了時）</label>
-          <input id="score" type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="例 32000" required>
-        </div>
-      </div>
-      <label for="key">報告キー</label>
-      <input id="key" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
-      <button class="primary" type="submit">送信する</button>
-      <div id="msg" class="msg" aria-live="polite"></div>
-    </form>
   </div>
 
   <h2>集計（予選は4半荘の合計ポイント）</h2>
@@ -163,6 +142,7 @@ summary{cursor:pointer;font-weight:700}
   <div class="tools">
     <button class="ghost" type="button" id="dl">JSONをコピー</button>
     <span class="small">点棒のJSON（P1〜P30・本田プロ・ゆうこママ）をそのままコピーします</span>
+    <div id="msg" class="msg" aria-live="polite"></div>
   </div>
   <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/" aria-current="page">点数報告</a></nav>
 </div>
@@ -303,36 +283,91 @@ function renderBorder() {
 }
 document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
 
-// ---- 卓入力 ----
+// ---- 卓入力（予選・準決勝・決勝 共通）----
 const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
-function currentTable() { return (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value); }
+const STAGE = { S1: { api: 'S', name: '準決勝 S1卓' }, S2: { api: 'S', name: '準決勝 S2卓' }, F: { api: 'F', name: '決勝' } };
+function isPrelim() { return !STAGE[qround.value]; }
+function apiRound() { return isPrelim() ? qround.value : STAGE[qround.value].api; }
+// 予選順位（参加者だけ・合計ポイント順）。並びは集計表と同じ
+function prelimRanking() {
+  return PLAYERS.filter(p => p.startsWith('P') && TOTALS[p] && TOTALS[p].total !== null)
+    .map(p => ({ p, total: TOTALS[p].total, n: TOTALS[p].n }))
+    .sort((a, b) => b.total - a.total);
+}
+// 準決勝の卓: S1 = 本田プロ・ゆうこママ・予選3位・6位 / S2 = 予選1位・2位・4位・5位（幹部用3章と同じ規則）
+function semiTables() {
+  const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + r[i].p } : null;
+  return { S1: [{ p: '本田プロ', label: '本田プロ' }, { p: 'ゆうこママ', label: 'ゆうこママ' }, at(2), at(5)], S2: [at(0), at(1), at(3), at(4)] };
+}
+// 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順。同点は卓の並び順＝起家に近い方）
+function finalTable() {
+  const t = semiTables(), top2 = (name, mem) => {
+    const done = mem.filter(m => m && DATA && DATA.players[m.p] && DATA.players[m.p].S !== null && DATA.players[m.p].S !== undefined);
+    if (done.length < 4) return [null, null];
+    return done.map((m, i) => ({ m, i, s: DATA.players[m.p].S })).sort((a, b) => b.s - a.s || a.i - b.i).slice(0, 2)
+      .map((x, k) => ({ p: x.m.p, label: name + '卓' + (k + 1) + '位 ' + x.m.p }));
+  };
+  const a = top2('S1', t.S1), b = top2('S2', t.S2);
+  return [a[0], b[0], a[1], b[1]];
+}
+// 今の卓。予選は対戦表から、準決勝・決勝は順位から導く（seats: 名前（未確定は null）、labels: 表示名）
+function currentTable() {
+  if (isPrelim()) {
+    const t = (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value);
+    return t ? { name: qround.value + '半荘目 ' + t.table + '卓', seats: t.seats, labels: t.seats, missing: 0 } : null;
+  }
+  const mem = qround.value === 'F' ? finalTable() : semiTables()[qround.value];
+  return { name: STAGE[qround.value].name, seats: mem.map(m => m ? m.p : null), labels: mem.map(m => m ? m.label : '（未確定）'), missing: mem.filter(m => !m).length };
+}
 function fillTables() {
   qtable.innerHTML = '';
-  (SCHED[qround.value] || []).forEach(t => { const o = document.createElement('option'); o.value = t.table; o.textContent = t.table + '卓'; qtable.appendChild(o); });
-  try { const last = localStorage.getItem('halu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
+  if (isPrelim()) {
+    (SCHED[qround.value] || []).forEach(t => { const o = document.createElement('option'); o.value = t.table; o.textContent = t.table + '卓'; qtable.appendChild(o); });
+    try { const last = localStorage.getItem('halu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
+  } else {
+    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value + '卓'; qtable.appendChild(o);
+  }
+  qtable.disabled = !isPrelim();
   fillSeats();
 }
 function fillSeats() {
   const t = currentTable(); const box = document.getElementById('seats'); box.innerHTML = '';
+  const hint = document.getElementById('qhint'); hint.textContent = '';
   if (!t) return;
   t.seats.forEach((n, i) => {
     const row = document.createElement('div'); row.className = 'seat';
-    const cur = DATA ? (DATA.players[n] || {})[qround.value] : null;
-    row.innerHTML = '<div class="w">' + WINDS[i] + '</div><div class="nm">' + n + '</div><input type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="点棒" data-name="' + n + '"><div class="pt"></div>';
+    const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
+    row.innerHTML = '<div class="w">' + WINDS[i] + '</div><div class="nm">' + t.labels[i] + '</div><input type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="点棒" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><div class="pt"></div>';
     row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur;
     box.appendChild(row);
   });
+  if (!isPrelim()) {
+    const note = [];
+    if (t.missing) note.push(qround.value === 'F' ? '決勝の4名は、準決勝2卓の点棒がそろってから出ます。' : '予選の順位がまだ出ていません。');
+    const cnt = prelimRanking().filter(x => x.n === 4).length;
+    if (qround.value !== 'F' && cnt < 30) note.push('予選4半荘を終えた参加者は ' + cnt + '/30 名です（メンバーは暫定）。');
+    note.push('準決勝・決勝は素点で順位を決めます（ウマ・オカなし）。席の並びは当日の起家の発表に従ってください。');
+    hint.textContent = note.join(' ');
+  }
   box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', preview));
   preview();
 }
+// 4席ぶん（未確定の席は name '' / raw null）
 function readSeats() {
-  return [...document.querySelectorAll('#seats input')].map(inp => ({ name: inp.dataset.name, raw: inp.value.trim() === '' ? null : parseInt(inp.value, 10) }));
+  return [...document.querySelectorAll('#seats input')].map(inp => ({ name: inp.dataset.name, raw: (inp.disabled || inp.value.trim() === '') ? null : parseInt(inp.value, 10) }));
 }
 function preview() {
   const seats = readSeats();
-  const res = calcTable(seats);
-  document.querySelectorAll('#seats .pt').forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位 ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
-  const filled = seats.filter(s => s.raw !== null);
+  const pts = document.querySelectorAll('#seats .pt');
+  if (isPrelim()) {
+    const res = calcTable(seats);
+    pts.forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位 ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
+  } else {
+    const all = seats.every(s => s.raw !== null && !Number.isNaN(s.raw));
+    const order = all ? seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i) : [];
+    pts.forEach((el, i) => { const k = order.findIndex(x => x.i === i); el.textContent = k >= 0 ? (k + 1) + '位' : ''; el.className = 'pt'; });
+  }
+  const filled = seats.filter(s => s.raw !== null && !Number.isNaN(s.raw));
   const sum = filled.reduce((a, s) => a + s.raw, 0);
   document.getElementById('qsum').textContent = fmt(sum);
   document.getElementById('qwarn').textContent = (filled.length === 4 && sum !== 100000) ? '合計が100,000になっていません。点棒を確認してください（送信はできます）' : '';
@@ -348,46 +383,36 @@ const ERR = { key: '報告キーが違います', player: 'プレイヤーが不
 document.getElementById('qsend').addEventListener('click', async () => {
   if (!API) { say('qmsg', 'APIが未設定です', false); return; }
   const key = document.getElementById('qkey').value.trim(); if (!key) { say('qmsg', '報告キーを入れてください', false); return; }
-  const seats = readSeats().filter(s => s.raw !== null && Number.isInteger(s.raw));
+  const t = currentTable(); if (!t) return;
+  const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
   if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
   say('qmsg', '送信中…（' + seats.length + '人分）', true);
   let last = null;
   for (const s of seats) {
-    const j = await post({ key, player: s.name, round: qround.value, score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
+    const j = await post({ key, player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
     if (!j.ok) { say('qmsg', s.name + ': ' + (ERR[j.error] || '送信に失敗しました'), false); if (last) render(last); return; }
     last = j.data;
   }
   render(last);
-  say('qmsg', qround.value + '半荘目 ' + qtable.value + '卓の ' + seats.length + '人分を記録しました', true);
+  say('qmsg', t.name + 'の ' + seats.length + '人分を記録しました', true);
 });
 document.getElementById('qclear').addEventListener('click', async () => {
   const key = document.getElementById('qkey').value.trim(); if (!key) { say('qmsg', '報告キーを入れてください', false); return; }
   const t = currentTable(); if (!t) return;
-  if (!confirm(qround.value + '半荘目 ' + qtable.value + '卓の4人の点数を取り消しますか？')) return;
+  const names = t.seats.filter(Boolean); if (!names.length) return;
+  if (!confirm(t.name + 'の' + names.length + '人の点数を取り消しますか？')) return;
   let last = null;
-  for (const n of t.seats) {
-    const j = await post({ key, player: n, round: qround.value, action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
+  for (const n of names) {
+    const j = await post({ key, player: n, round: apiRound(), action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
     if (!j.ok) { say('qmsg', n + ': ' + (ERR[j.error] || '取り消しに失敗しました'), false); if (last) render(last); return; }
     last = j.data;
   }
   render(last); say('qmsg', '取り消しました', true);
 });
 
-// ---- 準決勝・決勝 ----
-const sel = document.getElementById('player');
-PLAYERS.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); });
 const bdsel = document.getElementById('bdplayer');
 PLAYERS.filter(p => p.startsWith('P')).forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; bdsel.appendChild(o); });
 try { const v = localStorage.getItem('halu:bdplayer'); if (v) bdsel.value = v; } catch (e) {}
-document.getElementById('f').addEventListener('submit', async e => {
-  e.preventDefault();
-  if (!API) { say('msg', 'APIが未設定です', false); return; }
-  const score = parseInt(document.getElementById('score').value, 10), key = document.getElementById('key').value.trim();
-  if (!Number.isInteger(score)) { say('msg', '点棒を数字で入れてください', false); return; }
-  say('msg', '送信中…', true);
-  const j = await post({ key, player: sel.value, round: document.getElementById('round').value, score }).catch(() => ({ ok: false, error: 'net' }));
-  if (j.ok) { render(j.data); say('msg', sel.value + ' を ' + fmt(score) + ' で記録しました', true); } else say('msg', ERR[j.error] || '送信に失敗しました', false);
-});
 
 // ---- 読み込み・その他 ----
 async function load() {
