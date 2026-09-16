@@ -12,6 +12,8 @@ def inline(s):
     s = html.escape(s, quote=False)
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
     s = re.sub(r"`(.+?)`", r"<code>\1</code>", s)
+    # 「N章」をページ内リンクに（見出しの id は sN）
+    s = re.sub(r"([0-9]+)章", r'<a class="xref" href="#s\1">\1章</a>', s)
     return s
 
 out, table, lst = [], [], None

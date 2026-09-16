@@ -13,6 +13,9 @@ def inline(s):
     s = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", s)
     s = re.sub(r"`(.+?)`", r"<code>\1</code>", s)
     s = s.replace("※要確定", '<span class="warn">※要確定</span>')
+    # 「N章」をページ内リンクに。「参加者ページのN章」「参加者案内N章」は参加者ページの章へ
+    s = re.sub(r"(参加者ページの|参加者案内の|参加者案内)([0-9]+)章", r'<a class="xref" href="sanka/#s\2">\1\2章</a>', s)
+    s = re.sub(r"([0-9]+)章(?![^<]*</a>)", r'<a class="xref" href="#s\1">\1章</a>', s)
     return s
 
 out = []
