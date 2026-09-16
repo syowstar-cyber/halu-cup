@@ -117,12 +117,12 @@ async function syncChecks(c){
   applyChecks(c);
 }
 // 8章: 打ち上げ希望の回答一覧（参加者ページのフォームから受け口に届いたもの）
-const PMARK = { '1': '①', '2': '②', '3': '③' };
+const PMARK = { '1': '①', '2': '②', '3': '③', '4': '④' };
 function renderParty(party){
   const box = document.getElementById('party'); if (!box) return;
   const rows = Object.entries(party).map(([n, v]) => ({ n, no: v.no || '', ch: v.choice, ts: v.ts || '' })).sort((a, b) => (a.ch + a.ts).localeCompare(b.ch + b.ts));
-  const cnt = { '1': 0, '2': 0, '3': 0 }; rows.forEach(r => { if (cnt[r.ch] !== undefined) cnt[r.ch]++; });
-  let h = '<div class="cnt"><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③不可 ' + cnt['3'] + '人</span><span>計 ' + rows.length + '人</span></div>';
+  const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; rows.forEach(r => { if (cnt[r.ch] !== undefined) cnt[r.ch]++; });
+  let h = '<div class="cnt"><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④食事券 ' + cnt['4'] + '人</span><span>計 ' + rows.length + '人</span></div>';
   if (rows.length) {
     h += '<div class="tw"><table><tr><th>名前</th><th>No</th><th>希望</th><th>回答</th></tr>' + rows.map(r => '<tr><td>' + esc(r.n) + '</td><td>' + esc(r.no) + '</td><td>' + (PMARK[r.ch] || '') + '</td><td>' + fmtTs(r.ts) + '</td></tr>').join('') + '</table></div>';
   } else h += '<p class="st">まだ回答はありません。</p>';

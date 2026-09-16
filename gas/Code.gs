@@ -5,7 +5,7 @@
 // 受け口は2つ:
 //   点数報告（参加者）… キーなし。{player, round, score} / {action:'clear', player, round}
 //   チェック共有（幹部）… キーなし（幹部用ページは公開のため）。{action:'check', k, v, by}
-//   打ち上げ希望（参加者）… キーなし。{action:'party', name, no, choice:'1'|'2'|'3'|''}（'' は取り消し）
+//   打ち上げ希望（参加者）… キーなし。{action:'party', name, no, choice:'1'|'2'|'3'|'4'|''}（'' は取り消し）
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -69,7 +69,7 @@ function doGet(e) {
 //   {player:'P12', round:'1'..'4'|'S'|'F', score: 32000}
 //   {action:'clear', player, round}   … 取り消し（null に戻す）
 //   {action:'check', k:'項目キー', v:true|false, by:'名前'}   … 幹部のチェック共有（キー不要）
-//   {action:'party', name:'名前', no:'P12'|'', choice:'1'|'2'|'3'|''}   … 打ち上げ希望（キー不要。'' で取り消し）
+//   {action:'party', name:'名前', no:'P12'|'', choice:'1'|'2'|'3'|'4'|''}   … 打ち上げ希望（キー不要。'' で取り消し）
 function doPost(e) {
   let body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad_json' }); }
@@ -127,7 +127,7 @@ function doParty_(body) {
   const no = String(body.no || '');
   if (no && PLAYERS.indexOf(no) < 0) return out_({ ok: false, error: 'player' });
   const choice = String(body.choice || '');
-  if (['', '1', '2', '3'].indexOf(choice) < 0) return out_({ ok: false, error: 'choice' });
+  if (['', '1', '2', '3', '4'].indexOf(choice) < 0) return out_({ ok: false, error: 'choice' });
 
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);

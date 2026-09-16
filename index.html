@@ -266,7 +266,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li>大会当日（10/24）後の打ち上げ</li>
 <li>翌週土曜（10/31）の打ち上げ</li>
 </ul>
-<p>両日とも都合が悪く参加できない場合は、年末まで使えるHaluお食事券5,000円を渡す。</p>
+<p>お食事券希望（④）と、当日だけ希望で入れなかった人（③）には、年末まで使えるHaluお食事券5,000円を渡す。</p>
 <h3>会場 Halu</h3>
 <ul>
 <li>住所: 福岡市博多区博多駅東3-9-3 博多ニッコーハイツ1F（092-292-9982）</li>
@@ -277,9 +277,10 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>事前の希望調査（<a class="xref" href="sanka/#s7">参加者ページの7章</a>のフォームで回答）</h3>
 <div class="tw"><table>
 <tr><th>選択肢</th><th>内容</th></tr>
-<tr><td>①</td><td>大会当日希望だけど翌週でも可</td></tr>
-<tr><td>②</td><td>翌週土曜希望だけど当日でも可</td></tr>
-<tr><td>③</td><td>両日とも参加不可</td></tr>
+<tr><td>①</td><td>大会当日希望。翌週でも可</td></tr>
+<tr><td>②</td><td>翌週土曜希望。当日でも可</td></tr>
+<tr><td>③</td><td>大会当日だけ希望。入れなければお食事券</td></tr>
+<tr><td>④</td><td>お食事券希望（打ち上げには参加しない）</td></tr>
 </table></div>
 <p>事前の希望日、大会の順位、希望人数に沿って、大会後にメンバーを発表する。</p>
 <h3>回答状況</h3>
@@ -513,6 +514,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td><label><input type="checkbox" data-k="14幹11実況役を誰がやるか" data-legacy=""><span>幹-11</span></label></td><td>実況役を誰がやるか</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹12報告キー数字を決めてGASのスクリプトプロパティに設定し案内カードに印" data-legacy=""><span>幹-12</span></label></td><td>~~報告キー（数字）を決めて GAS のスクリプト プロパティに設定し、案内カードに印字する~~ → 報告キーは廃止（2026-09-16 主催の指示。送信にキー不要）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹13集計係入力サポート1名を誰がやるか" data-legacy=""><span>幹-13</span></label></td><td>集計係（入力サポート1名）を誰がやるか</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹15Codegsを新バージョンでデプロイする打ち上げ希望④を受けるためデプ" data-legacy=""><span>幹-15</span></label></td><td>Code.gs を新バージョンでデプロイする（打ち上げ希望④を受けるため。デプロイするまで④は「送れませんでした」になる）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹14GASにCHECK_KEYを設定しCodegsを新バージョンでデプロイ" data-legacy=""><span>幹-14</span></label></td><td>~~GAS に <code>CHECK_KEY</code> を設定し、Code.gs を新バージョンでデプロイ~~ → 設定・デプロイ済み（2026-09-16）。同日にパスワードと報告キーを外し、キー不要版の Code.gs を再デプロイ・「幹部で共有中」を確認・スクリプト プロパティの <code>REPORT_KEY</code>／<code>CHECK_KEY</code> も削除済み（2026-09-16 解消）</td></tr>
 </table></div>
 <h2 id="s15">15. 逆算スケジュール</h2>
@@ -571,6 +573,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-09-17</td><td>点数計算をMリーグ公式規定に完全一致させた。五捨六入と端数の引き受けを廃止し、100点＝0.1ポイントで丸めない。順位点はオカ込みで1位+50／+10／−10／−30。半荘の同点は同点の人で順位点を分け、割り切れない分は起家に近い方が多く取る。準決勝・決勝の同点も起家に近い方が上位に。4半荘合計の同点だけは年齢のまま（Mリーグに規定がない）。点数報告ページも同時更新</td><td>主催の指示</td></tr>
 <tr><td>2026-09-17</td><td>トビ終了なし（箱下あり）で確定し、<a class="xref" href="#s4">4章</a>に追記。幹-3 はトビの部分を解消。参加者案内・点数報告ページにも同時追記</td><td>主催の指示</td></tr>
 <tr><td>2026-09-17</td><td><a class="xref" href="sanka/#s1">参加者案内1章</a>から「申込締切」「申込・問い合わせ」の行を削除（申込は別途案内しているため）</td><td>主催の指示</td></tr>
+<tr><td>2026-09-17</td><td>打ち上げの希望調査を4択に。③「大会当日だけ希望。入れなければお食事券」を追加し、旧③「両日とも参加不可」は④「お食事券希望」に言い換え。参加者案内・参加者ページのフォーム・幹部用ページの集計・Code.gs を同時更新（幹-15: 再デプロイが要る）</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
@@ -610,12 +613,12 @@ async function syncChecks(c){
   applyChecks(c);
 }
 // 8章: 打ち上げ希望の回答一覧（参加者ページのフォームから受け口に届いたもの）
-const PMARK = { '1': '①', '2': '②', '3': '③' };
+const PMARK = { '1': '①', '2': '②', '3': '③', '4': '④' };
 function renderParty(party){
   const box = document.getElementById('party'); if (!box) return;
   const rows = Object.entries(party).map(([n, v]) => ({ n, no: v.no || '', ch: v.choice, ts: v.ts || '' })).sort((a, b) => (a.ch + a.ts).localeCompare(b.ch + b.ts));
-  const cnt = { '1': 0, '2': 0, '3': 0 }; rows.forEach(r => { if (cnt[r.ch] !== undefined) cnt[r.ch]++; });
-  let h = '<div class="cnt"><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③不可 ' + cnt['3'] + '人</span><span>計 ' + rows.length + '人</span></div>';
+  const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; rows.forEach(r => { if (cnt[r.ch] !== undefined) cnt[r.ch]++; });
+  let h = '<div class="cnt"><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④食事券 ' + cnt['4'] + '人</span><span>計 ' + rows.length + '人</span></div>';
   if (rows.length) {
     h += '<div class="tw"><table><tr><th>名前</th><th>No</th><th>希望</th><th>回答</th></tr>' + rows.map(r => '<tr><td>' + esc(r.n) + '</td><td>' + esc(r.no) + '</td><td>' + (PMARK[r.ch] || '') + '</td><td>' + fmtTs(r.ts) + '</td></tr>').join('') + '</table></div>';
   } else h += '<p class="st">まだ回答はありません。</p>';

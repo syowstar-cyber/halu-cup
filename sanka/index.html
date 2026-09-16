@@ -173,15 +173,16 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <h2 id="s7">7. 打ち上げ</h2>
 <p>全員が入れないため、2回に分けて行います。</p>
 <ul><li>大会当日（10月24日）の夜</li><li>翌週土曜（10月31日）</li></ul>
-<p>両日とも都合が悪く参加できない方には、年末まで使えるHaluお食事券5,000円をお渡しします。</p>
+<p>お食事券希望の方（④）と、当日だけ希望で入れなかった方（③）には、年末まで使えるHaluお食事券5,000円をお渡しします。</p>
 <h3>会場 Halu</h3>
 <ul><li>住所: 福岡市博多区博多駅東3-9-3 博多ニッコーハイツ1F</li><li>麻雀Firstから: 地下鉄で約20分／タクシーで約10〜15分（目安）</li><li>地下鉄の内訳: 天神南駅まで徒歩約5分 → 七隈線 天神南→博多 3分 → 博多駅から徒歩約8分</li></ul>
 <h3>必ずご回答ください（下のフォームから送れます）</h3>
 <div class="tw"><table>
 <tr><th>選択肢</th><th>内容</th></tr>
-<tr><td>①</td><td>大会当日希望だけど翌週でも可</td></tr>
-<tr><td>②</td><td>翌週土曜希望だけど当日でも可</td></tr>
-<tr><td>③</td><td>両日とも参加不可</td></tr>
+<tr><td>①</td><td>大会当日希望。翌週でも可</td></tr>
+<tr><td>②</td><td>翌週土曜希望。当日でも可</td></tr>
+<tr><td>③</td><td>大会当日だけ希望。入れなければお食事券</td></tr>
+<tr><td>④</td><td>お食事券希望（打ち上げには参加しない）</td></tr>
 </table></div>
 <div id="party" class="party"></div>
 <p>フォームが使えないときは、LINEでゆうこママに直接お伝えください。</p>
@@ -313,11 +314,12 @@ c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a
   const box = document.getElementById('party'); if (!box) return;
   const API = (window.HALU_API || '').trim();
   const names = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
-  const LABEL = { '1': '大会当日希望だけど翌週でも可', '2': '翌週土曜希望だけど当日でも可', '3': '両日とも参加不可' };
-  const MARK = { '1': '①', '2': '②', '3': '③' };
+  const LABEL = { '1': '大会当日希望。翌週でも可', '2': '翌週土曜希望。当日でも可', '3': '大会当日だけ希望。入れなければお食事券', '4': 'お食事券希望（打ち上げには参加しない）' };
+  const MARK = { '1': '①', '2': '②', '3': '③', '4': '④' };
+  const CH = ['1', '2', '3', '4'];
   box.innerHTML = '<label for="pname">お名前（LINEの名前など、幹部に分かる呼び名）</label><input id="pname" type="text" maxlength="20" autocomplete="off">'
     + '<label for="pno">プレイヤーNo（まだ分からなければ空のまま）</label><select id="pno"><option value="">未定</option>' + names.map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select>'
-    + '<label>希望</label>' + ['1', '2', '3'].map(v => '<label class="opt"><input type="radio" name="pch" value="' + v + '"><span><b>' + MARK[v] + '</b>' + LABEL[v] + '</span></label>').join('')
+    + '<label>希望</label>' + CH.map(v => '<label class="opt"><input type="radio" name="pch" value="' + v + '"><span><b>' + MARK[v] + '</b>' + LABEL[v] + '</span></label>').join('')
     + '<button type="button" id="psend">この内容で回答する</button><button type="button" class="ghost" id="pdel">回答を消す</button><div class="st" id="pst" aria-live="polite"></div>';
   const name = box.querySelector('#pname'), no = box.querySelector('#pno'), st = box.querySelector('#pst');
   try { name.value = localStorage.getItem('halu:pname') || ''; } catch (e) {}
@@ -326,8 +328,8 @@ c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a
   function fmt(ts) { return ts ? ts.slice(5, 16).replace('-', '/') : ''; }
   function showMine(party) {
     const n = name.value.trim(), me = n && party ? party[n] : null;
-    const cnt = { '1': 0, '2': 0, '3': 0 }; Object.values(party || {}).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
-    const tot = '（いまの回答: ①' + cnt['1'] + '人 ②' + cnt['2'] + '人 ③' + cnt['3'] + '人）';
+    const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; Object.values(party || {}).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
+    const tot = '（いまの回答: ' + CH.map(v => MARK[v] + cnt[v] + '人').join(' ') + '）';
     if (me) { const r = box.querySelector('input[name=pch][value="' + me.choice + '"]'); if (r) r.checked = true; if (me.no) no.value = me.no; say('回答済み: ' + MARK[me.choice] + ' ' + LABEL[me.choice] + '（' + fmt(me.ts) + '）' + tot, 'ok'); }
     else say((n ? 'まだ回答がありません ' : '') + tot);
   }
@@ -338,7 +340,7 @@ c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a
   }
   async function send(choice) {
     const n = name.value.trim(); if (!n) { say('お名前を入れてください', 'ng'); name.focus(); return; }
-    if (choice === undefined) { const r = box.querySelector('input[name=pch]:checked'); if (!r) { say('①〜③のどれかを選んでください', 'ng'); return; } choice = r.value; }
+    if (choice === undefined) { const r = box.querySelector('input[name=pch]:checked'); if (!r) { say('①〜④のどれかを選んでください', 'ng'); return; } choice = r.value; }
     try { localStorage.setItem('halu:pname', n); } catch (e) {}
     say('送信中…');
     try {
