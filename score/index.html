@@ -299,7 +299,7 @@ function semiTables() {
   const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + r[i].p } : null;
   return { S1: [{ p: '本田プロ', label: '本田プロ' }, { p: 'ゆうこママ', label: 'ゆうこママ' }, at(2), at(5)], S2: [at(0), at(1), at(3), at(4)] };
 }
-// 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順。同点は卓の並び順＝起家に近い方）
+// 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順）。準決勝の席はサイコロで決まるので、同点はページでは判定できない（並び順で仮置き＝集計係が確認）
 function finalTable() {
   const t = semiTables(), top2 = (name, mem) => {
     const done = mem.filter(m => m && DATA && DATA.players[m.p] && DATA.players[m.p].S !== null && DATA.players[m.p].S !== undefined);
@@ -337,7 +337,7 @@ function fillSeats() {
   t.seats.forEach((n, i) => {
     const row = document.createElement('div'); row.className = 'seat';
     const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
-    row.innerHTML = '<div class="w">' + WINDS[i] + '</div><div class="nm">' + t.labels[i] + '</div><input type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="点棒" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><div class="pt"></div>';
+    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><input type="number" inputmode="numeric" step="100" min="-200000" max="300000" placeholder="点棒" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><div class="pt"></div>';
     row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur;
     box.appendChild(row);
   });
@@ -346,7 +346,7 @@ function fillSeats() {
     if (t.missing) note.push(qround.value === 'F' ? '決勝の4名は、準決勝2卓の点棒がそろってから出ます。' : '予選の順位がまだ出ていません。');
     const cnt = prelimRanking().filter(x => x.n === 4).length;
     if (qround.value !== 'F' && cnt < 30) note.push('予選4半荘を終えた参加者は ' + cnt + '/30 名です（メンバーは暫定）。');
-    note.push('準決勝・決勝は素点で順位を決めます（ウマ・オカなし）。席の並びは当日の起家の発表に従ってください。');
+    note.push('準決勝・決勝は素点で順位を決めます（ウマ・オカなし）。席と起家は自動卓のサイコロで決めるので、ここの並びは席順ではありません。同点があったときは起家に近い方が上位です（集計係が確認）。');
     hint.textContent = note.join(' ');
   }
   box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', preview));

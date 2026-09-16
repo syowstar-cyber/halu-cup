@@ -45,6 +45,11 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 .pnav{display:flex;gap:8px;margin:12px 0}
 .pnav a{flex:1;text-align:center;padding:10px 12px;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
 .pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+.pick{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:10px 12px;margin:12px 0}
+.pick label{display:block;font-weight:700;margin-bottom:6px}
+.pick select{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+.pick .note{font-size:.9rem;color:var(--muted);margin-top:6px}
+td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outline:2px solid var(--accent);outline-offset:-2px}
 </style>
 </head>
 <body>
@@ -114,7 +119,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>南場は親の連荘あり</h3>
 <ul><li>親の和了・聴牌流局ともに連荘し、本場を積みます</li><li>南4局で親がトップの場合、アガリやめができます</li></ul>
 <h3>場決めなし</h3>
-<ul><li>風牌のつかみ取りはしません。席順は対戦表のとおりです</li><li>予選・準決勝・決勝、すべての半荘で同じです</li></ul>
+<ul><li>予選は風牌のつかみ取りをしません。席順は対戦表のとおりです</li><li>準決勝・決勝は1回勝負なので、席と起家は自動卓のサイコロで決めます</li></ul>
 <h3>点数計算（予選）</h3>
 <div class="tw"><table>
 <tr><th>項目</th><th>内容</th></tr>
@@ -168,6 +173,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <p>当日のメンバーは18:20の閉会で発表し、そのままHaluへ移動します。</p>
 <h2 id="s8">8. 対戦表（予選）</h2>
 <p>本田プロ＋P1〜P15 が1〜4卓、ゆうこママ＋P16〜P30 が5〜8卓です。席は表のとおりで、場決めはしません。</p>
+<p>この下で自分のプレイヤーNoを選ぶと、自分の卓だけが表示されます。</p>
 <p>本田プロは1卓、ゆうこママは5卓に固定です（4半荘とも席を動きません。対戦する方がその卓へ移動してください）。</p>
 <h3>予選1半荘目</h3>
 <div class="tw"><table>
@@ -259,6 +265,32 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <script>
 const c = document.getElementById('content'), toc = document.getElementById('toc');
 c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+// 8章（対戦表）: プレイヤーNoを選ぶと、その人のいる行だけに絞る
+(function () {
+  const h2 = [...c.querySelectorAll('h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
+  const names = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
+  const tables = []; for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) tables.push(...el.querySelectorAll('table'));
+  if (!tables.length) return;
+  const box = document.createElement('div'); box.className = 'pick';
+  box.innerHTML = '<label for="pick">自分のプレイヤーNoを選ぶと、自分の卓だけ表示します</label><select id="pick"><option value="">全員の表を見る</option>' + names.map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select><div class="note"></div>';
+  const first = h2.nextElementSibling && h2.nextElementSibling.tagName === 'P' ? h2.nextElementSibling : h2;
+  first.insertAdjacentElement('afterend', box);
+  const sel = box.querySelector('select'), note = box.querySelector('.note');
+  function apply() {
+    const v = sel.value;
+    tables.forEach(t => t.querySelectorAll('tr').forEach(tr => {
+      const tds = [...tr.querySelectorAll('td')]; if (!tds.length) return;
+      const hit = tds.some(td => td.textContent.trim() === v);
+      tr.hidden = !!v && !hit;
+      tds.forEach(td => td.classList.toggle('me', !!v && td.textContent.trim() === v));
+    }));
+    note.textContent = v ? v + ' の卓だけ表示中。表の色つきが自分の席です' : '';
+    try { localStorage.setItem('halu:pick', v); } catch (e) {}
+  }
+  sel.addEventListener('change', apply);
+  try { const v = localStorage.getItem('halu:pick'); if (v && names.includes(v)) sel.value = v; } catch (e) {}
+  apply();
+})();
 </script>
 </body>
 </html>

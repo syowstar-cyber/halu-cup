@@ -45,6 +45,11 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 .pnav{display:flex;gap:8px;margin:12px 0}
 .pnav a{flex:1;text-align:center;padding:10px 12px;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
 .pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+.pick{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:10px 12px;margin:12px 0}
+.pick label{display:block;font-weight:700;margin-bottom:6px}
+.pick select{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+.pick .note{font-size:.9rem;color:var(--muted);margin-top:6px}
+td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outline:2px solid var(--accent);outline-offset:-2px}
 </style>
 </head>
 <body>
@@ -65,6 +70,32 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <script>
 const c = document.getElementById('content'), toc = document.getElementById('toc');
 c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+// 8章（対戦表）: プレイヤーNoを選ぶと、その人のいる行だけに絞る
+(function () {
+  const h2 = [...c.querySelectorAll('h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
+  const names = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
+  const tables = []; for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) tables.push(...el.querySelectorAll('table'));
+  if (!tables.length) return;
+  const box = document.createElement('div'); box.className = 'pick';
+  box.innerHTML = '<label for="pick">自分のプレイヤーNoを選ぶと、自分の卓だけ表示します</label><select id="pick"><option value="">全員の表を見る</option>' + names.map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select><div class="note"></div>';
+  const first = h2.nextElementSibling && h2.nextElementSibling.tagName === 'P' ? h2.nextElementSibling : h2;
+  first.insertAdjacentElement('afterend', box);
+  const sel = box.querySelector('select'), note = box.querySelector('.note');
+  function apply() {
+    const v = sel.value;
+    tables.forEach(t => t.querySelectorAll('tr').forEach(tr => {
+      const tds = [...tr.querySelectorAll('td')]; if (!tds.length) return;
+      const hit = tds.some(td => td.textContent.trim() === v);
+      tr.hidden = !!v && !hit;
+      tds.forEach(td => td.classList.toggle('me', !!v && td.textContent.trim() === v));
+    }));
+    note.textContent = v ? v + ' の卓だけ表示中。表の色つきが自分の席です' : '';
+    try { localStorage.setItem('halu:pick', v); } catch (e) {}
+  }
+  sel.addEventListener('change', apply);
+  try { const v = localStorage.getItem('halu:pick'); if (v && names.includes(v)) sel.value = v; } catch (e) {}
+  apply();
+})();
 </script>
 </body>
 </html>
