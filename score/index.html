@@ -96,8 +96,6 @@ summary{cursor:pointer;font-weight:700}
     <div id="qhint" class="small"></div>
     <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
     <div id="qwarn" class="small neg"></div>
-    <label for="qkey">報告キー（受付で伝えた数字）</label>
-    <input id="qkey" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
     <button class="primary" type="button" id="qsend">この卓の4人分を送信する</button>
     <div id="qmsg" class="msg" aria-live="polite"></div>
     <div class="tools"><button class="ghost" type="button" id="qclear">この卓の点数を取り消す</button></div>
@@ -392,17 +390,16 @@ async function post(body) {
   const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
   return r.json();
 }
-const ERR = { key: '報告キーが違います', player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
+const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
 document.getElementById('qsend').addEventListener('click', async () => {
   if (!API) { say('qmsg', 'APIが未設定です', false); return; }
-  const key = document.getElementById('qkey').value.trim(); if (!key) { say('qmsg', '報告キーを入れてください', false); return; }
   const t = currentTable(); if (!t) return;
   const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
   if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
   say('qmsg', '送信中…（' + seats.length + '人分）', true);
   let last = null;
   for (const s of seats) {
-    const j = await post({ key, player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
+    const j = await post({ player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
     if (!j.ok) { say('qmsg', s.name + ': ' + (ERR[j.error] || '送信に失敗しました'), false); if (last) render(last); return; }
     last = j.data;
   }
@@ -410,13 +407,12 @@ document.getElementById('qsend').addEventListener('click', async () => {
   say('qmsg', t.name + 'の ' + seats.length + '人分を記録しました', true);
 });
 document.getElementById('qclear').addEventListener('click', async () => {
-  const key = document.getElementById('qkey').value.trim(); if (!key) { say('qmsg', '報告キーを入れてください', false); return; }
   const t = currentTable(); if (!t) return;
   const names = t.seats.filter(Boolean); if (!names.length) return;
   if (!confirm(t.name + 'の' + names.length + '人の点数を取り消しますか？')) return;
   let last = null;
   for (const n of names) {
-    const j = await post({ key, player: n, round: apiRound(), action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
+    const j = await post({ player: n, round: apiRound(), action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
     if (!j.ok) { say('qmsg', n + ': ' + (ERR[j.error] || '取り消しに失敗しました'), false); if (last) render(last); return; }
     last = j.data;
   }

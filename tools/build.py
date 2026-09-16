@@ -158,6 +158,9 @@ while i < len(src):
         steps = [s.strip() for s in line[3:].split("→")]
         out.append('<div class="flow">' + "<i>→</i>".join(f"<span>{inline(s)}</span>" for s in steps) + "</div>")
         continue
+    if line.strip() == "<!--party-->":          # 打ち上げ希望の回答（ページの JS が埋める）
+        out.append('<div id="party" class="party"></div>')
+        continue
     out.append(f"<p>{inline(line)}</p>")
 
 flush_table(); flush_list()

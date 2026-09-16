@@ -51,6 +51,11 @@ table.todo .meta{display:inline;margin-left:6px}
 .who .st.ng{color:#b00020}
 .who button{margin-top:6px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card2);color:var(--fg);font-size:.95rem}
 .warn{color:#b00020;font-weight:bold}
+.party{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px;margin:12px 0}
+.party .cnt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.party .cnt span{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700}
+.party .st{font-size:.9rem;color:var(--muted)}
+.party .st.ng{color:#b00020}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:bold}
 code{background:var(--card2);padding:1px 5px;border-radius:4px}
@@ -60,62 +65,23 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 .flow span{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px;font-weight:bold;text-align:center}
 .flow i{font-style:normal;font-weight:bold;color:var(--accent);text-align:center;transform:rotate(90deg);line-height:1;font-size:1.2rem}
 @media (min-width:560px){.flow{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}.flow i{transform:none}}
-#gate{max-width:480px;margin:0 auto;padding:0 0 40px}
-#gate .poster{display:block;width:100%;background:#111}
-#gate .poster img{display:block;width:100%;max-height:62vh;object-fit:contain;margin:0 auto}
-#gate .card{margin:16px 16px 0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-#gate h1{font-size:1.2rem;margin:0 0 6px}
-#gate p{color:var(--muted);font-size:.95rem;margin:0 0 6px}
-#gate input{width:100%;font-size:1.3rem;text-align:center;padding:12px;border:2px solid var(--line);border-radius:8px;margin:10px 0;background:#fff;color:var(--fg)}
-#gate input:focus{outline:3px solid var(--focus);outline-offset:2px}
-#gate button{width:100%;font-size:1.05rem;padding:14px;background:var(--accent);color:var(--accent-fg);font-weight:bold;border:0;border-radius:8px}
-#msg{color:#b00020;min-height:1.4em;font-size:.95rem}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 </style>
 </head>
 <body>
-<div id="gate">
-  <div class="poster"><img src="poster.jpg" alt="第20回 Halu杯 ポスター"></div>
-  <div class="card">
-    <h1>🀄 幹部用ページ</h1>
-    <p>幹部LINEで共有したパスワードを入れてください。</p>
-    <form id="f">
-      <input id="pw" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" placeholder="パスワード" autofocus>
-      <button type="submit">開く</button>
-    </form>
-    <div id="msg"></div>
-  </div>
-</div>
-<div class="wrap" id="page" hidden>
+<div class="wrap" id="page">
   <div class="hero"><img src="poster.jpg" alt="第20回 Halu杯 ポスター"><span class="badge">幹部用</span></div>
   <header>
     <h1>第20回 Halu杯 幹部用ページ</h1>
     <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: __UPDATED__ ／ <a href="sanka/">参加者用ページ</a> ／ <a href="score/">点数報告・集計</a></div>
   </header>
   <nav class="toc" id="toc"></nav>
-  <main id="content"></main>
+  <main id="content">__BODY__</main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
 <script src="score/config.js"></script>
-<script id="blob" type="application/json">__CIPHER__</script>
 <script>
-const B = JSON.parse(document.getElementById('blob').textContent);
-const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-async function unlock(pw){
-  const enc = new TextEncoder();
-  const base = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveBits']);
-  const bits = new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2', hash:'SHA-256', salt:b64(B.salt), iterations:B.iter}, base, 512));
-  const aesKey = await crypto.subtle.importKey('raw', bits.slice(0,32), {name:'AES-CBC'}, false, ['decrypt']);
-  const macKey = await crypto.subtle.importKey('raw', bits.slice(32,64), {name:'HMAC', hash:'SHA-256'}, false, ['verify']);
-  const iv = b64(B.iv), ct = b64(B.ct);
-  const joined = new Uint8Array(iv.length + ct.length); joined.set(iv); joined.set(ct, iv.length);
-  const ok = await crypto.subtle.verify('HMAC', macKey, b64(B.mac), joined);
-  if(!ok) throw new Error('bad');
-  const plain = await crypto.subtle.decrypt({name:'AES-CBC', iv}, aesKey, ct);
-  return new TextDecoder().decode(plain);
-}
-
 // ---- チェックの共有（点数報告と同じ受け口 GAS に保存。名前と時刻が残る） ----
 const API = (window.HALU_API || '').trim();
 let CHECKS = null;           // サーバの状態 k -> {by, ts}
@@ -135,18 +101,34 @@ function applyChecks(c){
   });
 }
 async function syncChecks(c){
-  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); applyChecks(c); return; }
+  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口（API）が未設定のため、回答一覧を読めません</p>'; applyChecks(c); return; }
   try {
     const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
     const j = await r.json();
     if (!j.ok) throw new Error('bad');
     CHECKS = j.data.checks || {}; SHARED = true;
+    renderParty(j.data.party || {});
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
   } catch (e) {
     SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
+    const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口につながらないため、回答一覧を読めません。「最新に更新」で再試行</p>';
   }
   applyChecks(c);
 }
+// 8章: 打ち上げ希望の回答一覧（参加者ページのフォームから受け口に届いたもの）
+const PMARK = { '1': '①', '2': '②', '3': '③' };
+function renderParty(party){
+  const box = document.getElementById('party'); if (!box) return;
+  const rows = Object.entries(party).map(([n, v]) => ({ n, no: v.no || '', ch: v.choice, ts: v.ts || '' })).sort((a, b) => (a.ch + a.ts).localeCompare(b.ch + b.ts));
+  const cnt = { '1': 0, '2': 0, '3': 0 }; rows.forEach(r => { if (cnt[r.ch] !== undefined) cnt[r.ch]++; });
+  let h = '<div class="cnt"><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③不可 ' + cnt['3'] + '人</span><span>計 ' + rows.length + '人</span></div>';
+  if (rows.length) {
+    h += '<div class="tw"><table><tr><th>名前</th><th>No</th><th>希望</th><th>回答</th></tr>' + rows.map(r => '<tr><td>' + esc(r.n) + '</td><td>' + esc(r.no) + '</td><td>' + (PMARK[r.ch] || '') + '</td><td>' + fmtTs(r.ts) + '</td></tr>').join('') + '</table></div>';
+  } else h += '<p class="st">まだ回答はありません。</p>';
+  h += '<p class="st">参加者ページの7章から送られた回答（同じ名前は上書き）。LINEで受けた分は、幹部が参加者ページのフォームに代わりに入れると、ここに揃います。</p>';
+  box.innerHTML = h;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){
   const first = c.querySelector('ul.todo, table.todo');
   if (!first) return;
@@ -165,16 +147,15 @@ function setupChecks(c){
       try { localStorage.setItem('halu:' + k, v ? '1' : '0'); } catch(e){}
       if (!SHARED) return;
       const by = name.value.trim();
-      let pw = ''; try { pw = sessionStorage.getItem('halu:pw') || ''; } catch(e){}
       cb.disabled = true;
       try {
-        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ key: pw, action: 'check', k, v, by }) });
+        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'check', k, v, by }) });
         const j = await r.json();
         if (!j.ok) throw new Error(j.error || 'ng');
         CHECKS = j.checks || {};
         setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
       } catch (e) {
-        setStatus(e.message === 'key' ? '受け口の CHECK_KEY が幹部用ページのパスワードと違います（gas/README.md）' : '送れませんでした。通信を確認して「最新に更新」', true);
+        setStatus(e.message === 'key' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）' : '送れませんでした。通信を確認して「最新に更新」', true);
       } finally { cb.disabled = false; }
       applyChecks(c);
     });
@@ -183,25 +164,12 @@ function setupChecks(c){
   setInterval(() => { if (!document.hidden) syncChecks(c); }, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) syncChecks(c); });
 }
-function show(htmlText){
+(() => {
   const c = document.getElementById('content');
-  c.innerHTML = htmlText;
   const toc = document.getElementById('toc');
   c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
   setupChecks(c);
-  document.getElementById('gate').hidden = true;
-  document.getElementById('page').hidden = false;
-}
-document.getElementById('f').addEventListener('submit', async e => {
-  e.preventDefault();
-  const pw = document.getElementById('pw').value.trim();
-  const msg = document.getElementById('msg');
-  msg.textContent = '確認中…';
-  try { const t = await unlock(pw); try { sessionStorage.setItem('halu:pw', pw); } catch(_){} show(t); }
-  catch(err){ msg.textContent = 'パスワードが違います'; }
-});
-document.getElementById('pw').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('f').requestSubmit(); } });
-(async () => { try { const pw = sessionStorage.getItem('halu:pw'); if(pw){ show(await unlock(pw)); } } catch(e){} })();
+})();
 </script>
 </body>
 </html>
