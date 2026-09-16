@@ -59,7 +59,7 @@ td.neg,.neg{color:var(--ng)}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:700}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-@media (max-width:420px){.seat{grid-template-columns:2em 1fr 6.5em 5em;gap:6px}.seat input{padding:8px;font-size:1rem}}
+@media (max-width:420px){.seat{grid-template-columns:2em 1fr 6em 4.8em;gap:6px}.seat input{padding:8px 6px;font-size:1rem}.seat .pt{font-size:.95rem}}
 </style>
 </head>
 <body>
@@ -103,8 +103,12 @@ summary{cursor:pointer;font-weight:700}
     <div class="tools"><button class="ghost" type="button" id="qclear">この卓の点数を取り消す</button></div>
   </div>
   <div class="hint">
-    <b>ポイントの計算</b>: 25,000点持ち・30,000点返し。① まず点棒の100点台を五捨六入（〜500は切り捨て、600〜は切り上げ）→ ②（点棒−30,000）÷1,000 → ③ 順位点 +30／+10／−10／−30 を足す → ④ 1位にオカ +20。
-    順位（1〜4位）は五捨六入する前の点棒で決めます。五捨六入の端数は1位が引き受け、卓の合計は必ず 0。同点は年齢が上の方が上位（ページは並び順で仮置き＝集計係が確認）。
+    <b>ポイントの計算</b>（25,000点持ち・30,000点返し）<br>
+    ① まず点棒の100点台を五捨六入（〜500は切り捨て、600〜は切り上げ）<br>
+    ②（点棒−30,000）÷1,000<br>
+    ③ 順位点 +30／+10／−10／−30 を足す<br>
+    ④ 1位にオカ +20<br>
+    <span class="small">順位（1〜4位）は五捨六入する前の点棒で決めます。五捨六入の端数は1位が引き受け、卓の合計は必ず 0。<br>同点は年齢が上の方が上位です（ページは並び順で仮置き＝集計係が確認）。</span>
   </div>
 
   <h2>集計（予選は4半荘の合計ポイント）</h2>
@@ -119,7 +123,11 @@ summary{cursor:pointer;font-weight:700}
       <tbody></tbody>
     </table>
   </div>
-  <p class="small">順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため順位から外しています。卓の4人がそろうまで、その半荘のポイントは出ません。準決勝・決勝は点棒をそのまま表示します。合計が同点のときは年齢が上の方が上位です。ページでは判定できないので並び順で仮置きし、順位に「同点」と出ます（集計係が確認）。</p>
+  <ul class="small" style="padding-left:1.3em;margin:8px 0">
+    <li>順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため、順位から外しています。</li>
+    <li>卓の4人がそろうまで、その半荘のポイントは出ません。準決勝・決勝は点棒をそのまま表示します。</li>
+    <li>合計が同点のときは年齢が上の方が上位です。ページでは判定できないので並び順で仮置きし、順位に「同点」と出ます（集計係が確認）。</li>
+  </ul>
   <h2>6位ライン（準決勝に行ける目安）</h2>
   <div class="card">
     <label for="bdplayer">プレイヤー</label>
