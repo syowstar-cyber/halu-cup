@@ -301,7 +301,7 @@ const NAMES = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30
 const PNOS = NAMES.slice(2);
 let ROSTER = {};
 function esc(s) { return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
-function label(n) { return ROSTER[n] ? n + ' ' + ROSTER[n] : n; }
+function label(n) { return ROSTER[n] || n; }   // 名前が入っていれば名前だけ（P番号は出さない）
 async function fetchData() {
   if (!API) throw new Error('noapi');
   const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (!j.ok) throw new Error('bad');
@@ -337,8 +337,8 @@ const onRoster = [];   // 一覧が届いたら呼ぶ
   // 一覧が届いたら、表の P番号の下に名前を添える（仮のNo）
   onRoster.push(() => {
     sel.querySelectorAll('option').forEach(o => { if (o.value) o.textContent = label(o.value); });
-    tables.forEach(t => t.querySelectorAll('td').forEach(td => { const p = key(td); if (/^P\d+$/.test(p) && ROSTER[p]) { td.dataset.p = p; td.innerHTML = p + '<small class="nm">' + esc(ROSTER[p]) + '</small>'; } }));
-    if (Object.keys(ROSTER).length && !box.querySelector('.st')) box.insertAdjacentHTML('beforeend', '<p class="st">表の名前は仮のプレイヤーNoによるものです（正式なNoは別途）</p>');
+    tables.forEach(t => t.querySelectorAll('td').forEach(td => { const p = key(td); if (/^P\d+$/.test(p) && ROSTER[p]) { td.dataset.p = p; td.textContent = ROSTER[p]; } }));
+    if (Object.keys(ROSTER).length && !box.querySelector('.st')) box.insertAdjacentHTML('beforeend', '<p class="st">名前が入っている人は名前で表示しています（席は仮のプレイヤーNoによるもの。正式なNoは別途）</p>');
     apply();
   });
 })();

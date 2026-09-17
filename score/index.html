@@ -160,7 +160,9 @@ const WINDS = ['東', '南', '西', '北'];
 // 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0（Mリーグ公式規定）
 const BONUS = [500, 100, -100, -300], RETURN = 30000;
 const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
-let DATA = null;
+let DATA = null, ROSTER = {};
+// 表示名: 受け口の出席者一覧に名前があれば名前、なければ P番号
+const dn = p => (p && ROSTER[p]) || p;
 
 const fmt = n => (n === null || n === undefined) ? '' : n.toLocaleString('ja-JP');
 // ポイントは 0.1 単位の整数（tenths）で持ち、表示で小数1桁にする（浮動小数の誤差を出さない）
@@ -202,7 +204,8 @@ function calcAll(d) {
 
 // ---- 集計表 ----
 function render(d) {
-  DATA = d;
+  DATA = d; ROSTER = d.roster || {};
+  document.querySelectorAll('#bdplayer option').forEach(o => { if (o.value) o.textContent = dn(o.value); });
   document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
   const pts = calcAll(d);
   computeTotals(d);
@@ -222,14 +225,14 @@ function render(d) {
     if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
     if (r.rank === 6) tr.classList.add('line6');
     const bd = r.guest ? '' : borderText(r.p);
-    const cells = [r.rank ? (r.tie ? r.rank + ' 同点' : r.rank) : '', r.p, ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
+    const cells = [r.rank ? (r.tie ? r.rank + ' 同点' : r.rank) : '', dn(r.p), ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
     cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
     tb.appendChild(tr);
   });
   const rb = document.querySelector('#raw tbody'); rb.innerHTML = '';
   PLAYERS.forEach(p => {
     const s = d.players[p] || {}; const tr = document.createElement('tr');
-    [p, s['1'], s['2'], s['3'], s['4'], s.S, s.F].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
+    [dn(p), s['1'], s['2'], s['3'], s['4'], s.S, s.F].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
     rb.appendChild(tr);
   });
   // 卓の入力状況
@@ -266,8 +269,8 @@ function renderBorder() {
   const me = TOTALS[name]; if (!me) { box.textContent = ''; return; }
   const B = borderFor(name);
   let h = '';
-  if (me.total === null) h += '<p>' + name + ' はまだポイントがありません。</p>';
-  else h += '<p>' + name + ' の現在: 合計 <b>' + fpt(me.total) + '</b>（' + me.n + '/4半荘）</p>';
+  if (me.total === null) h += '<p>' + dn(name) + ' はまだポイントがありません。</p>';
+  else h += '<p>' + dn(name) + ' の現在: 合計 <b>' + fpt(me.total) + '</b>（' + me.n + '/4半荘）</p>';
   if (B === null) { box.innerHTML = h + '<p class="small">6位ラインは、参加者6人以上のポイントがそろってから出ます。</p>'; return; }
   const D = B - (me.total ?? 0);
   h += '<p>6位ライン（自分を除いた6番目の合計）: <b>' + fpt(B) + '</b></p>';
@@ -304,7 +307,7 @@ function prelimRanking() {
 }
 // 準決勝の卓: S1 = 本田プロ・ゆうこママ・予選3位・6位 / S2 = 予選1位・2位・4位・5位（幹部用3章と同じ規則）
 function semiTables() {
-  const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + r[i].p } : null;
+  const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + dn(r[i].p) } : null;
   return { S1: [{ p: '本田プロ', label: '本田プロ' }, { p: 'ゆうこママ', label: 'ゆうこママ' }, at(2), at(5)], S2: [at(0), at(1), at(3), at(4)] };
 }
 // 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順）。同点は起家に近い方が上位で、ページでは判定できない（並び順で仮置き＝集計係が確認）
@@ -313,7 +316,7 @@ function finalTable() {
     const done = mem.filter(m => m && DATA && DATA.players[m.p] && DATA.players[m.p].S !== null && DATA.players[m.p].S !== undefined);
     if (done.length < 4) return [null, null];
     return done.map((m, i) => ({ m, i, s: DATA.players[m.p].S })).sort((a, b) => b.s - a.s || a.i - b.i).slice(0, 2)
-      .map((x, k) => ({ p: x.m.p, label: name + '卓' + (k + 1) + '位 ' + x.m.p }));
+      .map((x, k) => ({ p: x.m.p, label: name + '卓' + (k + 1) + '位 ' + dn(x.m.p) }));
   };
   const a = top2('S1', t.S1), b = top2('S2', t.S2);
   return [a[0], b[0], a[1], b[1]];
@@ -322,7 +325,7 @@ function finalTable() {
 function currentTable() {
   if (isPrelim()) {
     const t = (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value);
-    return t ? { name: qround.value + '半荘目 ' + t.table + '卓', seats: t.seats, labels: t.seats, missing: 0 } : null;
+    return t ? { name: qround.value + '半荘目 ' + t.table + '卓', seats: t.seats, labels: t.seats.map(dn), missing: 0 } : null;
   }
   const mem = qround.value === 'F' ? finalTable() : semiTables()[qround.value];
   return { name: STAGE[qround.value].name, seats: mem.map(m => m ? m.p : null), labels: mem.map(m => m ? m.label : '（未確定）'), missing: mem.filter(m => !m).length };

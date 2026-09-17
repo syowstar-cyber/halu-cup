@@ -692,7 +692,7 @@ function renderParty(party, roster){
 function nameSchedule(roster){
   const h2 = [...document.querySelectorAll('#content h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
   for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
-    el.querySelectorAll('td').forEach(td => { const p = td.dataset.p || td.textContent.trim(); if (/^P\d+$/.test(p) && roster[p]) { td.dataset.p = p; td.innerHTML = p + '<small class="nm">' + esc(roster[p]) + '</small>'; } });
+    el.querySelectorAll('td').forEach(td => { const p = td.dataset.p || td.textContent.trim(); if (/^P\d+$/.test(p) && roster[p]) { td.dataset.p = p; td.textContent = roster[p]; } });
   }
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
