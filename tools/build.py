@@ -33,6 +33,37 @@ lst = None        # ("ul"|"ol", items)
 TODO_LIST_SECTIONS = ("11", "12", "13")    # 設営・手配物・出発前チェック（箇条書きにチェック）
 TODO_TABLE_SECTIONS = ("14",)              # 確認事項一覧（表の行にチェック）
 
+
+# 対戦表: 本田プロがいる行（予選N半荘目）と、選手別の表でその卓に当たる席に印を付ける
+PRO = "本田プロ"
+PRO_TABLES = []      # 半荘ごとの本田プロの卓（"1卓" など。表の出現順）
+LEGEND = '<p class="legend"><span class="pro-sw"></span> 色つき＝本田プロと同卓</p>'
+legend_done = False
+
+def pro_marks(rows_cells):
+    """rows_cells: [[cell,...], ...]（先頭は見出し行）。戻り値: (行ごとのクラス, セルごとのクラス)"""
+    global legend_done
+    n = len(rows_cells)
+    row_cls = [""] * n
+    cell_cls = [[""] * len(r) for r in rows_cells]
+    head = rows_cells[0] if rows_cells else []
+    if head and head[0] == "卓":                      # 予選N半荘目の表
+        for k in range(1, n):
+            if PRO in rows_cells[k]:
+                row_cls[k] = "pro"
+                PRO_TABLES.append(rows_cells[k][0])
+    elif PRO_TABLES and all(re.match(r"^\d+卓\s", c) for c in rows_cells[1][1:]):   # 選手別（卓・席）の表
+        for k in range(1, n):
+            if rows_cells[k][0] == PRO:
+                continue
+            for j in range(1, len(rows_cells[k])):
+                if j - 1 < len(PRO_TABLES) and rows_cells[k][j].startswith(PRO_TABLES[j - 1] + " "):
+                    cell_cls[k][j] = "pro"
+    legend = ""
+    if not legend_done and (any(row_cls) or any(any(r) for r in cell_cls)):
+        legend, legend_done = LEGEND, True
+    return row_cls, cell_cls, legend
+
 def keyfn(s):
     return html.escape(re.sub(r"\W+", "", s)[:40])
 
@@ -56,15 +87,16 @@ def flush_table():
         return
     rows = [r for r in table if not re.match(r"^\|\s*-", r)]
     todo = section in TODO_TABLE_SECTIONS
-    h = ['<div class="tw"><table' + (' class="todo"' if todo else '') + '>']
-    for k, r in enumerate(rows):
-        cells = [c.strip() for c in r.strip().strip("|").split("|")]
+    rows_cells = [[c.strip() for c in r.strip().strip("|").split("|")] for r in rows]
+    row_cls, cell_cls, legend = pro_marks(rows_cells)
+    h = [legend + '<div class="tw"><table' + (' class="todo"' if todo else '') + '>']
+    for k, cells in enumerate(rows_cells):
         tag = "th" if k == 0 else "td"
-        tds = [f"<{tag}>{inline(c)}</{tag}>" for c in cells]
+        tds = [f"<{tag}{' class=pro' if cell_cls[k][j] else ''}>{inline(c)}</{tag}>" for j, c in enumerate(cells)]
         if todo and tag == "td" and len(cells) >= 2:
             key = keyfn(section + cells[0] + cells[1])
             tds[0] = f'<td><label><input type="checkbox" data-k="{key}" data-legacy=""><span>{inline(cells[0])}</span></label></td>'
-        h.append("<tr>" + "".join(tds) + "</tr>")
+        h.append(("<tr class=pro>" if row_cls[k] else "<tr>") + "".join(tds) + "</tr>")
     h.append("</table></div>")
     out.append("\n".join(h))
     table = []

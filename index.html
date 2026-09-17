@@ -66,6 +66,9 @@ details{background:var(--card);border:1px solid var(--line);border-radius:8px;pa
 summary{cursor:pointer;font-weight:bold}
 code{background:var(--card2);padding:1px 5px;border-radius:4px}
 a.xref{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+tr.pro td,table td.pro{background:#fbe3c4}
+.legend{font-size:.9rem;color:var(--muted);margin:6px 0 4px}
+.pro-sw{display:inline-block;width:1em;height:1em;background:#fbe3c4;border:1px solid var(--line);border-radius:3px;vertical-align:-2px}
 nav.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:14px 0}
 nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.95rem;color:var(--fg);background:var(--card2);border:1px solid var(--line);border-radius:999px;text-decoration:none}
 .flow{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:12px 0}
@@ -308,9 +311,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li>表は <code>halu-cup/tools/make_schedule.py</code> が生成する（乱数固定なので毎回同じ）。点数報告ページにも同じ表が入っている</li>
 </ul>
 <h3>予選1半荘目</h3>
-<div class="tw"><table>
+<p class="legend"><span class="pro-sw"></span> 色つき＝本田プロと同卓</p><div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr><td>1卓</td><td>P15</td><td>P2</td><td>P13</td><td>本田プロ</td></tr>
+<tr class=pro><td>1卓</td><td>P15</td><td>P2</td><td>P13</td><td>本田プロ</td></tr>
 <tr><td>2卓</td><td>P1</td><td>P11</td><td>P5</td><td>P7</td></tr>
 <tr><td>3卓</td><td>P6</td><td>P9</td><td>P14</td><td>P3</td></tr>
 <tr><td>4卓</td><td>P12</td><td>P10</td><td>P4</td><td>P8</td></tr>
@@ -322,7 +325,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>予選2半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr><td>1卓</td><td>P4</td><td>P5</td><td>本田プロ</td><td>P9</td></tr>
+<tr class=pro><td>1卓</td><td>P4</td><td>P5</td><td>本田プロ</td><td>P9</td></tr>
 <tr><td>2卓</td><td>P10</td><td>P15</td><td>P6</td><td>P11</td></tr>
 <tr><td>3卓</td><td>P8</td><td>P3</td><td>P2</td><td>P1</td></tr>
 <tr><td>4卓</td><td>P13</td><td>P7</td><td>P12</td><td>P14</td></tr>
@@ -334,7 +337,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>予選3半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr><td>1卓</td><td>本田プロ</td><td>P6</td><td>P1</td><td>P12</td></tr>
+<tr class=pro><td>1卓</td><td>本田プロ</td><td>P6</td><td>P1</td><td>P12</td></tr>
 <tr><td>2卓</td><td>P2</td><td>P14</td><td>P10</td><td>P5</td></tr>
 <tr><td>3卓</td><td>P9</td><td>P8</td><td>P7</td><td>P15</td></tr>
 <tr><td>4卓</td><td>P3</td><td>P4</td><td>P11</td><td>P13</td></tr>
@@ -346,7 +349,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>予選4半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr><td>1卓</td><td>P7</td><td>本田プロ</td><td>P3</td><td>P10</td></tr>
+<tr class=pro><td>1卓</td><td>P7</td><td>本田プロ</td><td>P3</td><td>P10</td></tr>
 <tr><td>2卓</td><td>P5</td><td>P13</td><td>P8</td><td>P6</td></tr>
 <tr><td>3卓</td><td>P11</td><td>P12</td><td>P9</td><td>P2</td></tr>
 <tr><td>4卓</td><td>P14</td><td>P1</td><td>P15</td><td>P4</td></tr>
@@ -359,21 +362,21 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <div class="tw"><table>
 <tr><th>選手</th><th>1半荘目</th><th>2半荘目</th><th>3半荘目</th><th>4半荘目</th></tr>
 <tr><td>本田プロ</td><td>1卓 北</td><td>1卓 西</td><td>1卓 東</td><td>1卓 南</td></tr>
-<tr><td>P1</td><td>2卓 東</td><td>3卓 北</td><td>1卓 西</td><td>4卓 南</td></tr>
-<tr><td>P2</td><td>1卓 南</td><td>3卓 西</td><td>2卓 東</td><td>3卓 北</td></tr>
-<tr><td>P3</td><td>3卓 北</td><td>3卓 南</td><td>4卓 東</td><td>1卓 西</td></tr>
-<tr><td>P4</td><td>4卓 西</td><td>1卓 東</td><td>4卓 南</td><td>4卓 北</td></tr>
-<tr><td>P5</td><td>2卓 西</td><td>1卓 南</td><td>2卓 北</td><td>2卓 東</td></tr>
-<tr><td>P6</td><td>3卓 東</td><td>2卓 西</td><td>1卓 南</td><td>2卓 北</td></tr>
-<tr><td>P7</td><td>2卓 北</td><td>4卓 南</td><td>3卓 西</td><td>1卓 東</td></tr>
+<tr><td>P1</td><td>2卓 東</td><td>3卓 北</td><td class=pro>1卓 西</td><td>4卓 南</td></tr>
+<tr><td>P2</td><td class=pro>1卓 南</td><td>3卓 西</td><td>2卓 東</td><td>3卓 北</td></tr>
+<tr><td>P3</td><td>3卓 北</td><td>3卓 南</td><td>4卓 東</td><td class=pro>1卓 西</td></tr>
+<tr><td>P4</td><td>4卓 西</td><td class=pro>1卓 東</td><td>4卓 南</td><td>4卓 北</td></tr>
+<tr><td>P5</td><td>2卓 西</td><td class=pro>1卓 南</td><td>2卓 北</td><td>2卓 東</td></tr>
+<tr><td>P6</td><td>3卓 東</td><td>2卓 西</td><td class=pro>1卓 南</td><td>2卓 北</td></tr>
+<tr><td>P7</td><td>2卓 北</td><td>4卓 南</td><td>3卓 西</td><td class=pro>1卓 東</td></tr>
 <tr><td>P8</td><td>4卓 北</td><td>3卓 東</td><td>3卓 南</td><td>2卓 西</td></tr>
-<tr><td>P9</td><td>3卓 南</td><td>1卓 北</td><td>3卓 東</td><td>3卓 西</td></tr>
-<tr><td>P10</td><td>4卓 南</td><td>2卓 東</td><td>2卓 西</td><td>1卓 北</td></tr>
+<tr><td>P9</td><td>3卓 南</td><td class=pro>1卓 北</td><td>3卓 東</td><td>3卓 西</td></tr>
+<tr><td>P10</td><td>4卓 南</td><td>2卓 東</td><td>2卓 西</td><td class=pro>1卓 北</td></tr>
 <tr><td>P11</td><td>2卓 南</td><td>2卓 北</td><td>4卓 西</td><td>3卓 東</td></tr>
-<tr><td>P12</td><td>4卓 東</td><td>4卓 西</td><td>1卓 北</td><td>3卓 南</td></tr>
-<tr><td>P13</td><td>1卓 西</td><td>4卓 東</td><td>4卓 北</td><td>2卓 南</td></tr>
+<tr><td>P12</td><td>4卓 東</td><td>4卓 西</td><td class=pro>1卓 北</td><td>3卓 南</td></tr>
+<tr><td>P13</td><td class=pro>1卓 西</td><td>4卓 東</td><td>4卓 北</td><td>2卓 南</td></tr>
 <tr><td>P14</td><td>3卓 西</td><td>4卓 北</td><td>2卓 南</td><td>4卓 東</td></tr>
-<tr><td>P15</td><td>1卓 東</td><td>2卓 南</td><td>3卓 北</td><td>4卓 西</td></tr>
+<tr><td>P15</td><td class=pro>1卓 東</td><td>2卓 南</td><td>3卓 北</td><td>4卓 西</td></tr>
 <tr><td>ゆうこママ</td><td>5卓 北</td><td>5卓 西</td><td>5卓 東</td><td>5卓 南</td></tr>
 <tr><td>P16</td><td>6卓 東</td><td>7卓 北</td><td>5卓 西</td><td>8卓 南</td></tr>
 <tr><td>P17</td><td>5卓 南</td><td>7卓 西</td><td>6卓 東</td><td>7卓 北</td></tr>
