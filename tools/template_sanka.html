@@ -164,9 +164,9 @@ onRoster.push(() => {
 // 7章（打ち上げ）: 希望日の回答フォーム。名前は出席者一覧から選ぶ（受け口に名前ごとに保存）
 (function () {
   const box = document.getElementById('party'); if (!box) return;
-  const LABEL = { '1': '大会当日希望。翌週でも可', '2': '翌週土曜希望。当日でも可', '3': '大会当日だけ希望。入れなければお食事券', '4': 'お食事券希望（打ち上げには参加しない）' };
-  const MARK = { '1': '①', '2': '②', '3': '③', '4': '④' };
-  const CH = ['1', '2', '3', '4'];
+  const LABEL = { '1': '大会当日希望。翌週でも可', '2': '翌週土曜希望。当日でも可', '3': '大会当日だけ希望。入れなければお食事券', '4': '翌週土曜だけ希望。入れなければお食事券', '5': 'お食事券希望（打ち上げには参加しない）' };
+  const MARK = { '1': '①', '2': '②', '3': '③', '4': '④', '5': '⑤' };
+  const CH = ['1', '2', '3', '4', '5'];
   box.innerHTML = '<label for="pname">お名前（一覧から選ぶ）</label><select id="pname"><option value="">選んでください</option><option value="*">一覧にない（下に入力）</option></select>'
     + '<input id="pname2" type="text" maxlength="20" autocomplete="off" placeholder="LINEの名前など、幹部に分かる呼び名" hidden>'
     + '<label>希望</label>' + CH.map(v => '<label class="opt"><input type="radio" name="pch" value="' + v + '"><span><b>' + MARK[v] + '</b>' + LABEL[v] + '</span></label>').join('')
@@ -181,14 +181,15 @@ onRoster.push(() => {
     [...sel.options].forEach(o => { if (o.value && o.value !== '*') o.remove(); });
     PNOS.filter(p => ROSTER[p]).forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = label(p); sel.insertBefore(o, sel.lastElementChild); });
     if (keep && [...sel.options].some(o => o.value === keep)) sel.value = keep;
-    else { try { const v = localStorage.getItem('halu:pname'); if (v && [...sel.options].some(o => o.value === v)) sel.value = v; else { const pk = localStorage.getItem('halu:pick'); if (pk && ROSTER[pk]) sel.value = pk; } } catch (e) {} }
+    // 既定は空白。この端末から回答済みの人だけ、その名前を戻す（対戦表で選んだNoからは埋めない）
+    else { try { const v = localStorage.getItem('halu:pname'); const nm = (v && v !== '*') ? ROSTER[v] : ''; if (v && nm && PARTY[nm] && [...sel.options].some(o => o.value === v)) sel.value = v; } catch (e) {} }
     free.hidden = sel.value !== '*';
     showMine();
   }
   function showMine() {
     const w = who(), me = w.name ? PARTY[w.name] : null;
     box.querySelectorAll('input[name=pch]').forEach(x => { x.checked = false; });
-    const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
+    const cnt = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
     const tot = '（いまの回答: ' + CH.map(v => MARK[v] + cnt[v] + '人').join(' ') + '）';
     if (me) { const r = box.querySelector('input[name=pch][value="' + me.choice + '"]'); if (r) r.checked = true; say('回答済み: ' + MARK[me.choice] + ' ' + LABEL[me.choice] + '（' + fmt(me.ts) + '）' + tot, 'ok'); }
     else say((w.name ? 'まだ回答がありません ' : '') + tot);
@@ -199,7 +200,7 @@ onRoster.push(() => {
   }
   async function send(choice) {
     const w = who(); if (!w.name) { say(sel.value === '*' ? 'お名前を入れてください' : 'お名前を選んでください', 'ng'); (sel.value === '*' ? free : sel).focus(); return; }
-    if (choice === undefined) { const r = box.querySelector('input[name=pch]:checked'); if (!r) { say('①〜④のどれかを選んでください', 'ng'); return; } choice = r.value; }
+    if (choice === undefined) { const r = box.querySelector('input[name=pch]:checked'); if (!r) { say('①〜⑤のどれかを選んでください', 'ng'); return; } choice = r.value; }
     try { localStorage.setItem('halu:pname', sel.value); } catch (e) {}
     say('送信中…');
     try {

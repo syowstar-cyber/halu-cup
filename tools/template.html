@@ -129,7 +129,7 @@ async function syncChecks(c){
 }
 // 8章: 出席者一覧（受け口の ROSTER＝P番号→名前）と打ち上げ希望（PARTY＝名前→No・選択・時刻）
 // 名前は受け口にだけ置く（このリポにはファイルとして置かない）。名前欄・希望欄はここで直せる
-const PMARK = { '1': '①', '2': '②', '3': '③', '4': '④' };
+const PMARK = { '1': '①', '2': '②', '3': '③', '4': '④', '5': '⑤' };
 const PNOS = Array.from({ length: 30 }, (_, i) => 'P' + (i + 1));
 let PARTY = {}, ROSTER = {};
 function partyOf(p){
@@ -140,10 +140,10 @@ function partyOf(p){
 function renderParty(party, roster){
   const box = document.getElementById('party'); if (!box) return;
   PARTY = party || {}; ROSTER = roster || {};
-  const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
+  const cnt = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
   const named = PNOS.filter(p => ROSTER[p]).length;
-  let h = '<div class="cnt"><span>出席者 ' + named + '人</span><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④食事券 ' + cnt['4'] + '人</span><span>回答 ' + Object.keys(PARTY).length + '人</span></div>';
-  const opts = v => '<option value=""' + (!v ? ' selected' : '') + '>未回答</option>' + ['1', '2', '3', '4'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
+  let h = '<div class="cnt"><span>出席者 ' + named + '人</span><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④翌週のみ ' + cnt['4'] + '人</span><span>⑤食事券 ' + cnt['5'] + '人</span><span>回答 ' + Object.keys(PARTY).length + '人</span></div>';
+  const opts = v => '<option value=""' + (!v ? ' selected' : '') + '>未回答</option>' + ['1', '2', '3', '4', '5'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
   h += '<div class="tw"><table class="roster"><tr><th>No</th><th>名前</th><th>希望</th><th>回答</th></tr>';
   const used = new Set();
   PNOS.forEach(p => {
