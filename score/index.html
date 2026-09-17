@@ -66,7 +66,7 @@ summary{cursor:pointer;font-weight:700}
 <div class="wrap">
   <header>
     <h1>🀄 Halu杯 点数報告</h1>
-    <div class="sub">半荘が終わったら、卓の代表が4人分の点棒を入れて送ってください。ポイントは自動で計算されます。</div>
+    <div class="sub">半荘が終わったら、卓の代表が4人分の点棒を送ってください。ポイントは自動計算です。</div>
   </header>
   <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/" aria-current="page">点数報告</a></nav>
 
@@ -104,7 +104,7 @@ summary{cursor:pointer;font-weight:700}
     <b>ポイントの計算</b>（25,000点持ち・30,000点返し。Mリーグ公式規定と同じ）<br>
     ①（点棒−30,000）÷1,000。100点＝0.1ポイント（丸めない）<br>
     ② 順位点 1位 +50／2位 +10／3位 −10／4位 −30 を足す<br>
-    <span class="small">卓の合計は必ず 0。同じ点棒の人がいたら、その人たちで順位点を分けます（1位と2位が同点なら各 +30）。0.1で割り切れない分は起家（東）に近い方が多く取ります。<br>トビ終了はありません（箱下あり）。マイナスの点棒は「-」を付けてそのまま入れてください。</span>
+    <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「-」を付けてそのまま入れてください。</span>
   </div>
 
   <h2>集計（予選は4半荘の合計ポイント）</h2>
@@ -120,9 +120,9 @@ summary{cursor:pointer;font-weight:700}
     </table>
   </div>
   <ul class="small" style="padding-left:1.3em;margin:8px 0">
-    <li>順位は参加者（P1〜P30）だけで数えます。本田プロとゆうこママは準決勝S1卓に固定のため、順位から外しています。</li>
-    <li>卓の4人がそろうまで、その半荘のポイントは出ません。準決勝・決勝は点棒をそのまま表示します。</li>
-    <li>4半荘の合計が同点のときは年齢が上の方が上位です。ページでは判定できないので並び順で仮置きし、順位に「同点」と出ます（集計係が確認）。</li>
+    <li>順位は参加者（P1〜P30）だけで数えます（本田プロとゆうこママは準決勝S1卓に固定）。</li>
+    <li>卓の4人がそろうまで、その半荘のポイントは出ません。</li>
+    <li>4半荘合計の同点は年齢が上の方が上位です。ページは「同点」と出すだけなので、集計係が確認します。</li>
   </ul>
   <h2>6位ライン（準決勝に行ける目安）</h2>
   <div class="card">
@@ -271,14 +271,14 @@ function renderBorder() {
   let h = '';
   if (me.total === null) h += '<p>' + dn(name) + ' はまだポイントがありません。</p>';
   else h += '<p>' + dn(name) + ' の現在: 合計 <b>' + fpt(me.total) + '</b>（' + me.n + '/4半荘）</p>';
-  if (B === null) { box.innerHTML = h + '<p class="small">6位ラインは、参加者6人以上のポイントがそろってから出ます。</p>'; return; }
+  if (B === null) { box.innerHTML = h + '<p class="small">6位ラインは、6人以上のポイントがそろってから出ます。</p>'; return; }
   const D = B - (me.total ?? 0);
   h += '<p>6位ライン（自分を除いた6番目の合計）: <b>' + fpt(B) + '</b></p>';
   if (D < 0) h += '<p>いまは<b>圏内</b>。7位との差は ' + fpt(-D) + ' です。</p>';
-  else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（合計の同点は年齢が上の方が上位なので、上回る数字で出しています）。</p>';
+  else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（同点は年齢順のため、上回る数字）。</p>';
   if (me.n >= 4) { box.innerHTML = h + '<p class="small">予選4半荘は終了しています。</p>'; return; }
   const need = D + 1;
-  h += '<p>次の半荘で圏内に入る（または残る）目安。順位ごとに、終了時にこの点棒以上ならOK:</p><div class="tw"><table><thead><tr><th style="text-align:left">順位</th><th>必要ポイント</th><th>必要な点棒</th></tr></thead><tbody>';
+  h += '<p>次の半荘で圏内に入る目安（順位ごとに、この点棒以上ならOK）:</p><div class="tw"><table><thead><tr><th style="text-align:left">順位</th><th>必要ポイント</th><th>必要な点棒</th></tr></thead><tbody>';
   const labels = ['1位', '2位', '3位', '4位'];
   for (let r = 0; r < 4; r++) {
     const needPts = need;
@@ -289,7 +289,7 @@ function renderBorder() {
     else cell = fmt(raw) + ' 以上';
     h += '<tr><td style="text-align:left">' + labels[r] + '</td><td>' + fpt(needPts) + '</td><td>' + cell + '</td></tr>';
   }
-  h += '</tbody></table></div><p class="small">同点があると順位点を分けるので変わることがあります。他の人の結果でラインも動くので、目安として見てください。</p>';
+  h += '</tbody></table></div><p class="small">他の人の結果でラインは動きます。目安として見てください。</p>';
   box.innerHTML = h;
 }
 document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
