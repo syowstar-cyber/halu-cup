@@ -196,6 +196,9 @@ while i < len(src):
     if line.strip() == "<!--party-->":          # 打ち上げ希望の回答（ページの JS が埋める）
         out.append('<div id="party" class="party"></div>')
         continue
+    if line.strip() == "<!--views-->":          # 参加者ページの閲覧ログ（ページの JS が埋める）
+        out.append('<div id="views" class="party"></div>')
+        continue
     out.append(f"<p>{inline(line)}</p>")
 
 flush_table(); flush_list()

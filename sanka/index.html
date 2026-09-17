@@ -312,6 +312,14 @@ async function fetchData() {
   return j.data;
 }
 const onRoster = [];   // 一覧が届いたら呼ぶ
+// 閲覧ログ: ページを開いたら受け口に1件送る（同じタブでは1回だけ。名前は自分のNoを選んだ人だけ入る）
+onRoster.push(() => {
+  try { if (sessionStorage.getItem('halu:viewed')) return; } catch (e) {}
+  let who = '';
+  try { const pk = localStorage.getItem('halu:pick'), pn = localStorage.getItem('halu:pname'); who = ROSTER[pk] || ROSTER[pn] || ''; } catch (e) {}
+  fetch(API, { method: 'POST', body: JSON.stringify({ action: 'view', page: 'sanka', who }) })
+    .then(r => r.json()).then(j => { if (j && j.ok) { try { sessionStorage.setItem('halu:viewed', '1'); } catch (e) {} } }).catch(() => {});
+});
 // 8章（対戦表）: プレイヤーNoを選ぶと、その人のいる行だけに絞る
 (function () {
   const h2 = [...c.querySelectorAll('h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;

@@ -231,6 +231,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>周知</h3>
 <p>変則ルールのため、募集要項とサイトに明記し、当日は各卓に卓上ルール表を置く。</p>
 <p>和了した東場の親が続けようとする事故が最も起きやすい。開会時のルール説明で2回繰り返す。</p>
+<h3>参加者ページの閲覧ログ</h3>
+<p>参加者ページを開いた回数（日ごと）と直近の閲覧（時刻・名前）が、受け口から下に自動で出る。名前は、参加者ページで自分のNoを選んだ人だけ分かる（選んでいない人は「名前なし」）。同じタブで開き直した分は数えない。通信の失敗や広告ブロックで数件落ちることがあるので目安。</p>
+<div id="views" class="party"></div>
 <h2 id="s5">5. 順位の決め方</h2>
 <p>決勝に進む参加者は2〜4名で変動する（本田プロ・ママが勝ち上がるかで変わる）。決勝で決まるのは優勝・準優勝だけで、決勝に第3位はない。</p>
 <div class="tw"><table>
@@ -526,6 +529,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td><label><input type="checkbox" data-k="14幹12報告キー数字を決めてGASのスクリプトプロパティに設定し案内カードに印" data-legacy=""><span>幹-12</span></label></td><td>~~報告キー（数字）を決めて GAS のスクリプト プロパティに設定し、案内カードに印字する~~ → 報告キーは廃止（2026-09-16 主催の指示。送信にキー不要）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹13集計係入力サポート1名を誰がやるか" data-legacy=""><span>幹-13</span></label></td><td>集計係（入力サポート1名）を誰がやるか</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹15Codegsを新バージョンでデプロイする打ち上げ希望④を受けるため20" data-legacy=""><span>幹-15</span></label></td><td>~~Code.gs を新バージョンでデプロイする（打ち上げ希望④を受けるため）~~ → 2026-09-17 19:08 に再デプロイ済み。④のテスト送信が通ることを確認し、テスト回答は消去済み</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹17Codegsを新バージョンでデプロイする参加者ページの閲覧ログVIEW" data-legacy=""><span>幹-17</span></label></td><td>Code.gs を新バージョンでデプロイする（参加者ページの閲覧ログ <code>VIEWS</code> を受けるため。2026-09-17 の変更。デプロイするまで閲覧は記録されない）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹16Codegsを新バージョンでデプロイする出席者一覧ROSTERを受ける" data-legacy=""><span>幹-16</span></label></td><td>~~Code.gs を新バージョンでデプロイする（出席者一覧 <code>ROSTER</code> を受けるため）~~ → 2026-09-17 19:2x に版5をデプロイ済み。名簿26名（仮No P1〜P26。yuko shinbara はゆうこママ本人、水野さん・中村さんは不参加なので外した）を受け口に登録済み。参加者ページの打ち上げ名前選択と出席者一覧に出ることを確認</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹14GASにCHECK_KEYを設定しCodegsを新バージョンでデプロイ" data-legacy=""><span>幹-14</span></label></td><td>~~GAS に <code>CHECK_KEY</code> を設定し、Code.gs を新バージョンでデプロイ~~ → 設定・デプロイ済み（2026-09-16）。同日にパスワードと報告キーを外し、キー不要版の Code.gs を再デプロイ・「幹部で共有中」を確認・スクリプト プロパティの <code>REPORT_KEY</code>／<code>CHECK_KEY</code> も削除済み（2026-09-16 解消）</td></tr>
 </table></div>
@@ -590,6 +594,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-09-17</td><td>yuko shinbara はゆうこママ本人と確認。参加者名簿から外し、ショウタロウを P28 に詰めた（参加者28名。P29・P30 は空き）。受け口 <code>ROSTER</code> も更新</td><td>主催の確認</td></tr>
 <tr><td>2026-09-17</td><td>水野さん不参加の連絡。名簿から外し、P21〜P28 を1つずつ詰めて参加者27名（P1〜P27。P28〜P30 は空き）。受け口 <code>ROSTER</code> も更新</td><td>主催の連絡</td></tr>
 <tr><td>2026-09-17</td><td>中村さん不参加の連絡。名簿から外し、P13〜P27 を1つずつ詰めて参加者26名（P1〜P26。P27〜P30 は空き）。受け口 <code>ROSTER</code> も更新</td><td>主催の連絡</td></tr>
+<tr><td>2026-09-17</td><td>参加者ページの閲覧ログを追加。参加者ページを開くと受け口 <code>VIEWS</code> に1件送り（同じタブで1回・名前は自分のNoを選んだ人だけ）、幹部用ページ<a class="xref" href="#s4">4章</a>に日ごとの回数と直近の閲覧を表示。Code.gs に view を追加（幹-17: 再デプロイが要る）</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
@@ -622,6 +627,7 @@ async function syncChecks(c){
     CHECKS = j.data.checks || {}; SHARED = true;
     renderParty(j.data.party || {}, j.data.roster || {});
     nameSchedule(j.data.roster || {});
+    renderViews(j.data.views || { daily: {}, recent: [] });
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
   } catch (e) {
     SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
@@ -698,6 +704,19 @@ function nameSchedule(roster){
   for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
     el.querySelectorAll('td').forEach(td => { const p = td.dataset.p || td.textContent.trim(); if (/^P\d+$/.test(p) && roster[p]) { td.dataset.p = p; td.textContent = roster[p]; } });
   }
+}
+// 4章: 参加者ページの閲覧ログ（日ごとの回数と直近の閲覧）
+function renderViews(v){
+  const box = document.getElementById('views'); if (!box) return;
+  const days = Object.keys(v.daily || {}).sort().reverse();
+  const total = days.reduce((a, d) => a + (v.daily[d] || 0), 0);
+  let h = '<div class="cnt"><span>合計 ' + total + '回</span>' + days.slice(0, 7).map(d => '<span>' + d.slice(5).replace('-', '/') + ' ' + v.daily[d] + '回</span>').join('') + '</div>';
+  const rec = (v.recent || []).slice().reverse();
+  if (rec.length) {
+    h += '<div class="tw"><table><tr><th>時刻</th><th>名前</th></tr>' + rec.slice(0, 50).map(r => '<tr><td>' + fmtTs(r.ts) + '</td><td>' + (r.who ? esc(r.who) : '<span class="st">（名前なし）</span>') + '</td></tr>').join('') + '</table></div>';
+  } else h += '<p class="st">まだ閲覧の記録はありません。</p>';
+  h += '<p class="st">参加者ページを開いた記録（同じタブで開き直した分は数えない）。名前は、参加者ページで自分のNoを選んだ人だけ分かる。直近' + rec.length + '件を表示（受け口は直近100件を保持）。</p>';
+  box.innerHTML = h;
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){

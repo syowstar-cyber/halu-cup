@@ -8,6 +8,7 @@
 //   打ち上げ希望（参加者）… キーなし。{action:'party', name, no, choice:'1'|'2'|'3'|'4'|''}（'' は取り消し）
 //   出席者一覧（幹部）… キーなし。{action:'roster', names:{P1:'名前', ...}}（'' で消す。渡したキーだけ更新）
 //     名前はここ（スクリプト プロパティ ROSTER）にだけ置く。公開リポにはファイルとして置かない（2026-09-17）
+//   閲覧ログ（参加者ページ）… キーなし。{action:'view', page:'sanka', who:'名前'|''}。日ごとの回数と直近 VIEW_MAX 件を VIEWS に持つ
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -16,6 +17,7 @@ const PLAYERS = (function () {
   return a;
 })();
 const LOG_MAX = 120;   // 保存領域の上限（1項目9KB）に収める
+const VIEW_MAX = 100;  // 閲覧ログの直近件数
 
 function props_() { return PropertiesService.getScriptProperties(); }
 
@@ -29,15 +31,22 @@ function emptyPlayers_() {
 
 function load_() {
   const p = props_();
-  let players, log, checks, party, roster;
+  let players, log, checks, party, roster, views;
   try { players = JSON.parse(p.getProperty('PLAYERS') || 'null'); } catch (e) { players = null; }
   try { log = JSON.parse(p.getProperty('LOG') || '[]'); } catch (e) { log = []; }
   try { checks = JSON.parse(p.getProperty('CHECKS') || '{}'); } catch (e) { checks = {}; }
   try { party = JSON.parse(p.getProperty('PARTY') || '{}'); } catch (e) { party = {}; }
   try { roster = JSON.parse(p.getProperty('ROSTER') || '{}'); } catch (e) { roster = {}; }
+  try { views = JSON.parse(p.getProperty('VIEWS') || 'null'); } catch (e) { views = null; }
+  if (!views || typeof views !== 'object') views = { daily: {}, recent: [] };
+  if (!views.daily) views.daily = {}; if (!views.recent) views.recent = [];
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {} };
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views };
+}
+
+function saveViews_(views) {
+  props_().setProperty('VIEWS', JSON.stringify(views));
 }
 
 function saveRoster_(roster) {
@@ -84,6 +93,7 @@ function doPost(e) {
   if (body.action === 'check') return doCheck_(body);
   if (body.action === 'party') return doParty_(body);
   if (body.action === 'roster') return doRoster_(body);
+  if (body.action === 'view') return doView_(body);
 
   const player = String(body.player || '');
   const round = String(body.round || '');
@@ -173,7 +183,27 @@ function doRoster_(body) {
   }
 }
 
-// 全消去（エディタから手で実行する用。ウェブからは呼べない）。チェック・打ち上げ希望・出席者一覧は消さない
+// 閲覧ログ（参加者ページ）。views = {daily:{'YYYY-MM-DD': 回数}, recent:[{ts, who}]}（直近 VIEW_MAX 件）
+function doView_(body) {
+  const page = String(body.page || '');
+  if (page !== 'sanka') return out_({ ok: false, error: 'page' });
+  const who = String(body.who || '').replace(/[<>"'\n\r\t]/g, '').trim().slice(0, 20);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const views = load_().views;
+    const ts = now_(), day = ts.slice(0, 10);
+    views.daily[day] = (views.daily[day] || 0) + 1;
+    views.recent.push({ ts: ts, who: who });
+    views.recent = views.recent.slice(-VIEW_MAX);
+    saveViews_(views);
+    return out_({ ok: true });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 全消去（エディタから手で実行する用。ウェブからは呼べない）。チェック・打ち上げ希望・出席者一覧・閲覧ログは消さない
 function resetAll() {
   const p = props_();
   p.deleteProperty('PLAYERS');
@@ -194,4 +224,9 @@ function resetParty() {
 // 出席者一覧だけ全消去（エディタから手で実行する用。大会後に名前を消すときもこれ）
 function resetRoster() {
   props_().deleteProperty('ROSTER');
+}
+
+// 閲覧ログだけ全消去（エディタから手で実行する用）
+function resetViews() {
+  props_().deleteProperty('VIEWS');
 }

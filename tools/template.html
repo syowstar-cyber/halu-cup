@@ -119,6 +119,7 @@ async function syncChecks(c){
     CHECKS = j.data.checks || {}; SHARED = true;
     renderParty(j.data.party || {}, j.data.roster || {});
     nameSchedule(j.data.roster || {});
+    renderViews(j.data.views || { daily: {}, recent: [] });
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
   } catch (e) {
     SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
@@ -195,6 +196,19 @@ function nameSchedule(roster){
   for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
     el.querySelectorAll('td').forEach(td => { const p = td.dataset.p || td.textContent.trim(); if (/^P\d+$/.test(p) && roster[p]) { td.dataset.p = p; td.textContent = roster[p]; } });
   }
+}
+// 4章: 参加者ページの閲覧ログ（日ごとの回数と直近の閲覧）
+function renderViews(v){
+  const box = document.getElementById('views'); if (!box) return;
+  const days = Object.keys(v.daily || {}).sort().reverse();
+  const total = days.reduce((a, d) => a + (v.daily[d] || 0), 0);
+  let h = '<div class="cnt"><span>合計 ' + total + '回</span>' + days.slice(0, 7).map(d => '<span>' + d.slice(5).replace('-', '/') + ' ' + v.daily[d] + '回</span>').join('') + '</div>';
+  const rec = (v.recent || []).slice().reverse();
+  if (rec.length) {
+    h += '<div class="tw"><table><tr><th>時刻</th><th>名前</th></tr>' + rec.slice(0, 50).map(r => '<tr><td>' + fmtTs(r.ts) + '</td><td>' + (r.who ? esc(r.who) : '<span class="st">（名前なし）</span>') + '</td></tr>').join('') + '</table></div>';
+  } else h += '<p class="st">まだ閲覧の記録はありません。</p>';
+  h += '<p class="st">参加者ページを開いた記録（同じタブで開き直した分は数えない）。名前は、参加者ページで自分のNoを選んだ人だけ分かる。直近' + rec.length + '件を表示（受け口は直近100件を保持）。</p>';
+  box.innerHTML = h;
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){
