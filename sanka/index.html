@@ -62,6 +62,13 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 .party .st{font-size:.95rem;margin-top:8px;color:var(--muted)}
 .party .st.ok{color:#146c2e;font-weight:700}
 .party .st.ng{color:#b00020;font-weight:700}
+.party input[hidden]{display:none}
+.roster{margin:10px 0}
+.roster .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.roster .tw{margin:0}
+.roster td,.roster th{padding:8px 8px}
+.roster .st{color:var(--muted);font-size:.95rem}
+@media (max-width:420px){.roster .cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -107,7 +114,7 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <h2 id="s3">3. 競技方式</h2>
 <div class="flow"><span>予選（8卓・4半荘）</span><i>→</i><span>準決勝（2卓・1半荘）</span><i>→</i><span>決勝（1卓・1半荘）</span></div>
 <h3>予選（8卓・4半荘・40分制）</h3>
-<ul><li>本田プロ＋P1〜P15 が1〜4卓、ゆうこママ＋P16〜P30 が5〜8卓で、それぞれ4半荘を打ちます</li><li>プレイヤーNo（P1〜P30）は事前にお知らせします。対戦表は<a class="xref" href="#s8">8章</a>のとおりで、同じ相手とは2度当たりません</li><li>順位は4半荘の合計ポイントで決めます（計算は<a class="xref" href="#s4">4章</a>）</li><li><strong>参加者の上位6名が準決勝へ進みます</strong></li></ul>
+<ul><li>本田プロ＋P1〜P15 が1〜4卓、ゆうこママ＋P16〜P30 が5〜8卓で、それぞれ4半荘を打ちます</li><li>プレイヤーNo（P1〜P30）は仮の割り当てを<a class="xref" href="#s8">8章</a>の出席者一覧に載せています（変わることがあります）。対戦表は<a class="xref" href="#s8">8章</a>のとおりで、同じ相手とは2度当たりません</li><li>順位は4半荘の合計ポイントで決めます（計算は<a class="xref" href="#s4">4章</a>）</li><li><strong>参加者の上位6名が準決勝へ進みます</strong></li></ul>
 <h3>準決勝（2卓・1半荘・60分制）</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>メンバー</th></tr>
@@ -177,6 +184,7 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <h3>会場 Halu</h3>
 <ul><li>住所: 福岡市博多区博多駅東3-9-3 博多ニッコーハイツ1F</li><li>麻雀Firstから: 地下鉄で約20分／タクシーで約10〜15分（目安）</li><li>地下鉄の内訳: 天神南駅まで徒歩約5分 → 七隈線 天神南→博多 3分 → 博多駅から徒歩約8分</li></ul>
 <h3>必ずご回答ください（下のフォームから送れます）</h3>
+<p>名前を一覧から選び、①〜④を選んで「回答する」を押すだけです。</p>
 <div class="tw"><table>
 <tr><th>選択肢</th><th>内容</th></tr>
 <tr><td>①</td><td>大会当日希望。翌週でも可</td></tr>
@@ -192,6 +200,9 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <p>本田プロ＋P1〜P15 が1〜4卓、ゆうこママ＋P16〜P30 が5〜8卓です。席は表のとおりで、場決めはしません。</p>
 <p>この下で自分のプレイヤーNoを選ぶと、自分の卓だけが表示されます。</p>
 <p>本田プロは1卓、ゆうこママは5卓に固定です（4半荘とも席を動きません。対戦する方がその卓へ移動してください）。</p>
+<h3>出席者一覧（仮のプレイヤーNo）</h3>
+<p>プレイヤーNoは仮です。変わることがあります。</p>
+<div id="roster" class="roster"></div>
 <h3>予選1半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
@@ -283,14 +294,27 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <script>
 const c = document.getElementById('content'), toc = document.getElementById('toc');
 c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+// 受け口（点数報告と同じ GAS）。出席者一覧（P番号→名前）は受け口にだけある＝このリポにはファイルとして置かない
+const API = (window.HALU_API || '').trim();
+const NAMES = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
+const PNOS = NAMES.slice(2);
+let ROSTER = {};
+function esc(s) { return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
+function label(n) { return ROSTER[n] ? n + ' ' + ROSTER[n] : n; }
+async function fetchData() {
+  if (!API) throw new Error('noapi');
+  const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (!j.ok) throw new Error('bad');
+  ROSTER = j.data.roster || {};
+  return j.data;
+}
+const onRoster = [];   // 一覧が届いたら呼ぶ
 // 8章（対戦表）: プレイヤーNoを選ぶと、その人のいる行だけに絞る
 (function () {
   const h2 = [...c.querySelectorAll('h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
-  const names = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
   const tables = []; for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) tables.push(...el.querySelectorAll('table'));
   if (!tables.length) return;
   const box = document.createElement('div'); box.className = 'pick';
-  box.innerHTML = '<label for="pick">自分のプレイヤーNoを選ぶと、自分の卓だけ表示します</label><select id="pick"><option value="">全員の表を見る</option>' + names.map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select><div class="note"></div>';
+  box.innerHTML = '<label for="pick">自分のプレイヤーNoを選ぶと、自分の卓だけ表示します</label><select id="pick"><option value="">全員の表を見る</option>' + NAMES.map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select><div class="note"></div>';
   const first = h2.nextElementSibling && h2.nextElementSibling.tagName === 'P' ? h2.nextElementSibling : h2;
   first.insertAdjacentElement('afterend', box);
   const sel = box.querySelector('select'), note = box.querySelector('.note');
@@ -302,57 +326,78 @@ c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a
       tr.hidden = !!v && !hit;
       tds.forEach(td => td.classList.toggle('me', !!v && td.textContent.trim() === v));
     }));
-    note.textContent = v ? v + ' の卓だけ表示中。表の色つきが自分の席です' : '';
+    note.textContent = v ? label(v) + ' の卓だけ表示中。表の色つきが自分の席です' : '';
     try { localStorage.setItem('halu:pick', v); } catch (e) {}
   }
   sel.addEventListener('change', apply);
-  try { const v = localStorage.getItem('halu:pick'); if (v && names.includes(v)) sel.value = v; } catch (e) {}
+  try { const v = localStorage.getItem('halu:pick'); if (v && NAMES.includes(v)) sel.value = v; } catch (e) {}
   apply();
+  onRoster.push(() => { sel.querySelectorAll('option').forEach(o => { if (o.value) o.textContent = label(o.value); }); apply(); });
 })();
-// 7章（打ち上げ）: 希望日の回答フォーム。受け口（点数報告と同じ GAS）に名前ごとに保存する
+// 8章（出席者一覧）: 受け口の一覧を表にする（仮のプレイヤーNo）
+(function () {
+  const box = document.getElementById('roster'); if (!box) return;
+  box.innerHTML = '<p class="st">出席者一覧を読み込み中…</p>';
+  onRoster.push(() => {
+    const rows = PNOS.filter(p => ROSTER[p]);
+    if (!rows.length) { box.innerHTML = '<p class="st">出席者一覧はまだ登録されていません。</p>'; return; }
+    const half = Math.ceil(rows.length / 2);
+    const tbl = list => '<div class="tw"><table><tr><th>No</th><th>名前</th></tr>' + list.map(p => '<tr><td>' + p + '</td><td>' + esc(ROSTER[p]) + '</td></tr>').join('') + '</table></div>';
+    box.innerHTML = '<div class="cols">' + tbl(rows.slice(0, half)) + tbl(rows.slice(half)) + '</div>';
+  });
+})();
+// 7章（打ち上げ）: 希望日の回答フォーム。名前は出席者一覧から選ぶ（受け口に名前ごとに保存）
 (function () {
   const box = document.getElementById('party'); if (!box) return;
-  const API = (window.HALU_API || '').trim();
-  const names = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
   const LABEL = { '1': '大会当日希望。翌週でも可', '2': '翌週土曜希望。当日でも可', '3': '大会当日だけ希望。入れなければお食事券', '4': 'お食事券希望（打ち上げには参加しない）' };
   const MARK = { '1': '①', '2': '②', '3': '③', '4': '④' };
   const CH = ['1', '2', '3', '4'];
-  box.innerHTML = '<label for="pname">お名前（LINEの名前など、幹部に分かる呼び名）</label><input id="pname" type="text" maxlength="20" autocomplete="off">'
-    + '<label for="pno">プレイヤーNo（まだ分からなければ空のまま）</label><select id="pno"><option value="">未定</option>' + names.map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select>'
+  box.innerHTML = '<label for="pname">お名前（一覧から選ぶ）</label><select id="pname"><option value="">選んでください</option><option value="*">一覧にない（下に入力）</option></select>'
+    + '<input id="pname2" type="text" maxlength="20" autocomplete="off" placeholder="LINEの名前など、幹部に分かる呼び名" hidden>'
     + '<label>希望</label>' + CH.map(v => '<label class="opt"><input type="radio" name="pch" value="' + v + '"><span><b>' + MARK[v] + '</b>' + LABEL[v] + '</span></label>').join('')
     + '<button type="button" id="psend">この内容で回答する</button><button type="button" class="ghost" id="pdel">回答を消す</button><div class="st" id="pst" aria-live="polite"></div>';
-  const name = box.querySelector('#pname'), no = box.querySelector('#pno'), st = box.querySelector('#pst');
-  try { name.value = localStorage.getItem('halu:pname') || ''; } catch (e) {}
-  try { const v = localStorage.getItem('halu:pick'); if (v && names.includes(v)) no.value = v; } catch (e) {}
+  const sel = box.querySelector('#pname'), free = box.querySelector('#pname2'), st = box.querySelector('#pst');
+  let PARTY = {};
   function say(msg, cls) { st.textContent = msg; st.className = 'st' + (cls ? ' ' + cls : ''); }
   function fmt(ts) { return ts ? ts.slice(5, 16).replace('-', '/') : ''; }
-  function showMine(party) {
-    const n = name.value.trim(), me = n && party ? party[n] : null;
-    const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; Object.values(party || {}).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
+  function who() { return sel.value === '*' ? { name: free.value.trim(), no: '' } : { name: sel.value ? ROSTER[sel.value] || '' : '', no: sel.value }; }
+  function fillNames() {
+    const keep = sel.value;
+    [...sel.options].forEach(o => { if (o.value && o.value !== '*') o.remove(); });
+    PNOS.filter(p => ROSTER[p]).forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = label(p); sel.insertBefore(o, sel.lastElementChild); });
+    if (keep && [...sel.options].some(o => o.value === keep)) sel.value = keep;
+    else { try { const v = localStorage.getItem('halu:pname'); if (v && [...sel.options].some(o => o.value === v)) sel.value = v; else { const pk = localStorage.getItem('halu:pick'); if (pk && ROSTER[pk]) sel.value = pk; } } catch (e) {} }
+    free.hidden = sel.value !== '*';
+    showMine();
+  }
+  function showMine() {
+    const w = who(), me = w.name ? PARTY[w.name] : null;
+    box.querySelectorAll('input[name=pch]').forEach(x => { x.checked = false; });
+    const cnt = { '1': 0, '2': 0, '3': 0, '4': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
     const tot = '（いまの回答: ' + CH.map(v => MARK[v] + cnt[v] + '人').join(' ') + '）';
-    if (me) { const r = box.querySelector('input[name=pch][value="' + me.choice + '"]'); if (r) r.checked = true; if (me.no) no.value = me.no; say('回答済み: ' + MARK[me.choice] + ' ' + LABEL[me.choice] + '（' + fmt(me.ts) + '）' + tot, 'ok'); }
-    else say((n ? 'まだ回答がありません ' : '') + tot);
+    if (me) { const r = box.querySelector('input[name=pch][value="' + me.choice + '"]'); if (r) r.checked = true; say('回答済み: ' + MARK[me.choice] + ' ' + LABEL[me.choice] + '（' + fmt(me.ts) + '）' + tot, 'ok'); }
+    else say((w.name ? 'まだ回答がありません ' : '') + tot);
   }
   async function load() {
-    if (!API) { say('受け口（API）が未設定のため、いまは送れません', 'ng'); return; }
-    try { const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (!j.ok) throw 0; showMine(j.data.party || {}); }
-    catch (e) { say('受け口につながりません。電波のよい所でもう一度開いてください', 'ng'); }
+    try { const d = await fetchData(); PARTY = d.party || {}; onRoster.forEach(f => f()); }
+    catch (e) { say(e.message === 'noapi' ? '受け口（API）が未設定のため、いまは送れません' : '受け口につながりません。電波のよい所でもう一度開いてください', 'ng'); }
   }
   async function send(choice) {
-    const n = name.value.trim(); if (!n) { say('お名前を入れてください', 'ng'); name.focus(); return; }
+    const w = who(); if (!w.name) { say(sel.value === '*' ? 'お名前を入れてください' : 'お名前を選んでください', 'ng'); (sel.value === '*' ? free : sel).focus(); return; }
     if (choice === undefined) { const r = box.querySelector('input[name=pch]:checked'); if (!r) { say('①〜④のどれかを選んでください', 'ng'); return; } choice = r.value; }
-    try { localStorage.setItem('halu:pname', n); } catch (e) {}
+    try { localStorage.setItem('halu:pname', sel.value); } catch (e) {}
     say('送信中…');
     try {
-      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'party', name: n, no: no.value, choice }) });
+      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'party', name: w.name, no: w.no, choice }) });
       const j = await r.json(); if (!j.ok) throw new Error(j.error || 'ng');
-      if (!choice) box.querySelectorAll('input[name=pch]').forEach(x => { x.checked = false; });
-      showMine(j.party || {}); if (!choice) say('回答を消しました');
+      PARTY = j.party || {}; showMine(); if (!choice) say('回答を消しました');
     } catch (e) { say('送れませんでした。電波のよい所でもう一度お試しください', 'ng'); }
   }
   box.querySelector('#psend').addEventListener('click', () => send());
   box.querySelector('#pdel').addEventListener('click', () => { if (confirm('回答を消しますか？')) send(''); });
-  name.addEventListener('change', () => load());
+  sel.addEventListener('change', () => { free.hidden = sel.value !== '*'; if (sel.value === '*') free.focus(); showMine(); });
+  free.addEventListener('change', showMine);
+  onRoster.push(fillNames);
   load();
 })();
 </script>

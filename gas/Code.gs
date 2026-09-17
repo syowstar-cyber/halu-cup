@@ -6,6 +6,8 @@
 //   点数報告（参加者）… キーなし。{player, round, score} / {action:'clear', player, round}
 //   チェック共有（幹部）… キーなし（幹部用ページは公開のため）。{action:'check', k, v, by}
 //   打ち上げ希望（参加者）… キーなし。{action:'party', name, no, choice:'1'|'2'|'3'|'4'|''}（'' は取り消し）
+//   出席者一覧（幹部）… キーなし。{action:'roster', names:{P1:'名前', ...}}（'' で消す。渡したキーだけ更新）
+//     名前はここ（スクリプト プロパティ ROSTER）にだけ置く。公開リポにはファイルとして置かない（2026-09-17）
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -27,14 +29,19 @@ function emptyPlayers_() {
 
 function load_() {
   const p = props_();
-  let players, log, checks, party;
+  let players, log, checks, party, roster;
   try { players = JSON.parse(p.getProperty('PLAYERS') || 'null'); } catch (e) { players = null; }
   try { log = JSON.parse(p.getProperty('LOG') || '[]'); } catch (e) { log = []; }
   try { checks = JSON.parse(p.getProperty('CHECKS') || '{}'); } catch (e) { checks = {}; }
   try { party = JSON.parse(p.getProperty('PARTY') || '{}'); } catch (e) { party = {}; }
+  try { roster = JSON.parse(p.getProperty('ROSTER') || '{}'); } catch (e) { roster = {}; }
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {} };
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {} };
+}
+
+function saveRoster_(roster) {
+  props_().setProperty('ROSTER', JSON.stringify(roster));
 }
 
 function save_(d) {
@@ -76,6 +83,7 @@ function doPost(e) {
 
   if (body.action === 'check') return doCheck_(body);
   if (body.action === 'party') return doParty_(body);
+  if (body.action === 'roster') return doRoster_(body);
 
   const player = String(body.player || '');
   const round = String(body.round || '');
@@ -141,7 +149,31 @@ function doParty_(body) {
   }
 }
 
-// 全消去（エディタから手で実行する用。ウェブからは呼べない）。チェックと打ち上げ希望は消さない
+// 出席者一覧。roster[P番号] = 名前。渡した names のキーだけ更新し、'' なら消す（P1〜P30 のみ）
+function doRoster_(body) {
+  const names = body.names;
+  if (!names || typeof names !== 'object') return out_({ ok: false, error: 'names' });
+  const keys = Object.keys(names);
+  if (!keys.length || keys.length > 30) return out_({ ok: false, error: 'names' });
+  for (let i = 0; i < keys.length; i++) {
+    if (!/^P([1-9]|[12]\d|30)$/.test(keys[i])) return out_({ ok: false, error: 'player' });
+  }
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const roster = load_().roster;
+    keys.forEach(function (k) {
+      const v = String(names[k] || '').replace(/[<>"'\n\r\t]/g, '').trim().slice(0, 20);
+      if (v) roster[k] = v; else delete roster[k];
+    });
+    saveRoster_(roster);
+    return out_({ ok: true, roster: roster });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// 全消去（エディタから手で実行する用。ウェブからは呼べない）。チェック・打ち上げ希望・出席者一覧は消さない
 function resetAll() {
   const p = props_();
   p.deleteProperty('PLAYERS');
@@ -157,4 +189,9 @@ function resetChecks() {
 // 打ち上げ希望だけ全消去（エディタから手で実行する用）
 function resetParty() {
   props_().deleteProperty('PARTY');
+}
+
+// 出席者一覧だけ全消去（エディタから手で実行する用。大会後に名前を消すときもこれ）
+function resetRoster() {
+  props_().deleteProperty('ROSTER');
 }
