@@ -51,6 +51,7 @@ table.todo .meta{display:inline;margin-left:6px}
 .who .st.ng{color:#b00020}
 .who button{margin-top:6px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card2);color:var(--fg);font-size:.95rem}
 .warn{color:#b00020;font-weight:bold}
+.nm{display:block;font-size:.78rem;color:var(--muted);font-weight:400;line-height:1.25;white-space:nowrap}
 .party{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px;margin:12px 0}
 .party .cnt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .party .cnt span{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700}
@@ -114,6 +115,7 @@ async function syncChecks(c){
     if (!j.ok) throw new Error('bad');
     CHECKS = j.data.checks || {}; SHARED = true;
     renderParty(j.data.party || {}, j.data.roster || {});
+    nameSchedule(j.data.roster || {});
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
   } catch (e) {
     SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
@@ -183,6 +185,13 @@ function renderParty(party, roster){
     if (!confirm(n + '人分を登録します（同じNoは上書き）。よいですか？')) return;
     if (await postRoster(names, st)) renderParty(PARTY, ROSTER);
   });
+}
+// 9章（対戦表）: 表の P番号の下に受け口の名前を添える（仮のNo）
+function nameSchedule(roster){
+  const h2 = [...document.querySelectorAll('#content h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
+  for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
+    el.querySelectorAll('td').forEach(td => { const p = td.dataset.p || td.textContent.trim(); if (/^P\d+$/.test(p) && roster[p]) { td.dataset.p = p; td.innerHTML = p + '<small class="nm">' + esc(roster[p]) + '</small>'; } });
+  }
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){

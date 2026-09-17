@@ -51,6 +51,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 .pick select{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
 .pick .note{font-size:.9rem;color:var(--muted);margin-top:6px}
 td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outline:2px solid var(--accent);outline-offset:-2px}
+.nm{display:block;font-size:.78rem;color:var(--muted);font-weight:400;line-height:1.25;white-space:nowrap}
 .party{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px;margin:12px 0}
 .party label{display:block;font-weight:700;margin:8px 0 4px}
 .party input[type=text],.party select{width:100%;font-size:1.1rem;padding:10px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
@@ -114,13 +115,14 @@ const onRoster = [];   // 一覧が届いたら呼ぶ
   const first = h2.nextElementSibling && h2.nextElementSibling.tagName === 'P' ? h2.nextElementSibling : h2;
   first.insertAdjacentElement('afterend', box);
   const sel = box.querySelector('select'), note = box.querySelector('.note');
+  const key = td => td.dataset.p || td.textContent.trim();   // 名前を添えた後も P番号で判定する
   function apply() {
     const v = sel.value;
     tables.forEach(t => t.querySelectorAll('tr').forEach(tr => {
       const tds = [...tr.querySelectorAll('td')]; if (!tds.length) return;
-      const hit = tds.some(td => td.textContent.trim() === v);
+      const hit = tds.some(td => key(td) === v);
       tr.hidden = !!v && !hit;
-      tds.forEach(td => td.classList.toggle('me', !!v && td.textContent.trim() === v));
+      tds.forEach(td => td.classList.toggle('me', !!v && key(td) === v));
     }));
     note.textContent = v ? label(v) + ' の卓だけ表示中。表の色つきが自分の席です' : '';
     try { localStorage.setItem('halu:pick', v); } catch (e) {}
@@ -128,7 +130,13 @@ const onRoster = [];   // 一覧が届いたら呼ぶ
   sel.addEventListener('change', apply);
   try { const v = localStorage.getItem('halu:pick'); if (v && NAMES.includes(v)) sel.value = v; } catch (e) {}
   apply();
-  onRoster.push(() => { sel.querySelectorAll('option').forEach(o => { if (o.value) o.textContent = label(o.value); }); apply(); });
+  // 一覧が届いたら、表の P番号の下に名前を添える（仮のNo）
+  onRoster.push(() => {
+    sel.querySelectorAll('option').forEach(o => { if (o.value) o.textContent = label(o.value); });
+    tables.forEach(t => t.querySelectorAll('td').forEach(td => { const p = key(td); if (/^P\d+$/.test(p) && ROSTER[p]) { td.dataset.p = p; td.innerHTML = p + '<small class="nm">' + esc(ROSTER[p]) + '</small>'; } }));
+    if (Object.keys(ROSTER).length && !box.querySelector('.st')) box.insertAdjacentHTML('beforeend', '<p class="st">表の名前は仮のプレイヤーNoによるものです（正式なNoは別途）</p>');
+    apply();
+  });
 })();
 // 8章（出席者一覧）: 受け口の一覧を表にする（仮のプレイヤーNo）
 (function () {
