@@ -52,6 +52,7 @@ td.neg,.neg{color:var(--ng)}
 .seat .pt{display:block;margin-top:2px;font-weight:700;font-size:.92rem;font-variant-numeric:tabular-nums;color:var(--muted)}
 .seat .pt.neg{color:var(--ng)}
 .seat input{padding:10px;font-size:1.1rem}
+.tools input.code{width:6.5em;padding:8px 10px;font-size:1rem;text-align:center;letter-spacing:.2em}
 .sum{display:flex;justify-content:space-between;padding:8px 0;font-weight:700}
 .status span{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:.9rem}
 .status span.done{background:#e3f2e6;border-color:#9fcfa9;color:var(--ok)}
@@ -79,7 +80,7 @@ summary{cursor:pointer;font-weight:700}
     <div id="qwarn" class="small neg"></div>
     <button class="primary" type="button" id="qsend">この半荘の4人分を記録する</button>
     <div id="qmsg" class="msg" aria-live="polite"></div>
-    <div class="tools"><button class="ghost" type="button" id="qclear">この半荘の点数を取り消す</button></div>
+    <div class="tools"><input id="qcode" class="code" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="番号4桁" aria-label="取り消しの番号（4桁）"><button class="ghost" type="button" id="qclear">この半荘の点数を取り消す</button></div>
   </div>
   <div class="hint">
     <b>ポイントの計算</b>（25,000点持ち・30,000点返し）<br>
@@ -329,10 +330,20 @@ document.getElementById('qsend').addEventListener('click', async () => {
   render(j.data); fillSeats();
   say('qmsg', r + '半荘目を記録しました' + (next && next !== r ? '。次は ' + next + '半荘目です' : ''), true);
 });
+// 取り消しの番号（4桁）。公開ページなので番号そのものは置かず、ハッシュで照合する（うっかり取り消し防止。受け口側では検査しない）
+const CLEAR_HASH = '58f8aed040a094ff335d067db3eaa6da9bec3823e5a5b6aa99866efe0e9e0893';
+async function clearCodeOk(v) {
+  if (!/^\d{4}$/.test(v)) return false;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('hayakawa:' + v));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('') === CLEAR_HASH;
+}
 document.getElementById('qclear').addEventListener('click', async () => {
   const r = qround.value;
   if (!DATA.rounds[r]) { say('qmsg', r + '半荘目はまだ記録がありません', false); return; }
+  const code = document.getElementById('qcode');
+  if (!(await clearCodeOk(code.value.trim()))) { say('qmsg', '取り消しの番号が違います（4桁）', false); code.focus(); return; }
   if (!confirm(r + '半荘目の点数を取り消しますか？')) return;
+  code.value = '';
   const j = await post({ action: 'clear', round: r }).catch(() => ({ ok: false, error: 'net' }));
   if (!j.ok) { say('qmsg', ERR[j.error] || '取り消しに失敗しました', false); return; }
   dirty = false; render(j.data); fillSeats(); say('qmsg', r + '半荘目を取り消しました', true);
