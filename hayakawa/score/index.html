@@ -177,6 +177,7 @@ function nowJst() {
 async function post(body) {
   if (API) { const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) }); return r.json(); }
   const d = localLoad();
+  if (body.action !== 'clear' && d.rounds[body.round]) return { ok: false, error: 'exists', data: d };
   if (body.action === 'clear') delete d.rounds[body.round]; else d.rounds[body.round] = { seats: body.seats, scores: body.scores };
   d.updated = nowJst();
   try { localStorage.setItem(LKEY, JSON.stringify(d)); } catch (e) { return { ok: false, error: 'storage' }; }
@@ -271,6 +272,7 @@ function fillSeats() {
     row.append(el('div', w, 'w'), nm, inp); box.appendChild(row);
   });
   refreshPicks();
+  if (x) document.querySelectorAll('#seats select, #seats input').forEach(e => { e.disabled = true; });
   preview();
 }
 // 選べる名前を、上の席で選ばれていない人だけに絞る。上の席を選び直して重なったら、下の席は選び直しにする
@@ -299,7 +301,7 @@ function readInput() {
   return { seats: complete ? seatNames.slice() : null, scores, raws, filled: raws.filter(Number.isInteger).length };
 }
 function preview() {
-  const f = readInput(), warn = [];
+  const f = readInput(), warn = [], locked = !!DATA.rounds[qround.value];
   const ready = f.seats && f.filled === 4;
   const res = ready ? calcRound(f) : null;
   document.querySelectorAll('#seats .seat').forEach((row, i) => {
@@ -309,21 +311,28 @@ function preview() {
   });
   const sum = f.raws.reduce((a, v) => a + (Number.isInteger(v) ? v : 0), 0);
   document.getElementById('qsum').textContent = fmt(sum);
-  if (!f.seats) warn.push('東・南・西の名前を選んでください（北は自動で入ります）。');
+  if (locked) warn.push('記録済みの半荘は上書きできません。直すときは、下の欄に番号を入れて取り消してから入れ直してください。');
+  else if (!f.seats) warn.push('東・南・西の名前を選んでください（北は自動で入ります）。');
   if (f.filled === 4 && sum !== 100000) warn.push('合計が100,000になっていません。点棒を確認してください（記録はできます）。');
   if (res && Object.values(res).some(x => x.tie)) warn.push('同じ点棒の人がいます。順位点はその人たちで分けています（起家に近い方が多く）。');
   document.getElementById('qwarn').textContent = warn.join(' ');
-  document.getElementById('qsend').disabled = !ready;
+  const send = document.getElementById('qsend');
+  send.disabled = !ready || locked;
+  send.textContent = locked ? 'この半荘は記録済みです' : 'この半荘の4人分を記録する';
 }
 qround.addEventListener('change', fillSeats);
 
-const ERR = { round: '半荘の指定が不正です', seats: '席の指定が不正です', score: '点数の値が不正です', storage: 'この端末に保存できませんでした', net: '送信に失敗しました（通信）' };
+const ERR = { round: '半荘の指定が不正です', seats: '席の指定が不正です', score: '点数の値が不正です', storage: 'この端末に保存できませんでした', net: '送信に失敗しました（通信）', exists: 'この半荘はもう記録されています（上書きはできません）' };
 document.getElementById('qsend').addEventListener('click', async () => {
   const f = readInput(); if (!f.seats || f.filled !== 4) return;
   const r = qround.value;
   say('qmsg', '記録中…', true);
+  if (API) {
+    const cur = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' }).then(x => x.json()).catch(() => null);
+    if (cur && cur.ok && cur.data.rounds[r]) { render(cur.data); fillSeats(); say('qmsg', r + '半荘目は、ほかの端末で先に記録されていました（上書きはできません）', false); return; }
+  }
   const j = await post({ round: r, seats: f.seats, scores: f.scores }).catch(() => ({ ok: false, error: 'net' }));
-  if (!j.ok) { say('qmsg', ERR[j.error] || '記録に失敗しました', false); return; }
+  if (!j.ok) { if (j.data) { render(j.data); fillSeats(); } say('qmsg', ERR[j.error] || '記録に失敗しました', false); return; }
   dirty = false;
   const next = ROUNDS.find(x => !j.data.rounds[x]);
   qround.value = next || r;   // 次の空いている半荘へ進める

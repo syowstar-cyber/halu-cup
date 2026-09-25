@@ -3,7 +3,7 @@
 // ドライブは使わない。スクリプト プロパティに JSON を持つ。配置手順は hayakawa/gas/README.md。
 //
 // 書き込み（POST・本文は JSON・キーなし）:
-//   {round:'1'..'6', seats:['東家','南家','西家','北家'], scores:{名前: 点棒, ...}}   … 1半荘ぶんを丸ごと上書き
+//   {round:'1'..'6', seats:['東家','南家','西家','北家'], scores:{名前: 点棒, ...}}   … 1半荘ぶんを記録（記録済みの半荘は上書きしない＝error 'exists'）
 //   {action:'clear', round:'1'..'6'}   … その半荘を取り消す
 
 const PLAYERS = ['早川さん', '志村さん', '祐輝君', 'ショウタロウ'];
@@ -65,6 +65,7 @@ function doPost(e) {
   lock.waitLock(10000);
   try {
     const d = load_();
+    if (entry && d.rounds[round]) return out_({ ok: false, error: 'exists', data: d });
     if (entry) d.rounds[round] = entry; else delete d.rounds[round];
     d.updated = now_();
     d.log.push({ ts: d.updated, round: round, clear: !entry, scores: entry ? entry.scores : null });
