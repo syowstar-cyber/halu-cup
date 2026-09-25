@@ -195,10 +195,10 @@ const WHO = [
 ];
 // open＝鳴いたときだけ出る行
 const MELDS = [
-  {k:'anko',  name:'自分でそろえた3枚', sub:'暗刻',                       fu:4},
-  {k:'pon',   name:'ポンした3枚',       sub:'明刻',                       fu:2,  open:true},
-  {k:'ankan', name:'暗カン',            sub:'自分で4枚',                  fu:16},
-  {k:'minkan',name:'明カン',            sub:'ポンからのカン・捨て牌でカン', fu:8,  open:true}
+  {k:'anko',  name:'暗刻（アンコ）',   short:'暗刻', sub:'自分でそろえた3枚同じ牌',             fu:4},
+  {k:'pon',   name:'明刻（ミンコ）',   short:'明刻', sub:'ポンした3枚同じ牌',                   fu:2,  open:true},
+  {k:'ankan', name:'暗槓（アンカン）', short:'暗槓', sub:'自分でそろえた4枚同じ牌',             fu:16},
+  {k:'minkan',name:'明槓（ミンカン）', short:'明槓', sub:'ポン・捨て牌からカンした4枚同じ牌', fu:8,  open:true}
 ];
 const WAITS = {
   ryan:  {name:'両面',     fu:0, tiles:[[3],[4]],     win:[2,5], s:'2つの牌で待つ'},
@@ -278,7 +278,7 @@ function evaluate(){
       MELDS.filter(meldActive).forEach(m => {
         [['_s','2〜8',1],['_y','1・9・字',2]].forEach(([sf,lab,mul]) => {
           const n = S.melds[m.k+sf];
-          if (n) items.push([`${m.name}（${lab}）×${n}`, n*m.fu*mul]);
+          if (n) items.push([`${m.short}（${lab}）×${n}`, n*m.fu*mul]);
         });
       });
       const raw = items.reduce((a,x)=>a+x[1],0);
@@ -341,7 +341,7 @@ function s3Html(){
   }
   // 3-1 手の形
   body += `<h3>手の形</h3>
-    <div class="opts g2">${opt('open', false, '鳴いていない', '暗カンだけも含む' + (!ts ? '・ロンは+10符' : ''), 'mid')}${opt('open', true, '鳴いた', 'ポン・チー・明カン', 'mid')}</div>`;
+    <div class="opts g2">${opt('open', false, '鳴いていない', '暗槓だけも含む' + (!ts ? '・ロンは+10符' : ''), 'mid')}${opt('open', true, '鳴いた', 'ポン・チー・明槓', 'mid')}</div>`;
   if (S.han >= 2) body += toggle('chiitoi', '七対子', '同じ牌2枚の組が7つ。鳴いていなくてもこちら', '25符固定');
   if (chiitoiActive()) return head() + body + `<div class="hint">七対子は25符で決まりです。待ち・アタマ・刻子は聞きません。</div>`;
   // 3-2 待ち
@@ -370,7 +370,7 @@ function s3Html(){
   }).join('');
   const autoRow = auto ? `<div class="mrow auto"><div class="mname">${auto.name}<span class="s">シャンポンの答えから自動で1つ（${auto.fu}符）。ここには入れません</span></div></div>` : '';
   body += `<h3>同じ牌3枚・4枚の組</h3>
-    <p class="lead" style="margin-bottom:4px">123 のような並びは数えません。${S.open ? '' : 'ポン・明カンの欄は「鳴いた」を押すと出ます。'}</p>
+    <p class="lead" style="margin-bottom:4px">123 のような並びは数えません。${S.open ? '' : '明刻・明槓の欄は「鳴いた」を押すと出ます。'}</p>
     ${rows}${autoRow}
     <div class="meldsum"><span>3枚・4枚の組の符</span><span>${meldFu()}符</span></div>`;
   return head() + body;
