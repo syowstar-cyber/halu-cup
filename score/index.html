@@ -28,9 +28,10 @@ button{font-size:1.05rem;padding:14px;border:0;border-radius:8px;font-weight:700
 .ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line);padding:8px 12px;font-size:.95rem}
 .msg{min-height:1.5em;margin-top:8px;font-weight:700}
 .msg.ok{color:var(--ok)}.msg.ng{color:var(--ng)}
-.pnav{display:flex;gap:8px;margin:12px 0}
-.pnav a{flex:1;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
+.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
 .pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+@media (min-width:560px){.pnav a{flex:1 1 0}}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
 table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--card)}
 th,td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:right;white-space:nowrap}
@@ -68,7 +69,7 @@ summary{cursor:pointer;font-weight:700}
     <h1>🀄 Halu杯 点数報告</h1>
     <div class="sub">半荘が終わったら、卓の代表が4人分の点棒を送ってください。ポイントは自動計算です。</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/" aria-current="page">点数報告</a><a href="../fu/">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/" aria-current="page">点数報告</a><a href="../fu/">点数計算</a></nav>
 
   <div id="setup" class="hint" hidden>点数報告の受け口（API）がまだ設定されていません。</div>
 
@@ -148,7 +149,7 @@ summary{cursor:pointer;font-weight:700}
     <span class="small">点棒のJSON（P1〜P30・本田プロ・ゆうこママ）をそのままコピーします</span>
     <div id="msg" class="msg" aria-live="polite"></div>
   </div>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/" aria-current="page">点数報告</a><a href="../fu/">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/" aria-current="page">点数報告</a><a href="../fu/">点数計算</a></nav>
 </div>
 
 <script src="config.js"></script>

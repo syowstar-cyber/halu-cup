@@ -14,6 +14,8 @@
 
 ## 参加者用ページ
 
+`rule/index.html` は Mリーグ公式ルールをやさしく書き直したルールページ（手書き。生成しない）。本大会だけのルールを変えたら早見表と2章も直す。
+
 `sanka/index.html` は参加者向けの公開ページ。正典は fp リポの `events/第20回_四麻Halu杯_参加者案内.md`。
 `tools/rebuild.py` が幹部用と一緒に作り直す（`tools/build_sanka.py`）。金銭の記述は載せない。
 

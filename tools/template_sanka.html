@@ -46,9 +46,10 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 .map{display:inline-block;margin-top:4px}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.pnav{display:flex;gap:8px;margin:12px 0}
-.pnav a{flex:1;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
+.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
 .pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+@media (min-width:560px){.pnav a{flex:1 1 0}}
 .pick{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:10px 12px;margin:12px 0}
 .pick label{display:block;font-weight:700;margin-bottom:6px}
 .pick select{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
@@ -82,12 +83,13 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
     <h1>第20回 Halu杯 参加者案内</h1>
     <div class="sub">2026年10月24日（土）麻雀First。最終更新: __UPDATED__</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/" aria-current="page">参加者案内</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/" aria-current="page">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
   <p class="lead">会場の地図: <a class="map" href="https://www.google.com/maps/search/?api=1&query=%E7%A6%8F%E5%B2%A1%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%E4%BB%8A%E6%B3%892-4-35" target="_blank" rel="noopener">福岡市中央区今泉2-4-35 今泉セントラルビル5F（Googleマップで開く）</a></p>
   <p class="lead">半荘が終わったら <a href="../score/">点数報告ページ</a> から自分の点数を送ってください。</p>
+  <p class="lead">Mリーグ公式ルールの細かい決まりは <a href="../rule/">ルールページ</a> にまとめています。</p>
   <nav class="toc" id="toc"></nav>
   <main id="content">__BODY__</main>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/" aria-current="page">参加者案内</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/" aria-current="page">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
 <script src="../score/config.js"></script>

@@ -16,9 +16,10 @@ a{color:var(--accent)}
 header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
 header h1{font-size:1.3rem;margin:0}
 header .sub{color:var(--muted);font-size:.9rem}
-.pnav{display:flex;gap:8px;margin:12px 0}
-.pnav a{flex:1;text-align:center;padding:10px 6px;white-space:nowrap;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card);font-size:.95rem}
+.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card);font-size:.95rem}
 .pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+@media (min-width:560px){.pnav a{flex:1 1 0}}
 button{font-family:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 8px;font-size:.92rem;color:var(--muted)}
@@ -155,7 +156,7 @@ footer{font-size:.82rem;color:var(--muted);margin-top:24px;border-top:1px solid 
     <h1>🀄 Halu杯 符計算と点数表</h1>
     <div class="sub">上から順に押すと、下に次の項目と点数が出ます。ページは切り替わりません。</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/">点数報告</a><a href="../fu/" aria-current="page">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../fu/" aria-current="page">点数計算</a></nav>
   <div class="top"><span>ふつうの手は 2〜3 回押すだけで点数が出ます。</span><button class="link" data-act="totable">点数表だけ見る ↓</button></div>
 
   <section class="sec" id="s1"></section>
