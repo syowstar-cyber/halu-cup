@@ -159,12 +159,17 @@ const LIMITS = {
   yaku2:{name:'ダブル役満',base:16000, han:''}
 };
 const FUS = [20,25,30,40,50,60,70,80,90,100,110];
+// open＝鳴いたときだけ出る欄。ronko＝シャンポン待ちのロンで完成した刻子（門前でも明刻扱い）
 const MELDS = [
-  {k:'pon',   name:'ポンした刻子',   sub:'明刻',          fu:2},
+  {k:'ronko', name:'ロンで完成した刻子', sub:'明刻の扱い',   fu:2, ronko:true},
+  {k:'pon',   name:'ポンした刻子',   sub:'明刻',          fu:2, open:true},
   {k:'anko',  name:'手の中の刻子',   sub:'暗刻',          fu:4},
-  {k:'minkan',name:'明槓',           sub:'大明槓・加槓',  fu:8},
+  {k:'minkan',name:'明槓',           sub:'大明槓・加槓',  fu:8, open:true},
   {k:'ankan', name:'暗槓',           sub:'',              fu:16}
 ];
+const ronShan = () => S.agari === 'ron' && S.wait === 'shan';
+const meldActive = m => (!m.open || S.menzen === false) && (!m.ronko || ronShan());
+const ronkoCount = () => S.melds.ronko_s + S.melds.ronko_y;
 const WAITS = {
   ryan:  {name:'両面',     fu:0, tiles:[[3],[4]],  win:[2,5], s:'2つの牌で待つ'},
   shan:  {name:'シャンポン',fu:0, tiles:[[5,5],[8,8]], win:[], s:'対子2組のどちらか'},
@@ -275,21 +280,28 @@ const VIEWS = {
       <div class="hint">ダブ東・ダブ南のアタマも2符です（Mリーグルール）。</div>${navRow()}</section>`;
   },
   melds(){
-    const cnt = meldCount();
-    const rows = MELDS.map(m => {
+    const cnt = meldCount(), rs = ronShan(), needRonko = rs && ronkoCount() === 0;
+    const rows = MELDS.filter(meldActive).map(m => {
+      const full = cnt >= 4 || (m.ronko && ronkoCount() >= 1);
       const c = y => {
         const key = m.k + (y?'_y':'_s'), v = S.melds[key], fu = m.fu * (y?2:1);
-        return `<td><div class="cell"><span class="ctr"><button data-m="${key}" data-d="-1" ${v<=0?'disabled':''} aria-label="減らす">−</button><output>${v}</output><button data-m="${key}" data-d="1" ${cnt>=4?'disabled':''} aria-label="増やす">＋</button></span><span class="f">1つ ${fu}符</span></div></td>`;
+        return `<td><div class="cell"><span class="ctr"><button data-m="${key}" data-d="-1" ${v<=0?'disabled':''} aria-label="減らす">−</button><output>${v}</output><button data-m="${key}" data-d="1" ${full?'disabled':''} aria-label="増やす">＋</button></span><span class="f">1つ ${fu}符</span></div></td>`;
       };
-      return `<tr><td>${m.name}<span class="s">${m.sub}</span></td>${c(false)}${c(true)}</tr>`;
+      return `<tr${m.ronko?' style="background:var(--soft)"':''}><td>${m.name}<span class="s">${m.sub}</span></td>${c(false)}${c(true)}</tr>`;
     }).join('');
-    const ronShan = S.agari === 'ron' && S.wait === 'shan';
+    const lead = S.menzen
+      ? '鳴いていないので、手の中の刻子（暗刻）と暗槓だけを数えます。'
+      : 'ポンした刻子・明槓と、手の中の刻子・暗槓を分けて数えます。';
+    const shanHint = rs
+      ? `<div class="hint"><b>シャンポン待ちのロン</b>：ロンで完成した刻子は、鳴いていなくても明刻の扱いです。いちばん上の欄に1つ入れてください。${needRonko?'<br><b style="color:var(--hit)">この欄が0のままでは先へ進めません。</b>':''}</div>`
+      : '';
+    const next = needRonko ? '' : (cnt ? '点数を見る →' : 'ない（点数を見る） →');
     return `<section class="q"><h2>刻子・槓子はありますか？</h2>
-      <p class="lead">同じ牌3枚（刻子）・4枚（槓子）の数を入れます。順子（連続した3枚）は0符なので数えません。</p>
+      <p class="lead">同じ牌3枚（刻子）・4枚（槓子）の数を入れます。順子（連続した3枚）は0符なので数えません。${lead}</p>
       <table class="mt"><thead><tr><th></th><th>2〜8の牌</th><th>1・9・字牌</th></tr></thead><tbody>${rows}</tbody></table>
       <div class="meldsum"><span>刻子・槓子の符</span><span>${meldFu()}符</span></div>
-      ${ronShan?'<div class="hint"><b>シャンポン待ちのロン</b>：ロンで完成した刻子は「ポンした刻子」に数えます。</div>':''}
-      ${navRow(cnt ? '点数を見る →' : 'ない（点数を見る） →')}</section>`;
+      ${shanHint}
+      ${navRow(next)}</section>`;
   },
   result(){
     if (S.tableOnly || !complete()) return tableHtml(null);
@@ -298,10 +310,11 @@ const VIEWS = {
 };
 
 /* ---------- 計算 ---------- */
-function meldCount(){ return Object.values(S.melds).reduce((a,b)=>a+b,0); }
+// 出ていない欄（門前のときのポン・明槓など）に残った数は数えない
+function meldCount(){ return MELDS.filter(meldActive).reduce((a,m)=>a+S.melds[m.k+'_s']+S.melds[m.k+'_y'],0); }
 function meldFu(){
   let f = 0;
-  MELDS.forEach(m => { f += S.melds[m.k+'_s']*m.fu + S.melds[m.k+'_y']*m.fu*2; });
+  MELDS.filter(meldActive).forEach(m => { f += S.melds[m.k+'_s']*m.fu + S.melds[m.k+'_y']*m.fu*2; });
   return f;
 }
 function complete(){
@@ -309,6 +322,7 @@ function complete(){
   if (!needFu()) return true;
   if (S.han >= 2 && S.chiitoi === null) return false;
   if (isChiitoi()) return true;
+  if (ronShan() && ronkoCount() === 0) return false;
   return S.wait!==null && S.menzen!==null && S.head!==null && S.meldsDone;
 }
 function calcFu(){
@@ -327,7 +341,7 @@ function calcFu(){
   if (tsumo) items.push(['ツモ',2]);
   if (w.fu) items.push([w.name+'待ち',w.fu]);
   if (headFu) items.push(['役牌のアタマ',2]);
-  MELDS.forEach(m => {
+  MELDS.filter(meldActive).forEach(m => {
     [['_s','2〜8',1],['_y','1・9・字',2]].forEach(([sf,lab,mul]) => {
       const n = S.melds[m.k+sf];
       if (n) items.push([`${m.name}（${lab}）×${n}`, n*m.fu*mul]);
