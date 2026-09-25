@@ -24,3 +24,9 @@
 `score/index.html` は点数の送信と集計の画面。データは Google Apps Script のウェブアプリ（`gas/Code.gs`）が
 スクリプト プロパティ（ドライブ不使用）に JSON として保存する。配置手順は `gas/README.md`。
 API の URL は `score/config.js` に書く。送信にキーは要らない（2026-09-16 撤去）。
+
+## 早川麻雀研究会（hayakawa/）
+
+Halu杯のページを複製したプライベート麻雀用のページ（2026-09-25）。参加者案内はなし。6半荘・ウマはワンツー・25,000点持ち30,000点返し。
+`hayakawa/score/`（点数報告・集計）・`hayakawa/rule/`（ルール）・`hayakawa/fu/`（点数計算）。どれも手書きで、`tools/rebuild.py` の対象外。
+点数の受け口は Halu杯とは別の Apps Script（`hayakawa/gas/`）。URL を `hayakawa/score/config.js` に入れるまでは、各端末のブラウザにだけ保存する。
