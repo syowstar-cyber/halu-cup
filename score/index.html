@@ -50,10 +50,18 @@ td.neg,.neg{color:var(--ng)}
 .seat .w{font-weight:700;text-align:center;background:var(--soft);border-radius:6px;padding:6px 0}
 .seat .nm{font-weight:700}
 .seat input{padding:10px;font-size:1.1rem}
-.seat .pt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.seat .pt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:pre-line}
 .sum{display:flex;justify-content:space-between;padding:8px 0;font-weight:700}
 .status span{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:.9rem}
 .status span.done{background:#e3f2e6;border-color:#9fcfa9;color:var(--ok)}
+/* チョンボ回数 */
+#cbox{margin:10px 0 0}
+#cbox[open]{border-color:var(--ng)}
+#cbox summary{color:var(--ng)}
+.cseat{display:grid;grid-template-columns:1fr 6.5em;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.cseat .nm{font-weight:700}
+.cseat select{padding:8px;font-size:1.05rem}
+.cseat select.on{border-color:var(--ng);color:var(--ng);font-weight:700}
 #sched table{table-layout:fixed}
 #sched th,#sched td{text-align:left;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;padding:8px 5px;font-size:.92rem}
 #sched th:first-child,#sched td:first-child{width:14%}
@@ -94,6 +102,11 @@ summary{cursor:pointer;font-weight:700}
       </div>
     </div>
     <div id="seats"></div>
+    <details id="cbox">
+      <summary>チョンボがあった（回数を入れる）</summary>
+      <div class="small" id="cnote"></div>
+      <div id="cseats"></div>
+    </details>
     <div id="qhint" class="small"></div>
     <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
     <div id="qwarn" class="small neg"></div>
@@ -105,7 +118,7 @@ summary{cursor:pointer;font-weight:700}
     <b>ポイントの計算</b>（25,000点持ち・30,000点返し。Mリーグ公式規定と同じ）<br>
     ①（点棒−30,000）÷1,000。100点＝0.1ポイント（丸めない）<br>
     ② 順位点 1位 +50／2位 +10／3位 −10／4位 −30 を足す<br>
-    <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「-」を付けてそのまま入れてください。</span>
+    <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「-」を付けてそのまま入れてください。<br>チョンボは1回につき、予選の合計ポイントから −20（Mリーグ公式規定）。点棒と一緒に回数を送ってください。</span>
   </div>
 
   <h2>集計（予選は4半荘の合計ポイント）</h2>
@@ -116,7 +129,7 @@ summary{cursor:pointer;font-weight:700}
   <div class="status" id="status"></div>
   <div class="tw">
     <table id="tbl">
-      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th>6位ライン</th><th>準決</th><th>決勝</th></tr></thead>
+      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>チョンボ</th><th>合計pt</th><th>6位ライン</th><th>準決</th><th>決勝</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -135,7 +148,7 @@ summary{cursor:pointer;font-weight:700}
     <summary>点棒（素点）の一覧</summary>
     <div class="tw" style="margin-top:8px">
       <table id="raw">
-        <thead><tr><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>準決</th><th>決勝</th></tr></thead>
+        <thead><tr><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>準決</th><th>決勝</th><th>チョンボ</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -161,7 +174,13 @@ const WINDS = ['東', '南', '西', '北'];
 // 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0（Mリーグ公式規定）
 const BONUS = [500, 100, -100, -300], RETURN = 30000;
 const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
-let DATA = null, ROSTER = {};
+let DATA = null, ROSTER = {}, CH = {};
+// チョンボ回数: CH[名前][半荘] = 回数。予選は1回につき合計ポイントから −20.0（0.1単位で 200）。Mリーグ公式規定
+const CHOMBO_PEN = 200, CH_ROUNDS = ['1', '2', '3', '4', 'S', 'F'];
+const RLABEL = { '1': '1半荘目', '2': '2半荘目', '3': '3半荘目', '4': '4半荘目', S: '準決', F: '決勝' };
+const chOf = (p, r) => ((CH[p] || {})[r]) || 0;
+const chPrelim = p => ['1', '2', '3', '4'].reduce((a, r) => a + chOf(p, r), 0);
+const chText = p => CH_ROUNDS.filter(r => chOf(p, r)).map(r => RLABEL[r] + ' ' + chOf(p, r) + '回').join('・');
 // 表示名: 受け口の出席者一覧に名前があれば名前、なければ P番号
 const dn = p => (p && ROSTER[p]) || p;
 
@@ -205,7 +224,7 @@ function calcAll(d) {
 
 // ---- 集計表 ----
 function render(d) {
-  DATA = d; ROSTER = d.roster || {};
+  DATA = d; ROSTER = d.roster || {}; CH = d.chombo || {};
   document.querySelectorAll('#bdplayer option').forEach(o => { if (o.value) o.textContent = dn(o.value); });
   document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
   const pts = calcAll(d);
@@ -214,7 +233,8 @@ function render(d) {
     const q = ['1', '2', '3', '4'].map(k => pts[p][k]);
     const done = q.filter(v => v !== null);
     const s = d.players[p] || {};
-    return { p, q, total: done.length ? done.reduce((a, b) => a + b, 0) : null, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
+    const pen = chPrelim(p) * CHOMBO_PEN;
+    return { p, q, pen, total: done.length ? done.reduce((a, b) => a + b, 0) - pen : null, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
   });
   const players = rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity));
   let rank = 0; players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
@@ -226,7 +246,7 @@ function render(d) {
     if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
     if (r.rank === 6) tr.classList.add('line6');
     const bd = r.guest ? '' : borderText(r.p);
-    const cells = [r.rank ? (r.tie ? r.rank + ' 同点' : r.rank) : '', dn(r.p), ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
+    const cells = [r.rank ? (r.tie ? r.rank + ' 同点' : r.rank) : '', dn(r.p), ...r.q.map(fpt), r.pen ? fpt(-r.pen) + '（' + chPrelim(r.p) + '回）' : '', r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
     cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
     tb.appendChild(tr);
   });
@@ -234,6 +254,7 @@ function render(d) {
   PLAYERS.forEach(p => {
     const s = d.players[p] || {}; const tr = document.createElement('tr');
     [dn(p), s['1'], s['2'], s['3'], s['4'], s.S, s.F].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
+    const tc = document.createElement('td'); tc.textContent = chText(p); tc.className = 'neg'; tr.appendChild(tc);
     rb.appendChild(tr);
   });
   // 卓の入力状況
@@ -251,7 +272,7 @@ function render(d) {
 let TOTALS = {};   // name -> {total, n}
 function computeTotals(d) {
   const pts = calcAll(d); TOTALS = {};
-  PLAYERS.forEach(p => { const q = ['1','2','3','4'].map(k => pts[p][k]).filter(v => v !== null); TOTALS[p] = { total: q.length ? q.reduce((a, b) => a + b, 0) : null, n: q.length }; });
+  PLAYERS.forEach(p => { const q = ['1','2','3','4'].map(k => pts[p][k]).filter(v => v !== null); TOTALS[p] = { total: q.length ? q.reduce((a, b) => a + b, 0) - chPrelim(p) * CHOMBO_PEN : null, n: q.length }; });
 }
 // 自分を除いた参加者の合計の上から6番目。6人に満たなければ null
 function borderFor(name) {
@@ -362,7 +383,29 @@ function fillSeats() {
     hint.textContent = note.join(' ');
   }
   box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', preview));
+  fillChombo(t);
   preview();
+}
+// チョンボ回数の欄（卓の4人ぶん）。受け口の値を初期値にし、1回以上の人がいれば開いておく
+function fillChombo(t) {
+  const box = document.getElementById('cseats'); box.innerHTML = '';
+  let any = false;
+  t.seats.forEach((n, i) => {
+    const cur = n ? chOf(n, apiRound()) : 0; if (cur) any = true;
+    const row = document.createElement('div'); row.className = 'cseat';
+    let opts = ''; for (let k = 0; k <= 5; k++) opts += '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + (k ? k + '回' : 'なし') + '</option>';
+    row.innerHTML = '<div class="nm">' + t.labels[i] + '</div><select data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + ' aria-label="チョンボ回数">' + opts + '</select>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll('select').forEach(sel => sel.addEventListener('change', preview));
+  document.getElementById('cbox').open = any;
+  document.getElementById('cnote').textContent = isPrelim()
+    ? 'この半荘でチョンボした人の回数。1回につき予選の合計ポイントから −20 します（点棒はそのまま入れる）。'
+    : 'この半荘でチョンボした人の回数。記録だけで、準決勝・決勝の順位（素点）には入りません。';
+}
+function readChombo() {
+  const m = {}; document.querySelectorAll('#cseats select').forEach(sel => { if (sel.dataset.name) m[sel.dataset.name] = parseInt(sel.value, 10) || 0; });
+  return m;
 }
 // 4席ぶん（未確定の席は name '' / raw null）
 function readSeats() {
@@ -371,9 +414,11 @@ function readSeats() {
 function preview() {
   const seats = readSeats();
   const pts = document.querySelectorAll('#seats .pt');
+  const chm = readChombo();
+  document.querySelectorAll('#cseats select').forEach(sel => sel.classList.toggle('on', sel.value !== '0'));
   if (isPrelim()) {
     const res = calcTable(seats);
-    pts.forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位' + (res[i].tie ? '(同点)' : '') + ' ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
+    pts.forEach((el, i) => { const c = chm[seats[i].name] || 0; el.textContent = res[i] ? res[i].rank + '位' + (res[i].tie ? '(同点)' : '') + ' ' + fpt(res[i].pts) + (c ? '\nチョンボ' + fpt(-c * CHOMBO_PEN) : '') : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
   } else {
     const all = seats.every(s => s.raw !== null && !Number.isNaN(s.raw));
     const order = all ? seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i) : [];
@@ -394,20 +439,23 @@ async function post(body) {
   const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
   return r.json();
 }
-const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
+const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です', chombo: 'チョンボ回数が不正です' };
 document.getElementById('qsend').addEventListener('click', async () => {
   if (!API) { say('qmsg', 'APIが未設定です', false); return; }
   const t = currentTable(); if (!t) return;
   const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
   if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
   say('qmsg', '送信中…（' + seats.length + '人分）', true);
+  const chm = readChombo();
   let last = null;
   for (const s of seats) {
-    const j = await post({ player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
+    const j = await post({ player: s.name, round: apiRound(), score: s.raw, chombo: chm[s.name] || 0 }).catch(() => ({ ok: false, error: 'net' }));
     if (!j.ok) { say('qmsg', s.name + ': ' + (ERR[j.error] || '送信に失敗しました'), false); if (last) render(last); return; }
     last = j.data;
   }
   render(last);
+  // 受け口が古い版（チョンボ未対応）だと chombo が返らない
+  if (!last.chombo && seats.some(s => chm[s.name])) { say('qmsg', '点棒は記録しましたが、受け口が古い版のためチョンボ回数は記録されていません（幹部に連絡）', false); return; }
   say('qmsg', t.name + 'の ' + seats.length + '人分を記録しました', true);
 });
 document.getElementById('qclear').addEventListener('click', async () => {
