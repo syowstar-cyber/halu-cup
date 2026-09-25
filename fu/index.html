@@ -41,7 +41,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .opt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:64px;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 8px;font-size:1rem;text-align:center}
 .opt:hover{border-color:var(--accent)}
 .opt .big{font-size:1.4rem;font-weight:800;line-height:1.2}
-.opt .s{font-size:.82rem;color:var(--muted);line-height:1.35}
+.opt .s{font-size:.82rem;color:var(--muted);line-height:1.35;word-break:keep-all;overflow-wrap:anywhere}
 .opt.sel{border-color:var(--accent);background:var(--soft);box-shadow:0 0 0 2px var(--accent) inset}
 .opt.wide{flex-direction:row;justify-content:flex-start;gap:14px;text-align:left;padding:10px 14px}
 .opt.wide .txt{display:flex;flex-direction:column}
@@ -56,7 +56,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .tg.sel{border-color:var(--accent);background:var(--soft);box-shadow:0 0 0 2px var(--accent) inset}
 .tg.sel .bx{background:var(--accent);border-color:var(--accent)}
 .tg .txt{display:flex;flex-direction:column;flex:1}
-.tg .big{font-weight:800;font-size:1.05rem;line-height:1.3}
+.tg .big{font-weight:800;font-size:1.05rem;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
 .tg .s{font-size:.82rem;color:var(--muted);line-height:1.35}
 .tg .plus{color:var(--hit);font-weight:800;white-space:nowrap}
 /* 符の近道 */
@@ -79,7 +79,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .mrow{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:var(--card)}
 .mrow.auto{background:var(--soft)}
 .mname{font-weight:700;line-height:1.3}
-.mname .s{font-weight:400;font-size:.82rem;color:var(--muted);margin-left:6px}
+.mname .s{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
 .mctrs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .cell{display:flex;flex-direction:column;align-items:center;gap:2px}
 .cell .lab{font-size:.82rem;color:var(--muted);font-weight:700}
