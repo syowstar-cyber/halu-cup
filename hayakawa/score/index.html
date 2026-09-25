@@ -15,7 +15,7 @@ a{color:var(--accent)}
 .wrap{max-width:760px;margin:0 auto;padding:12px 16px 84px}
 header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
 header h1{font-size:1.3rem;margin:0}
-header .sub{color:var(--muted);font-size:.9rem}
+header .sub{color:var(--muted);font-size:.9rem;word-break:keep-all;overflow-wrap:anywhere}
 h2{font-size:1.1rem;margin:26px 0 10px;padding:9px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0}
 label{display:block;font-weight:700;margin:12px 0 4px}
@@ -41,11 +41,15 @@ td.neg,.neg{color:var(--ng)}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
 .small{color:var(--muted);font-size:.9rem}
 .hint{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.95rem}
-/* 半荘の入力: 席 | 名前（下にポイント） | 点棒 */
-.seat{display:grid;grid-template-columns:3.6em 1fr 7em;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
-.seat select{padding:10px 4px;font-size:1.05rem;text-align:center;font-weight:700;background:var(--soft)}
-.seat .nm{font-weight:700;line-height:1.3}
-.seat .pt{display:block;font-weight:700;font-size:.92rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+/* 半荘の入力: 席（東南西北で固定） | 名前を選ぶ（下にポイント） | 点棒 */
+.seat{display:grid;grid-template-columns:2.4em 1fr 6.5em;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.seat .w{font-weight:700;text-align:center;background:var(--soft);border-radius:6px;padding:10px 0}
+.seat select{padding:10px 6px;font-size:1rem;font-weight:700}
+.seat select:disabled{background:var(--card2);color:var(--muted)}
+.seat .auto{padding:10px 8px;font-size:.92rem;border:2px dashed var(--line);border-radius:8px;color:var(--muted);line-height:1.3}
+.seat .auto.on{font-size:1rem;font-weight:700;color:var(--fg);border-style:solid;background:var(--card2)}
+.seat .nm{min-width:0;line-height:1.3}
+.seat .pt{display:block;margin-top:2px;font-weight:700;font-size:.92rem;font-variant-numeric:tabular-nums;color:var(--muted)}
 .seat .pt.neg{color:var(--ng)}
 .seat input{padding:10px;font-size:1.1rem}
 .sum{display:flex;justify-content:space-between;padding:8px 0;font-weight:700}
@@ -60,7 +64,7 @@ summary{cursor:pointer;font-weight:700}
 <div class="wrap">
   <header>
     <h1>🀄 早川麻雀研究会</h1>
-    <div class="sub">6半荘・ウマはワンツー・25,000点持ち30,000点返し。半荘が終わったら4人の席と点棒を入れてください。</div>
+    <div class="sub">6半荘・ウマはワンツー。25,000点持ち30,000点返し。<br>半荘が終わったら、東家から順に名前と点棒を入れてください。</div>
   </header>
   <nav class="pnav" aria-label="ページ切り替え"><a href="../rule/">ルール</a><a href="../score/" aria-current="page">点数報告</a><a href="../fu/">点数計算</a></nav>
 
@@ -242,50 +246,69 @@ function fillRounds() {
   if (!cur || !dirty) fillSeats();
 }
 let dirty = false;
+// 席は東南西北で固定。名前は東家から選ぶ（東は4人・南は残り3人・西は残り2人から。北家は残った1人が自動で入る）
+let seatNames = [null, null, null, null];
 function fillSeats() {
   dirty = false;
   const x = DATA.rounds[qround.value];
+  seatNames = x ? x.seats.slice() : [null, null, null, null];
   const box = document.getElementById('seats'); box.innerHTML = '';
-  PLAYERS.forEach((p, i) => {
+  WINDS.forEach((w, i) => {
     const row = el('div', undefined, 'seat');
-    const sel = document.createElement('select'); sel.setAttribute('aria-label', p + 'の席');
-    WINDS.forEach((w, k) => { const o = el('option', w); o.value = k; sel.appendChild(o); });
-    sel.value = x ? x.seats.indexOf(p) : i;
-    const nm = el('div', p, 'nm'); nm.appendChild(el('span', '', 'pt'));
+    const nm = el('div', undefined, 'nm');
+    const pick = i < 3 ? document.createElement('select') : el('div', '', 'auto');
+    if (i < 3) {
+      pick.setAttribute('aria-label', w + '家の名前');
+      pick.addEventListener('change', () => { seatNames[i] = pick.value || null; refreshPicks(); dirty = true; preview(); });
+    }
+    nm.append(pick, el('span', '', 'pt'));
     const inp = document.createElement('input');
     Object.assign(inp, { type: 'number', inputMode: 'numeric', step: 100, min: -200000, max: 300000, placeholder: '点棒' });
-    inp.setAttribute('aria-label', p + 'の点棒'); inp.dataset.name = p;
-    inp.value = x ? x.scores[p] : '';
-    row.append(sel, nm, inp); box.appendChild(row);
-    sel.addEventListener('change', () => { dirty = true; preview(); });
+    inp.setAttribute('aria-label', w + '家の点棒');
+    inp.value = x ? x.scores[x.seats[i]] : '';
     inp.addEventListener('input', () => { dirty = true; preview(); });
+    row.append(el('div', w, 'w'), nm, inp); box.appendChild(row);
   });
+  refreshPicks();
   preview();
 }
-// 入力欄 → {seats（東から順の名前。席が重なっていれば null）, scores, filled}
+// 選べる名前を、上の席で選ばれていない人だけに絞る。上の席を選び直して重なったら、下の席は選び直しにする
+function refreshPicks() {
+  const rows = document.querySelectorAll('#seats .seat');
+  for (let i = 0; i < 3; i++) {
+    const used = seatNames.slice(0, i);
+    const avail = PLAYERS.filter(p => !used.includes(p));
+    const open = i === 0 || !!seatNames[i - 1];
+    if (!open || !avail.includes(seatNames[i])) seatNames[i] = null;
+    const sel = rows[i].querySelector('select'); sel.innerHTML = '';
+    const ph = el('option', open ? '名前を選ぶ' : '―'); ph.value = ''; sel.appendChild(ph);
+    if (open) avail.forEach(p => { const o = el('option', p); o.value = p; sel.appendChild(o); });
+    sel.disabled = !open; sel.value = seatNames[i] || '';
+  }
+  seatNames[3] = seatNames.slice(0, 3).every(Boolean) ? PLAYERS.find(p => !seatNames.slice(0, 3).includes(p)) : null;
+  const auto = rows[3].querySelector('.auto');
+  auto.textContent = seatNames[3] || '（残った1人が入ります）';
+  auto.classList.toggle('on', !!seatNames[3]);
+}
+// 入力欄 → {seats（東から順の名前。そろっていなければ null）, scores（名前→点棒）, raws（席順の点棒）, filled}
 function readInput() {
-  const seats = [null, null, null, null], scores = {}; let filled = 0, dup = false;
-  document.querySelectorAll('#seats .seat').forEach(row => {
-    const p = row.querySelector('input').dataset.name, w = Number(row.querySelector('select').value);
-    if (seats[w]) dup = true; seats[w] = p;
-    const v = row.querySelector('input').value.trim();
-    scores[p] = v === '' ? null : parseInt(v, 10);
-    if (v !== '' && Number.isInteger(scores[p])) filled++;
-  });
-  return { seats: dup ? null : seats, scores, filled };
+  const raws = [...document.querySelectorAll('#seats input')].map(inp => { const v = inp.value.trim(); return v === '' ? null : parseInt(v, 10); });
+  const complete = seatNames.every(Boolean), scores = {};
+  if (complete) seatNames.forEach((p, i) => { scores[p] = raws[i]; });
+  return { seats: complete ? seatNames.slice() : null, scores, raws, filled: raws.filter(Number.isInteger).length };
 }
 function preview() {
   const f = readInput(), warn = [];
   const ready = f.seats && f.filled === 4;
   const res = ready ? calcRound(f) : null;
-  document.querySelectorAll('#seats .seat').forEach(row => {
-    const p = row.querySelector('input').dataset.name, pt = row.querySelector('.pt'), x = res && res[p];
+  document.querySelectorAll('#seats .seat').forEach((row, i) => {
+    const pt = row.querySelector('.pt'), x = res && res[seatNames[i]];
     pt.textContent = x ? x.rank + '位' + (x.tie ? '(同点)' : '') + ' ' + fpt(x.pts) : '';
     pt.className = 'pt' + (x && x.pts < 0 ? ' neg' : '');
   });
-  const sum = PLAYERS.reduce((a, p) => a + (Number.isInteger(f.scores[p]) ? f.scores[p] : 0), 0);
+  const sum = f.raws.reduce((a, v) => a + (Number.isInteger(v) ? v : 0), 0);
   document.getElementById('qsum').textContent = fmt(sum);
-  if (!f.seats) warn.push('席（東南西北）が重なっています。4人とも別の席にしてください。');
+  if (!f.seats) warn.push('東・南・西の名前を選んでください（北は自動で入ります）。');
   if (f.filled === 4 && sum !== 100000) warn.push('合計が100,000になっていません。点棒を確認してください（記録はできます）。');
   if (res && Object.values(res).some(x => x.tie)) warn.push('同じ点棒の人がいます。順位点はその人たちで分けています（起家に近い方が多く）。');
   document.getElementById('qwarn').textContent = warn.join(' ');
