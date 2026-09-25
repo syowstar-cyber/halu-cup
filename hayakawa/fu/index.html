@@ -167,7 +167,7 @@ footer{font-size:.82rem;color:var(--muted);margin-top:24px;border-top:1px solid 
 
   <footer>
     Mリーグ公式ルールに準拠して計算しています。<br>
-    切り上げ満貫あり（4翻30符・3翻60符は満貫）。連風牌（ダブ東・ダブ南）の雀頭は2符。<br>
+    切り上げ満貫あり（4翻30符・3翻60符は満貫）。連風牌（ダブトン・ダブナン）の雀頭は2符。<br>
     数え役満はなし（11翻以上は三倍満）。役満の複合はあり。本場（1本300点）は含みません。
   </footer>
 </div>
@@ -226,6 +226,9 @@ function shanAuto(){
   return {name:(ts ? 'ツモでそろった3枚（暗刻）' : 'ロンでそろった3枚（明刻の扱い）') + (y ? '・1・9・字' : '・2〜8'), fu:(ts ? 4 : 2) * (y ? 2 : 1)};
 }
 function meldCount(){ return MELDS.filter(meldActive).reduce((a,m)=>a+S.melds[m.k+'_s']+S.melds[m.k+'_y'],0) + (shanAuto() ? 1 : 0); }
+// 暗刻・暗槓の数（シャンポンをツモでそろえた3枚も暗刻）。4つは四暗刻（役満）なので3つまで
+const AN_MAX = 3;
+function anCount(){ return S.melds.anko_s + S.melds.anko_y + S.melds.ankan_s + S.melds.ankan_y + (shanAuto() && tsumo() ? 1 : 0); }
 function meldFu(){ return MELDS.filter(meldActive).reduce((a,m)=>a+S.melds[m.k+'_s']*m.fu+S.melds[m.k+'_y']*m.fu*2,0) + (shanAuto() ? shanAuto().fu : 0); }
 
 /* ---------- 計算 ---------- */
@@ -260,20 +263,20 @@ function evaluate(){
   if (S.directFu){
     fu = S.directFu; items = [['符を直接指定', fu]];
   } else if (chiitoiActive()){
-    if (ts && S.han === 2) return {state:'warn', msg:'七対子のツモは3翻以上のはずです（七対子2翻＋ツモ1翻）。翻数を確かめてください。'};
-    fu = 25; items = [['七対子', 25]]; notes.push('七対子は25符で固定です（切り上げません）。');
+    if (ts && S.han === 2) return {state:'warn', msg:'七対子（チートイツ）のツモは3翻以上のはずです（七対子2翻＋自摸（ツモ）1翻）。翻数を確かめてください。'};
+    fu = 25; items = [['七対子（チートイツ）', 25]]; notes.push('七対子は25符で固定です（切り上げません）。');
   } else {
     if (S.wait === 'shan' && !S.shanKind) return {state:'need', msg:'あと1つ：シャンポンでそろった3枚の牌を選んでください。', short:'あと1つ：そろった3枚の牌'};
     const pinfu = !S.open && S.wait === 'ryan' && !S.headYaku && meldCount() === 0;
     if (pinfu && ts){
-      if (S.han < 2) return {state:'warn', msg:'この形のツモは平和がつき、2翻以上のはずです（平和1翻＋ツモ1翻）。翻数を確かめてください。'};
-      fu = 20; items = [['副底', 20]]; notes.push('平和ツモはツモの2符をつけず、20符です。');
+      if (S.han < 2) return {state:'warn', msg:'この形のツモは平和（ピンフ）がつき、2翻以上のはずです（平和1翻＋自摸（ツモ）1翻）。翻数を確かめてください。'};
+      fu = 20; items = [['副底', 20]]; notes.push('平和（ピンフ）ツモはツモの2符をつけず、20符です。');
     } else {
       items.push(['副底', 20]);
       if (!S.open && !ts) items.push(['門前でロン', 10]);
       if (ts) items.push(['ツモ', 2]);
       if (WAITS[S.wait].fu) items.push([WAITS[S.wait].name + '待ち', 2]);
-      if (S.headYaku) items.push(['役牌のアタマ', 2]);
+      if (S.headYaku) items.push(['役牌（ヤクハイ）のアタマ', 2]);
       const auto = shanAuto(); if (auto) items.push([auto.name, auto.fu]);
       MELDS.filter(meldActive).forEach(m => {
         [['_s','2〜8',1],['_y','1・9・字',2]].forEach(([sf,lab,mul]) => {
@@ -284,7 +287,7 @@ function evaluate(){
       const raw = items.reduce((a,x)=>a+x[1],0);
       fu = Math.ceil(raw/10)*10;
       if (raw !== fu) notes.push(`${raw}符 → 1の位を切り上げて ${fu}符。`);
-      if (fu === 20 && !ts){ fu = 30; notes.push('鳴いた平和の形（20符）のロンは30符にします。'); }
+      if (fu === 20 && !ts){ fu = 30; notes.push('鳴いた平和（ピンフ）の形（20符）のロンは30符にします。'); }
       if (fu > 110) fu = 110;
     }
     if (!S.open) defaults.push('鳴いていない');
@@ -342,7 +345,7 @@ function s3Html(){
   // 3-1 手の形
   body += `<h3>手の形</h3>
     <div class="opts g2">${opt('open', false, '鳴いていない', '暗槓だけも含む' + (!ts ? '・ロンは+10符' : ''), 'mid')}${opt('open', true, '鳴いた', 'ポン・チー・明槓', 'mid')}</div>`;
-  if (S.han >= 2) body += toggle('chiitoi', '七対子', '同じ牌2枚の組が7つ。鳴いていなくてもこちら', '25符固定');
+  if (S.han >= 2) body += toggle('chiitoi', '七対子（チートイツ）', '同じ牌2枚の組が7つ。鳴いていなくてもこちら', '25符固定');
   if (chiitoiActive()) return head() + body + `<div class="hint">七対子は25符で決まりです。待ち・アタマ・刻子は聞きません。</div>`;
   // 3-2 待ち
   const waits = Object.entries(WAITS).map(([k,w]) => {
@@ -358,13 +361,13 @@ function s3Html(){
       <div class="opts g2" style="margin-top:8px">${opt('shanKind','s','2〜8の牌',`+${fs}符`,'mid')}${opt('shanKind','y','1・9・字牌',`+${fs*2}符`,'mid')}</div>`;
   }
   // 3-3 アタマ
-  body += `<h3>アタマ（2枚の組）</h3>` + toggle('headYaku', 'アタマが役牌', '白・発・中／場風（東場なら東）／自風（自分の席の風）。ダブ東・ダブ南も2符', '+2符');
+  body += `<h3>アタマ（2枚の組）</h3>` + toggle('headYaku', 'アタマが役牌（ヤクハイ）', '白・発・中／場風（東場なら東）／自風（自分の席の風）。ダブ東・ダブ南も2符', '+2符');
   // 3-4 刻子・カン
   const cnt = meldCount(), auto = shanAuto();
   const rows = MELDS.filter(meldActive).map(m => {
     const c = y => {
       const key = m.k + (y?'_y':'_s'), v = S.melds[key], fu = m.fu * (y?2:1);
-      return `<div class="cell"><span class="lab">${y?'1・9・字牌':'2〜8の牌'}</span><span class="ctr"><button data-m="${key}" data-d="-1" ${v<=0?'disabled':''} aria-label="減らす">−</button><output>${v}</output><button data-m="${key}" data-d="1" ${cnt>=4?'disabled':''} aria-label="増やす">＋</button></span><span class="f">1つ ${fu}符</span></div>`;
+      return `<div class="cell"><span class="lab">${y?'1・9・字牌':'2〜8の牌'}</span><span class="ctr"><button data-m="${key}" data-d="-1" ${v<=0?'disabled':''} aria-label="減らす">−</button><output>${v}</output><button data-m="${key}" data-d="1" ${cnt>=4 || (!m.open && anCount()>=AN_MAX)?'disabled':''} aria-label="増やす">＋</button></span><span class="f">1つ ${fu}符</span></div>`;
     };
     return `<div class="mrow"><div class="mname">${m.name}<span class="s">${m.sub}</span></div><div class="mctrs">${c(false)}${c(true)}</div></div>`;
   }).join('');
@@ -372,6 +375,7 @@ function s3Html(){
   body += `<h3>同じ牌3枚・4枚の組</h3>
     <p class="lead" style="margin-bottom:4px">123 のような並びは数えません。${S.open ? '' : '明刻・明槓の欄は「鳴いた」を押すと出ます。'}</p>
     ${rows}${autoRow}
+    ${anCount()>AN_MAX ? '<div class="hint strong">暗刻と暗槓が合わせて4つあると四暗刻（スーアンコー・役満）です。2の「役満」を選んでください。</div>' : anCount()===AN_MAX ? '<p class="note">暗刻と暗槓は合わせて3つまでです（4つは四暗刻＝役満）。</p>' : ''}
     <div class="meldsum"><span>3枚・4枚の組の符</span><span>${meldFu()}符</span></div>`;
   return head() + body;
 
