@@ -81,7 +81,7 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
   <div class="hero"><img src="../poster.jpg" alt="第20回 Halu杯 ポスター"></div>
   <header>
     <h1>第20回 Halu杯 参加者案内</h1>
-    <div class="sub">2026年10月24日（土）麻雀First。最終更新: 2026-09-25</div>
+    <div class="sub">2026年10月24日（土）麻雀First。最終更新: 2026-10-05</div>
   </header>
   <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/" aria-current="page">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
   <p class="lead">会場の地図: <a class="map" href="https://www.google.com/maps/search/?api=1&query=%E7%A6%8F%E5%B2%A1%E5%B8%82%E4%B8%AD%E5%A4%AE%E5%8C%BA%E4%BB%8A%E6%B3%892-4-35" target="_blank" rel="noopener">福岡市中央区今泉2-4-35 今泉セントラルビル5F（Googleマップで開く）</a></p>
@@ -132,7 +132,7 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <ul><li>S1卓1位・S2卓1位・S1卓2位・S2卓2位の4名</li><li>素点をリセットして、1半荘を最後まで打ちます</li><li><strong>参加者の最上位がイベント優勝です</strong>（第3位以下は<a class="xref" href="#s6">6章</a>）</li></ul>
 <h2 id="s4">4. ルール</h2>
 <p>ルールは「ルール」ページにまとめました（ページ上部の「ルール」ボタン）。</p>
-<p>Mリーグ公式ルールに準拠します。本大会だけのルール（東場の連荘なし・場決めなし・時間制限など）には印をつけています。</p>
+<p>Mリーグ公式ルールに準拠します。本大会だけのルール（東場のテンパイ連荘なし・場決めなし・時間制限など）には印をつけています。</p>
 <h2 id="s5">5. イベント</h2>
 <h3>本田プロ トークショー（13:15〜13:30）</h3>
 <h3>サイン会・写真会（15:35〜16:10・全員）</h3>
@@ -150,7 +150,6 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <h2 id="s7">7. 打ち上げ</h2>
 <p>全員が入れないため、2回に分けて行います。</p>
 <ul><li>大会当日（10月24日）の夜</li><li>翌週土曜（10月31日）</li></ul>
-<p>お食事券希望の方（⑤）と、当日だけ・翌週だけの希望で入れなかった方（③・④）には、年末まで使えるHaluお食事券5,000円をお渡しします。</p>
 <h3>会場 Halu</h3>
 <ul><li>住所: 福岡市博多区博多駅東3-9-3 博多ニッコーハイツ1F</li><li>麻雀Firstから: 地下鉄で約20分／タクシーで約10〜15分（目安）</li><li>地下鉄の内訳: 天神南駅まで徒歩約5分 → 七隈線 天神南→博多 3分 → 博多駅から徒歩約8分</li></ul>
 <h3>希望日（必ずご回答ください）</h3>
@@ -158,9 +157,9 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <tr><th>選択肢</th><th>内容</th></tr>
 <tr><td>①</td><td>大会当日希望。翌週でも可</td></tr>
 <tr><td>②</td><td>翌週土曜希望。当日でも可</td></tr>
-<tr><td>③</td><td>大会当日だけ希望。入れなければお食事券</td></tr>
-<tr><td>④</td><td>翌週土曜だけ希望。入れなければお食事券</td></tr>
-<tr><td>⑤</td><td>お食事券希望（打ち上げには参加しない）</td></tr>
+<tr><td>③</td><td>大会当日だけ希望</td></tr>
+<tr><td>④</td><td>翌週土曜だけ希望</td></tr>
+<tr><td>⑤</td><td>打ち上げには参加しない</td></tr>
 </table></div>
 <div id="party" class="party"></div>
 <p>フォームが使えないときは、LINEでゆうこママに直接お伝えください。</p>
@@ -332,7 +331,7 @@ onRoster.push(() => {
 // 7章（打ち上げ）: 希望日の回答フォーム。名前は出席者一覧から選ぶ（受け口に名前ごとに保存）
 (function () {
   const box = document.getElementById('party'); if (!box) return;
-  const LABEL = { '1': '大会当日希望。翌週でも可', '2': '翌週土曜希望。当日でも可', '3': '大会当日だけ希望。入れなければお食事券', '4': '翌週土曜だけ希望。入れなければお食事券', '5': 'お食事券希望（打ち上げには参加しない）' };
+  const LABEL = { '1': '大会当日希望。翌週でも可', '2': '翌週土曜希望。当日でも可', '3': '大会当日だけ希望', '4': '翌週土曜だけ希望', '5': '打ち上げには参加しない' };
   const MARK = { '1': '①', '2': '②', '3': '③', '4': '④', '5': '⑤' };
   const CH = ['1', '2', '3', '4', '5'];
   box.innerHTML = '<label for="pname">お名前（一覧から選ぶ）</label><select id="pname"><option value="">選んでください</option><option value="*">一覧にない（下に入力）</option></select>'

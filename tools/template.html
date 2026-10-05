@@ -142,7 +142,7 @@ function renderParty(party, roster){
   PARTY = party || {}; ROSTER = roster || {};
   const cnt = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
   const named = PNOS.filter(p => ROSTER[p]).length;
-  let h = '<div class="cnt"><span>出席者 ' + named + '人</span><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④翌週のみ ' + cnt['4'] + '人</span><span>⑤食事券 ' + cnt['5'] + '人</span><span>回答 ' + Object.keys(PARTY).length + '人</span></div>';
+  let h = '<div class="cnt"><span>出席者 ' + named + '人</span><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④翌週のみ ' + cnt['4'] + '人</span><span>⑤不参加 ' + cnt['5'] + '人</span><span>回答 ' + Object.keys(PARTY).length + '人</span></div>';
   const opts = v => '<option value=""' + (!v ? ' selected' : '') + '>未回答</option>' + ['1', '2', '3', '4', '5'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
   h += '<div class="tw"><table class="roster"><tr><th>No</th><th>名前</th><th>希望</th><th>回答</th></tr>';
   const used = new Set();
