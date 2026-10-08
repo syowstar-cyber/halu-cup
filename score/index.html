@@ -159,7 +159,7 @@ const API = (window.HALU_API || '').trim();
 const SCHED = window.HALU_SCHEDULE || {};
 // 予選の対戦表が未定（schedule.js が空）。予選の卓選び・入力・組み合わせ表を「製作中」の表示にする
 const SCHED_TBD = !['1', '2', '3', '4'].some(r => (SCHED[r] || []).length);
-const TBD_TEXT = '予選の対戦表は製作中です（未定）。決まったら、ここで卓を選んで点棒を入れられます。';
+const TBD_TEXT = '予選の対戦表は製作中です（未定）。前に載っていた表は使いません。決まったら、ここで卓を選んで点棒を入れられます。';
 const WINDS = ['東', '南', '西', '北'];
 // 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0（Mリーグ公式規定）
 const BONUS = [500, 100, -100, -300], RETURN = 30000;
@@ -241,7 +241,7 @@ function render(d) {
   });
   // 卓の入力状況
   const st = document.getElementById('status'); st.innerHTML = '';
-  if (SCHED_TBD) { const sp = document.createElement('span'); sp.textContent = '予選の対戦表は製作中（未定）'; st.appendChild(sp); }
+  if (SCHED_TBD) { const sp = document.createElement('span'); sp.textContent = '予選の対戦表は製作中（未定）'; sp.style.fontWeight = '700'; st.appendChild(sp); }
   else for (const r of ['1', '2', '3', '4']) {
     const tables = SCHED[r] || [];
     const done = tables.filter(t => t.seats.every(n => (d.players[n] || {})[r] !== null && (d.players[n] || {})[r] !== undefined)).length;
@@ -350,7 +350,7 @@ function fillTables() {
 function fillSeats() {
   const t = currentTable(); const box = document.getElementById('seats'); box.innerHTML = '';
   const hint = document.getElementById('qhint'); hint.textContent = '';
-  if (!t) { if (isPrelim()) hint.textContent = TBD_TEXT; document.getElementById('qsum').textContent = '0'; document.getElementById('qwarn').textContent = ''; return; }
+  if (!t) { if (isPrelim()) hint.innerHTML = '<b>' + TBD_TEXT + '</b>'; document.getElementById('qsum').textContent = '0'; document.getElementById('qwarn').textContent = ''; return; }
   t.seats.forEach((n, i) => {
     const row = document.createElement('div'); row.className = 'seat';
     const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
@@ -448,7 +448,7 @@ document.getElementById('dl').addEventListener('click', async () => {
 });
 (function renderSched() {
   const box = document.getElementById('sched'); let h = '';
-  if (SCHED_TBD) { box.innerHTML = '<p class="small">予選の対戦表は製作中です（未定）。</p>'; return; }
+  if (SCHED_TBD) { box.innerHTML = '<p><b>予選の対戦表は製作中です（未定）。前に載っていた表は使いません。</b></p>'; return; }
   for (const r of ['1', '2', '3', '4']) {
     h += '<h3>予選' + r + '半荘目</h3><div class="tw"><table><thead><tr><th>卓</th><th>東</th><th>南</th><th>西</th><th>北</th></tr></thead><tbody>';
     (SCHED[r] || []).forEach(t => { h += '<tr><td>' + t.table + '卓</td>' + t.seats.map(n => '<td style="text-align:left">' + n + '</td>').join('') + '</tr>'; });
