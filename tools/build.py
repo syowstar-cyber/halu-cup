@@ -16,9 +16,12 @@ def inline(s):
     s = re.sub(r"~~(.+?)~~", r"<s>\1</s>", s)   # 取り消し線（チェックのキーは生の文字列から作るので影響しない）
     # 「N章」をページ内リンクに。「参加者ページのN章」「参加者案内N章」は参加者ページの章へ
     s = re.sub(r"(参加者ページの|参加者案内の|参加者案内)([0-9]+)章", r'<a class="xref" href="sanka/#s\2">\1\2章</a>', s)
-    # 変更履歴（16章）はルールページ・まとめMDなど他の文書の章も書くので、ページ内リンクにしない
-    if section != "16":
-        s = re.sub(r"(?<!まとめ)(?<!まとめMD )([0-9]+)章(?![^<]*</a>)", r'<a class="xref" href="#s\1">\1章</a>', s)
+    # 変更履歴の章はルールページ・まとめMDなど他の文書の章も書くので、ページ内リンクにしない
+    if not in_history:
+        # 他の文書の章（まとめMD・ルールページ・幹部用MD の直後の N章）はリンクにしない。数字の途中からも当てない
+        s = re.sub(r"((?:まとめMD|まとめ|ルールページ|幹部用MD)の?\s*)([0-9]+章)", "\\1\u0000\\2", s)
+        s = re.sub(r"(?<![0-9\u0000])([0-9]+)章(?![^<]*</a>)", r'<a class="xref" href="#s\1">\1章</a>', s)
+        s = s.replace("\u0000", "")
     return s
 
 out = []
@@ -28,6 +31,7 @@ while i < len(src) and not src[i].startswith("## 1."):
     i += 1
 
 section = ""      # 現在の "## n" 番号
+in_history = False  # 「変更履歴」の章の中か（章番号が変わっても見出しで判定する）
 skip_owner = False
 in_code = False
 table = []
@@ -147,6 +151,7 @@ while i < len(src):
         title = m.group(2)
         if level == 2:
             section = re.match(r"(\d+)", title).group(1) if re.match(r"\d", title) else ""
+            in_history = "変更履歴" in title
             skip_owner = False
         if level == 3 and title.startswith("主催マター"):
             skip_owner = True
