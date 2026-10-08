@@ -118,7 +118,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <div class="tw"><table>
 <tr><th>開始</th><th>内容</th><th>打ち切り</th><th>次</th></tr>
 <tr><td>10:00</td><td>幹部集合・設営</td><td></td><td>10:30</td></tr>
-<tr><td>10:30</td><td>全員集合・受付・案内カード配布（対戦表は参加者ページ）</td><td></td><td>11:00</td></tr>
+<tr><td>10:30</td><td>全員集合・受付（対戦表は参加者ページ。LINEグループの固定（アナウンス）から開く）</td><td></td><td>11:00</td></tr>
 <tr><td>11:00</td><td>開会・ルール説明・ゲスト紹介・参加者ページと点数報告の入力方法の説明</td><td></td><td>11:15</td></tr>
 <tr><td>11:15</td><td>予選1回戦</td><td>11:55</td><td>12:05</td></tr>
 <tr><td>12:05</td><td>予選2回戦</td><td>12:45</td><td>12:55</td></tr>
@@ -244,7 +244,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <p>チョンボが起きたらその局は流局とし、やり直さない。次局はふつうの流局と同じく親が移り、本場を1本積む。聴牌・ノーテンの点棒のやり取りはしない。その局のリーチ棒は返さず、供託として場に残す（次に和了した人が取る）。点棒はその場で払い、点数報告ページには払った後の点棒を入れる（チョンボ回数の欄はない）。</p>
 <p>参加者向けのルール説明はルールページ（<code>rule/</code>）にまとめた。<a class="xref" href="sanka/#s4">参加者案内の4章</a>は案内だけにした。</p>
 <h3>周知</h3>
-<p>変則ルールのため、募集要項とサイトに明記し、当日は各卓に卓上ルール表を置く。</p>
+<p>変則ルールのため、募集要項とサイトに明記し、ルールページのリンクをLINEグループの固定（アナウンス）に置く。</p>
 <p>流局した親が続けようとする事故と、東場で和了した親が続けようとする事故が最も起きやすい。開会時のルール説明で2回繰り返す。</p>
 <h2 id="s5">5. 順位の決め方</h2>
 <p>決勝に進む参加者は2〜4名で変動する（本田プロ・ママが勝ち上がるかで変わる）。決勝で決まるのは優勝・準優勝だけで、決勝に第3位はない。</p>
@@ -258,7 +258,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <p>準決勝・決勝の同じ卓の中の同点は、起家に近い方が上位。</p>
 <p>準決勝のメンバーが変わる境目（2位と3位・3位と4位・5位と6位・6位と7位）が同点のときは、集計係が年齢で決める。</p>
 <p>点数報告ページは並び順で仮に置き、準決勝・決勝の欄に【注意】を出すだけ。</p>
-<p>ページのメンバーと違う人になったら、その卓の準決勝は記録用紙で集計し、決勝のメンバーも集計係が決める。</p>
+<p>ページのメンバーと違う人になったら、その卓の準決勝は集計係が手元で集計し、決勝のメンバーも集計係が決める。</p>
 <p>打ち上げの振り分けに全30名の順位が必要。</p>
 <p>下位の順位は15:20時点で確定するため、振り分け表の作成はそこから始められる。</p>
 <h2 id="s6">6. 表彰</h2>
@@ -418,7 +418,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><th>役割</th><th>人数</th><th>担当時間</th></tr>
 <tr><td>MC・実況</td><td>1名</td><td>終日</td></tr>
 <tr><td>受付</td><td>2名</td><td>10:30〜11:00（以降は未入力の卓への声かけを手伝う）</td></tr>
-<tr><td>集計（入力サポート）</td><td>1名</td><td>各回戦後。点数報告ページの入力方法を教え、集計表の「入力済み n/8卓」を見て未入力の卓に声をかける。計算と順位はページが出す</td></tr>
+<tr><td>集計（入力サポート）</td><td>1名</td><td>各回戦後。点数報告ページの入力方法を教え、頼まれた卓の分は自分で入れる。集計表の「入力済み n/8卓」を見て未入力の卓に声をかける。計算と順位はページが出す</td></tr>
 <tr><td>列整理</td><td>1名</td><td>15:35〜16:10</td></tr>
 <tr><td>撮影</td><td>1名</td><td>サイン会・表彰（集計と兼任可）</td></tr>
 </table></div>
@@ -427,10 +427,8 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h2 id="s11">11. 当日の設営（10:00〜10:30）</h2>
 <ul class=todo>
 <li><label><input type="checkbox" data-k="受付の設置" data-legacy="受付机の設置"><span>受付の設置</span></label></li>
-<li><label><input type="checkbox" data-k="対戦表を1部貼り出す各自は参加者ページで見るスマホがない人と全体確認用" data-legacy=""><span>対戦表を1部貼り出す（各自は参加者ページで見る。スマホがない人と全体確認用）</span></label></li>
-<li><label><input type="checkbox" data-k="卓上ルール表卓番号札を8卓に配置点数報告で卓番号を選ぶので卓番号が見えるように" data-legacy=""><span>卓上ルール表・卓番号札を8卓に配置（点数報告で卓番号を選ぶので、卓番号が見えるように）</span></label></li>
-<li><label><input type="checkbox" data-k="記録用紙点数早見表点数報告ページのQRカードを各卓に" data-legacy=""><span>記録用紙・点数早見表・点数報告ページのQRカードを各卓に</span></label></li>
-<li><label><input type="checkbox" data-k="名札色紙案内カード参加者ページと点数報告ページのQRWiFiを受付に準備" data-legacy=""><span>名札・色紙・案内カード（参加者ページと点数報告ページのQR、Wi-Fi）を受付に準備</span></label></li>
+<li><label><input type="checkbox" data-k="卓番号札を8卓に配置点数報告で卓番号を選ぶので卓番号が見えるように" data-legacy="卓上ルール表卓番号札を8卓に配置点数報告で卓番号を選ぶので卓番号が見えるように"><span>卓番号札を8卓に配置（点数報告で卓番号を選ぶので、卓番号が見えるように）</span></label></li>
+<li><label><input type="checkbox" data-k="名札色紙を受付に準備" data-legacy="名札色紙案内カード参加者ページと点数報告ページのQRWiFiを受付に準備"><span>名札・色紙を受付に準備</span></label></li>
 <li><label><input type="checkbox" data-k="集計係の端末で集計表を開いておく店のテレビにミラーリングできれば映す店9店のWi" data-legacy="集計係の端末で集計表を開いておく大画面があれば映す店のWiFiにつながるか確認"><span>集計係の端末で集計表を開いておく。店のテレビにミラーリングできれば映す（店-9）。店のWi-Fiにつないでよいか確認（店-8）</span></label></li>
 <li><label><input type="checkbox" data-k="マイクスピーカーの動作確認店にあるかは店6" data-legacy="マイクスピーカーの動作確認"><span>マイク・スピーカーの動作確認（店にあるかは店-6）</span></label></li>
 <li><label><input type="checkbox" data-k="サイン会の列の導線を確認" data-legacy=""><span>サイン会の列の導線を確認</span></label></li>
@@ -438,10 +436,10 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 </ul>
 <h3>精算10分で回すためのルール</h3>
 <ol class=todo>
-<li>記録用紙は終局時に各卓4名で確認・署名して完結させる（手元の正として残す）</li>
-<li>卓の代表が点数報告ページに4人分の点棒を入れて送信する（集計係は回収して回らない）</li>
-<li>対戦表は参加者ページで各自が確認する（会場にも1部掲示）</li>
-<li>集計係1名は入力方法を教える役。集計表の「入力済み n/8卓」を見て、未入力の卓に声をかける</li>
+<li>終局時に各卓4名で点棒を確かめ合う（記録用紙は使わない。送った点数が正）</li>
+<li>卓の代表がLINEグループの固定（アナウンス）から点数報告ページを開いて4人分を送るか、スタッフに伝えて入れてもらう（集計係は回収して回らない）</li>
+<li>対戦表は参加者ページで各自が確認する（LINEグループの固定（アナウンス）から開く。会場に掲示はしない）</li>
+<li>集計係1名は入力方法を教え、頼まれた卓の分は自分で入れる。集計表の「入力済み n/8卓」を見て、未入力の卓に声をかける</li>
 </ol>
 <h2 id="s12">12. 手配物</h2>
 <p>11〜<a class="xref" href="#s14">14章</a>のチェックは幹部で共有される（点数報告と同じ受け口に、誰がいつ付けたかつきで保存）。受け口につながらないときは、その端末だけに保存される。</p>
@@ -449,15 +447,10 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li><label><input type="checkbox" data-k="色紙32枚予備込み" data-legacy=""><span>色紙 32枚（予備込み）</span></label></li>
 <li><label><input type="checkbox" data-k="賞品優勝準優勝第3位役満賞飛び賞とトロフィー" data-legacy="賞品優勝準優勝第3位役満賞飛び賞"><span>賞品（優勝／準優勝／第3位／役満賞／飛び賞）とトロフィー</span></label></li>
 <li><label><input type="checkbox" data-k="印刷物" data-legacy=""><span>印刷物</span></label></li>
-<li><label><input type="checkbox" data-k="案内カード32枚参加者ページと点数報告ページのQR店のWiFi受付で色紙と一緒に" data-legacy=""><span>　案内カード 32枚（参加者ページと点数報告ページのQR、店のWi-Fi。受付で色紙と一緒に渡す）</span></label></li>
-<li><label><input type="checkbox" data-k="卓番号札8枚と点数報告ページのQRカード8枚各卓に置く" data-legacy=""><span>　卓番号札 8枚と点数報告ページのQRカード 8枚（各卓に置く）</span></label></li>
-<li><label><input type="checkbox" data-k="対戦表1部会場掲示用各自は参加者ページ" data-legacy=""><span>　対戦表 1部（会場掲示用。各自は参加者ページ）</span></label></li>
-<li><label><input type="checkbox" data-k="記録用紙予選8卓4半荘準決勝2卓決勝1卓手元の正" data-legacy=""><span>　記録用紙（予選8卓×4半荘、準決勝2卓、決勝1卓。手元の正）</span></label></li>
-<li><label><input type="checkbox" data-k="卓上ルール表8枚" data-legacy=""><span>　卓上ルール表 8枚</span></label></li>
-<li><label><input type="checkbox" data-k="点数早見表8枚" data-legacy=""><span>　点数早見表 8枚</span></label></li>
+<li><label><input type="checkbox" data-k="卓番号札8枚各卓に置く" data-legacy="卓番号札8枚と点数報告ページのQRカード8枚各卓に置く"><span>　卓番号札 8枚（各卓に置く）</span></label></li>
 <li><label><input type="checkbox" data-k="名札32枚" data-legacy=""><span>　名札 32枚</span></label></li>
-<li><label><input type="checkbox" data-k="集計シート点数報告ページが止まったときの予備" data-legacy=""><span>　集計シート（点数報告ページが止まったときの予備）</span></label></li>
-<li><label><input type="checkbox" data-k="筆記具電卓1台電卓は予備の集計シート用" data-legacy=""><span>筆記具・電卓1台（電卓は予備の集計シート用）</span></label></li>
+<li><label><input type="checkbox" data-k="筆記具受付用" data-legacy="筆記具電卓1台電卓は予備の集計シート用"><span>筆記具（受付用）</span></label></li>
+<li><label><input type="checkbox" data-k="LINEグループの固定アナウンスに参加者ページ点数報告ページルールページ点数計算" data-legacy=""><span>LINEグループの固定（アナウンス）に、参加者ページ・点数報告ページ・ルールページ・点数計算ページのリンクを置く（店のWi-Fiが使えればそれも。店-8）</span></label></li>
 <li><label><input type="checkbox" data-k="集計係の端末スマホかタブレットと充電器通信はスマホ回線でも可" data-legacy=""><span>集計係の端末（スマホかタブレット）と充電器。通信はスマホ回線でも可</span></label></li>
 <li><label><input type="checkbox" data-k="受付名簿" data-legacy=""><span>受付名簿</span></label></li>
 <li><label><input type="checkbox" data-k="カメラサイン会撮影用" data-legacy=""><span>カメラ（サイン会撮影用）</span></label></li>
@@ -469,11 +462,12 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li><label><input type="checkbox" data-k="色紙32枚当日サインか事前サインかは連3の結果どおりか" data-legacy=""><span>色紙 32枚（当日サインか事前サインかは連-3の結果どおりか）</span></label></li>
 <li><label><input type="checkbox" data-k="賞品一式優勝準優勝第3位役満賞飛び賞" data-legacy="賞品一式優勝準優勝第3位役満賞飛び賞とHaluお食事券"><span>賞品一式（優勝／準優勝／第3位／役満賞／飛び賞）</span></label></li>
 <li><label><input type="checkbox" data-k="トロフィー" data-legacy=""><span>トロフィー</span></label></li>
-<li><label><input type="checkbox" data-k="印刷物一式案内カード32卓番号札8QRカード8対戦表1部記録用紙卓上ルール表8点" data-legacy=""><span>印刷物一式: 案内カード32・卓番号札8・QRカード8・対戦表1部・記録用紙・卓上ルール表8・点数早見表8・名札32・集計シート</span></label></li>
+<li><label><input type="checkbox" data-k="印刷物一式卓番号札8名札32" data-legacy="印刷物一式案内カード32卓番号札8QRカード8対戦表1部記録用紙卓上ルール表8点"><span>印刷物一式: 卓番号札8・名札32</span></label></li>
 <li><label><input type="checkbox" data-k="集計係の端末は充電100充電器とモバイルバッテリー" data-legacy=""><span>集計係の端末は充電100%。充電器とモバイルバッテリー</span></label></li>
 <li><label><input type="checkbox" data-k="点数報告ページを開いて最新に更新が通ること集計表が空1023の試し送信を全消去済" data-legacy=""><span>点数報告ページを開いて「最新に更新」が通ること。集計表が空（10/23の試し送信を全消去済み）であること</span></label></li>
 <li><label><input type="checkbox" data-k="参加者ページを開いて対戦表が最新であること" data-legacy=""><span>参加者ページを開いて対戦表が最新であること</span></label></li>
-<li><label><input type="checkbox" data-k="筆記具電卓1台" data-legacy=""><span>筆記具・電卓1台</span></label></li>
+<li><label><input type="checkbox" data-k="LINEグループの固定アナウンスに各ページのリンクがあること" data-legacy=""><span>LINEグループの固定（アナウンス）に、各ページのリンクがあること</span></label></li>
+<li><label><input type="checkbox" data-k="筆記具" data-legacy="筆記具電卓1台"><span>筆記具</span></label></li>
 <li><label><input type="checkbox" data-k="受付名簿申込30名当日の連絡先" data-legacy=""><span>受付名簿（申込30名・当日の連絡先）</span></label></li>
 <li><label><input type="checkbox" data-k="カメラ充電空き容量" data-legacy=""><span>カメラ（充電・空き容量）</span></label></li>
 <li><label><input type="checkbox" data-k="マイク店にない場合のみ" data-legacy=""><span>マイク（店にない場合のみ）</span></label></li>
@@ -541,7 +535,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td><label><input type="checkbox" data-k="14幹10賞品の内容" data-legacy=""><span>幹-10</span></label></td><td>賞品の内容</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹11実況役を誰がやるか" data-legacy=""><span>幹-11</span></label></td><td>実況役を誰がやるか</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹13集計係入力サポート1名を誰がやるか" data-legacy=""><span>幹-13</span></label></td><td>集計係（入力サポート1名）を誰がやるか</td></tr>
-<tr><td><label><input type="checkbox" data-k="14幹22対戦表を確定するいまは製作中決まったら会場掲示用に1部印刷する期限は幹" data-legacy=""><span>幹-22</span></label></td><td>対戦表を確定する（いまは製作中）。決まったら会場掲示用に1部印刷する。期限は幹部で決める</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹22対戦表を確定するいまは製作中期限は幹部で決める" data-legacy=""><span>幹-22</span></label></td><td>対戦表を確定する（いまは製作中）。期限は幹部で決める</td></tr>
 </table></div>
 <h2 id="s15">15. 逆算スケジュール</h2>
 <div class="tw"><table>
@@ -550,7 +544,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>9月17日</td><td>幹部で決めることを確定</td></tr>
 <tr><td>9月18日</td><td>募集開始</td></tr>
 <tr><td>10月17日（土）</td><td><s>募集締切（30名）</s> → 満員で締切済み</td></tr>
-<tr><td>10月18〜22日</td><td>賞品・色紙・印刷物（案内カード・卓番号札・QR）の手配、プレイヤーNoの正式決定（仮の割り振りは済み。変えたら保管庫の名簿と<a class="xref" href="#s8">8章</a>の一覧を直し、結果をLINEで連絡）</td></tr>
+<tr><td>10月18〜22日</td><td>賞品・色紙・印刷物（名札・卓番号札）の手配、プレイヤーNoの正式決定（仮の割り振りは済み。変えたら保管庫の名簿と<a class="xref" href="#s8">8章</a>の一覧を直し、結果をLINEで連絡）</td></tr>
 <tr><td>10月23日（金）</td><td>最終確認・スタッフ打ち合わせ。点数報告ページで1卓分を試し送信し、確認後に全消去（GASの resetAll）</td></tr>
 <tr><td>10月24日（土）</td><td>本番</td></tr>
 </table></div>
@@ -627,6 +621,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-09</td><td>幹部用ページ8章の打ち上げの回答一覧（希望ごとの名前・未回答・文字で写す・回答の履歴）からプレイヤーNoを外し、名前だけにした。名前を登録する「出席者ごとの希望」の表はNoの列を残す</td><td>主催の指示</td></tr>
 <tr><td>2026-10-09</td><td>14章の確認事項から、ページ開発の項目（受け口のデプロイ・キーの設定など8件）を外した。開発の記録と残りは運営システムまとめMDで管理する。幹-22 は対戦表の確定と印刷だけにした</td><td>主催の指示</td></tr>
 <tr><td>2026-10-09</td><td>幹部用ページ8章の「出席者ごとの希望」の表からもプレイヤーNoの列を外し、名前・希望・回答だけにした（並びは名簿の順のまま）。名簿外の回答は名前に「（一覧外）」を付ける</td><td>主催の指示</td></tr>
+<tr><td>2026-10-09</td><td>印刷物を名札と卓番号札だけにした。案内カード・QRカード・対戦表の掲示・卓上ルール表・点数早見表・記録用紙・集計シートはやめ、各ページのリンクはLINEグループの固定（アナウンス）に置く。点数は、卓の代表がLINEのリンクから送るか、スタッフ（集計係）に伝えて入れてもらう。記録用紙をやめたので、送った点数が正。電卓もやめた（予備の集計シート用だったため）。2章・4章・5章・10〜13章・14章（幹-22）・15章を同時に更新</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
