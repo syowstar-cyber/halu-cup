@@ -44,7 +44,8 @@ function load_() {
   if (!views.daily) views.daily = {}; if (!views.recent) views.recent = [];
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {} };
+  let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) { partyLog = []; }
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog };
 }
 
 function saveViews_(views) {
@@ -69,6 +70,32 @@ function saveChecks_(checks) {
 
 function saveParty_(party) {
   props_().setProperty('PARTY', JSON.stringify(party));
+}
+
+// 打ち上げ希望の履歴（2026-10-08）。送信のたびに1件足すだけで、消す処理は置かない（上書き・取り消しの前の回答も残す）。
+// 1項目9KBの上限に収めるため PARTY_LOG_1, _2, … に分けて積み、今の番号を PARTY_LOG_N に持つ。
+const PLOG_BYTES = 7000;
+function appendPartyLog_(entry) {
+  const p = props_();
+  let n = parseInt(p.getProperty('PARTY_LOG_N') || '1', 10); if (!(n >= 1)) n = 1;
+  let arr;
+  try { arr = JSON.parse(p.getProperty('PARTY_LOG_' + n) || '[]'); } catch (e) { arr = []; }
+  arr.push(entry);
+  let s = JSON.stringify(arr);
+  if (arr.length > 1 && Utilities.newBlob(s).getBytes().length > PLOG_BYTES) {
+    n += 1; s = JSON.stringify([entry]);
+    p.setProperty('PARTY_LOG_N', String(n));
+  }
+  p.setProperty('PARTY_LOG_' + n, s);
+}
+function loadPartyLog_() {
+  const p = props_();
+  const n = parseInt(p.getProperty('PARTY_LOG_N') || '1', 10);
+  let all = [];
+  for (let i = 1; i <= n; i++) {
+    try { all = all.concat(JSON.parse(p.getProperty('PARTY_LOG_' + i) || '[]')); } catch (e) {}
+  }
+  return all;
 }
 
 function out_(o) {
@@ -165,9 +192,13 @@ function doParty_(body) {
   lock.waitLock(10000);
   try {
     const party = load_().party;
-    if (choice) party[name] = { no: no, choice: choice, ts: now_() }; else delete party[name];
+    const prev = party[name] ? party[name].choice : '';
+    const ts = now_();
+    if (choice) party[name] = { no: no, choice: choice, ts: ts }; else delete party[name];
     saveParty_(party);
-    return out_({ ok: true, party: party });
+    try { appendPartyLog_({ ts: ts, name: name, no: no, choice: choice, prev: prev }); } catch (e) {}   // 履歴が書けなくても回答の保存は止めない
+    let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) {}
+    return out_({ ok: true, party: party, partyLog: partyLog });
   } finally {
     lock.releaseLock();
   }

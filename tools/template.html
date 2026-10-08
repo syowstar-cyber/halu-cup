@@ -117,7 +117,7 @@ async function syncChecks(c){
     const j = await r.json();
     if (!j.ok) throw new Error('bad');
     CHECKS = j.data.checks || {}; SHARED = true;
-    renderParty(j.data.party || {}, j.data.roster || {});
+    renderParty(j.data.party || {}, j.data.roster || {}, j.data.partyLog);
     nameSchedule(j.data.roster || {});
     renderViews(j.data.views || { daily: {}, recent: [] });
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
@@ -131,15 +131,15 @@ async function syncChecks(c){
 // 名前は受け口にだけ置く（このリポにはファイルとして置かない）。名前欄・希望欄はここで直せる
 const PMARK = { '1': '①', '2': '②', '3': '③', '4': '④', '5': '⑤' };
 const PNOS = Array.from({ length: 30 }, (_, i) => 'P' + (i + 1));
-let PARTY = {}, ROSTER = {};
+let PARTY = {}, ROSTER = {}, PLOG = null;
 function partyOf(p){
   const n = ROSTER[p];
   if (n && PARTY[n]) return PARTY[n];
   const hit = Object.entries(PARTY).find(([k, v]) => v.no === p); return hit ? hit[1] : null;
 }
-function renderParty(party, roster){
+function renderParty(party, roster, plog){
   const box = document.getElementById('party'); if (!box) return;
-  PARTY = party || {}; ROSTER = roster || {};
+  PARTY = party || {}; ROSTER = roster || {}; if (plog !== undefined) PLOG = plog;
   const cnt = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
   const named = PNOS.filter(p => ROSTER[p]).length;
   let h = '<div class="cnt"><span>出席者 ' + named + '人</span><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④翌週のみ ' + cnt['4'] + '人</span><span>⑤不参加 ' + cnt['5'] + '人</span><span>回答 ' + Object.keys(PARTY).length + '人</span></div>';
@@ -168,6 +168,15 @@ function renderParty(party, roster){
   });
   h += '</table></div>';
   h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
+  // 回答の履歴（受け口の PARTY_LOG＝送信のたびに1件。変更・取り消しの前の回答も残る）。新しい順
+  if (Array.isArray(PLOG)) {
+    const what = r => !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));
+    h += '<details><summary>回答の履歴（' + PLOG.length + '件・新しい順）</summary>';
+    h += PLOG.length ? '<div class="tw"><table><tr><th>時刻</th><th>名前</th><th>回答</th></tr>' + PLOG.slice().reverse().map(r => '<tr><td>' + fmtTs(r.ts) + '</td><td>' + esc(r.name) + (r.no ? '（' + esc(r.no) + '）' : '') + '</td><td>' + what(r) + '</td></tr>').join('') + '</table></div>' : '<p class="st">まだありません</p>';
+    h += '<p class="st">2026-10-08 から記録。それより前の回答は今の回答だけが残っている。</p></details>';
+  } else {
+    h += '<p class="st ng">回答の履歴を読めません（受け口が古い版）。gas/Code.gs を新バージョンでデプロイしてください</p>';
+  }
   h += '<details><summary>出席者一覧を貼り付け（P番号と名前の行をまとめて登録）</summary><textarea id="rpaste" rows="8" placeholder="P1&#9;名前&#10;P2&#9;名前&#10;…（1行1人。番号と名前の間は空白かタブ）"></textarea><button type="button" id="rpost">この内容で登録する</button><div class="st" id="rst"></div></details>';
   box.innerHTML = h;
   async function postRoster(names, st){
@@ -200,7 +209,7 @@ function renderParty(party, roster){
     try {
       const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'party', name: n, no: p, choice: sel.value }) });
       const j = await r.json(); if (!j.ok) throw new Error(j.error || 'ng');
-      renderParty(j.party || {}, ROSTER);
+      renderParty(j.party || {}, ROSTER, j.partyLog);
     } catch (e) { st.textContent = '保存できませんでした。通信を確認して「最新に更新」'; st.className = 'st ng'; sel.disabled = false; }
   }));
   box.querySelector('#rpost').addEventListener('click', async () => {
