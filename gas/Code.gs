@@ -216,13 +216,27 @@ function doRoster_(body) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    const roster = load_().roster;
+    const d = load_(), roster = d.roster, party = d.party;
+    const moved = [];
     keys.forEach(function (k) {
       const v = String(names[k] || '').replace(/[<>"'\n\r\t]/g, '').trim().slice(0, 20);
+      const old = roster[k];
       if (v) roster[k] = v; else delete roster[k];
+      // 名前を変えたら打ち上げ希望も新しい名前へ移す（回答時刻は据え置き）。新しい名前に回答が既にあれば移さない
+      if (v && old && old !== v && party[old] && !party[v]) {
+        party[v] = { no: k, choice: party[old].choice, ts: party[old].ts };
+        delete party[old];
+        moved.push({ name: v, no: k, choice: party[v].choice, from: old });
+      }
     });
     saveRoster_(roster);
-    return out_({ ok: true, roster: roster });
+    if (moved.length) {
+      saveParty_(party);
+      const ts = now_();
+      moved.forEach(function (m) { try { appendPartyLog_({ ts: ts, name: m.name, no: m.no, choice: m.choice, prev: m.choice, from: m.from }); } catch (e) {} });
+    }
+    let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) {}
+    return out_({ ok: true, roster: roster, party: party, partyLog: partyLog });
   } finally {
     lock.releaseLock();
   }

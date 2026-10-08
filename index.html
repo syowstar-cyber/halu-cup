@@ -532,6 +532,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td><label><input type="checkbox" data-k="14幹17Codegsを新バージョンでデプロイする参加者ページの閲覧ログVIEW" data-legacy=""><span>幹-17</span></label></td><td>~~Code.gs を新バージョンでデプロイする（参加者ページの閲覧ログ <code>VIEWS</code> を受けるため）~~ → 2026-09-17 20:05 にデプロイ済み。参加者ページを開いて1件記録され、幹部用ページ<a class="xref" href="#s4">4章</a>に出ることを確認</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹16Codegsを新バージョンでデプロイする出席者一覧ROSTERを受ける" data-legacy=""><span>幹-16</span></label></td><td>~~Code.gs を新バージョンでデプロイする（出席者一覧 <code>ROSTER</code> を受けるため）~~ → 2026-09-17 19:2x に版5をデプロイ済み。名簿26名（仮No P1〜P26。yuko shinbara はゆうこママ本人、水野さん・中村さんは不参加なので外した）を受け口に登録済み。参加者ページの打ち上げ名前選択と出席者一覧に出ることを確認</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹20Codegsを新バージョンでデプロイする打ち上げ希望の履歴PARTY_" data-legacy=""><span>幹-20</span></label></td><td>~~Code.gs を新バージョンでデプロイする（打ち上げ希望の履歴 <code>PARTY_LOG</code> を残すため）~~ → 2026-10-08 18:1x にデプロイ済み。受け口が履歴（0件）を返すことを読み取りで確認（履歴は消せないためテスト送信はしない）</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹21Codegsを新バージョンでデプロイする名簿の名前を変えたら打ち上げ希" data-legacy=""><span>幹-21</span></label></td><td>Code.gs を新バージョンでデプロイする（名簿の名前を変えたら打ち上げ希望も新しい名前へ移すため）。デプロイ後に出席者一覧の名前を呼び名へ入れ替える</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹14GASにCHECK_KEYを設定しCodegsを新バージョンでデプロイ" data-legacy=""><span>幹-14</span></label></td><td>~~GAS に <code>CHECK_KEY</code> を設定し、Code.gs を新バージョンでデプロイ~~ → 設定・デプロイ済み（2026-09-16）。同日にパスワードと報告キーを外し、キー不要版の Code.gs を再デプロイ・「幹部で共有中」を確認・スクリプト プロパティの <code>REPORT_KEY</code>／<code>CHECK_KEY</code> も削除済み（2026-09-16 解消）</td></tr>
 </table></div>
 <h2 id="s15">15. 逆算スケジュール</h2>
@@ -607,6 +608,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-05</td><td>東場の連荘を変更。親の和了は連荘して本場を積む。親の聴牌流局は連荘せず親が移る（テンパイ連荘なしは据え置き）。<a class="xref" href="#s4">4章</a>・<a class="xref" href="sanka/#s4">参加者案内4章</a>・ルールページの早見表・<a class="xref" href="#s2">2章</a>・<a class="xref" href="#s3">3章</a>を同時に更新</td><td>主催の決定</td></tr>
 <tr><td>2026-10-05</td><td>お食事券をなしに。打ち上げの希望調査は5択のまま、③④から「入れなければお食事券」を外し、⑤を「打ち上げには参加しない」に。<a class="xref" href="#s8">8章</a>・<a class="xref" href="#s12">12章</a>・<a class="xref" href="#s13">13章</a>・<a class="xref" href="#s14">14章</a>（マ-5 解消）・<a class="xref" href="sanka/#s7">参加者案内7章</a>・参加者ページのフォーム・幹部用ページの集計を同時に更新。受け口の回答は0件で付け替えの影響なし（Code.gs は変更なし）</td><td>主催の決定</td></tr>
 <tr><td>2026-10-08</td><td>打ち上げ希望の履歴を残すようにした。参加者ページ・幹部用ページから送るたびに、時刻・名前・No・前の回答・新しい回答を受け口の <code>PARTY_LOG</code> へ1件足す（消す処理は置かない）。幹部用ページ<a class="xref" href="#s8">8章</a>に「回答の履歴」を新しい順で表示（幹-20: 再デプロイが要る）</td><td>主催の指示</td></tr>
+<tr><td>2026-10-08</td><td>出席者一覧の名前を LINE 表示名から主催の呼び名に切り替える。参加者1名が撮影係に回って抜け、代わりに1名が入った（Noは引き継ぎ）。名簿の名前を変えると、打ち上げ希望も回答時刻ごと新しい名前へ移り、履歴に「名前を変更」と1件残る（幹-21: 再デプロイが要る）。名前の正典は保管庫の参加者名簿</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
@@ -690,7 +692,7 @@ function renderParty(party, roster, plog){
   h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
   // 回答の履歴（受け口の PARTY_LOG＝送信のたびに1件。変更・取り消しの前の回答も残る）。新しい順
   if (Array.isArray(PLOG)) {
-    const what = r => !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));
+    const what = r => r.from ? '名前を「' + esc(r.from) + '」から変更（' + (PMARK[r.choice] || '') + '）' : !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));
     h += '<details><summary>回答の履歴（' + PLOG.length + '件・新しい順）</summary>';
     h += PLOG.length ? '<div class="tw"><table><tr><th>時刻</th><th>名前</th><th>回答</th></tr>' + PLOG.slice().reverse().map(r => '<tr><td>' + fmtTs(r.ts) + '</td><td>' + esc(r.name) + (r.no ? '（' + esc(r.no) + '）' : '') + '</td><td>' + what(r) + '</td></tr>').join('') + '</table></div>' : '<p class="st">まだありません</p>';
     h += '<p class="st">2026-10-08 から記録。それより前の回答は今の回答だけが残っている。</p></details>';
@@ -705,7 +707,7 @@ function renderParty(party, roster, plog){
     try {
       const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'roster', names }) });
       const j = await r.json(); if (!j.ok) throw new Error(j.error || 'ng');
-      ROSTER = j.roster || {}; st.textContent = '保存しました'; st.className = 'st'; return true;
+      ROSTER = j.roster || {}; if (j.party) PARTY = j.party; if (j.partyLog) PLOG = j.partyLog; st.textContent = '保存しました'; st.className = 'st'; return true;
     } catch (e) { st.textContent = e.message === 'names' || e.message === 'player' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください' : '保存できませんでした。通信を確認して「最新に更新」'; st.className = 'st ng'; return false; }
   }
   box.querySelectorAll('input.rname').forEach(inp => inp.addEventListener('change', async () => {

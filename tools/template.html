@@ -170,7 +170,7 @@ function renderParty(party, roster, plog){
   h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
   // 回答の履歴（受け口の PARTY_LOG＝送信のたびに1件。変更・取り消しの前の回答も残る）。新しい順
   if (Array.isArray(PLOG)) {
-    const what = r => !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));
+    const what = r => r.from ? '名前を「' + esc(r.from) + '」から変更（' + (PMARK[r.choice] || '') + '）' : !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));
     h += '<details><summary>回答の履歴（' + PLOG.length + '件・新しい順）</summary>';
     h += PLOG.length ? '<div class="tw"><table><tr><th>時刻</th><th>名前</th><th>回答</th></tr>' + PLOG.slice().reverse().map(r => '<tr><td>' + fmtTs(r.ts) + '</td><td>' + esc(r.name) + (r.no ? '（' + esc(r.no) + '）' : '') + '</td><td>' + what(r) + '</td></tr>').join('') + '</table></div>' : '<p class="st">まだありません</p>';
     h += '<p class="st">2026-10-08 から記録。それより前の回答は今の回答だけが残っている。</p></details>';
@@ -185,7 +185,7 @@ function renderParty(party, roster, plog){
     try {
       const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'roster', names }) });
       const j = await r.json(); if (!j.ok) throw new Error(j.error || 'ng');
-      ROSTER = j.roster || {}; st.textContent = '保存しました'; st.className = 'st'; return true;
+      ROSTER = j.roster || {}; if (j.party) PARTY = j.party; if (j.partyLog) PLOG = j.partyLog; st.textContent = '保存しました'; st.className = 'st'; return true;
     } catch (e) { st.textContent = e.message === 'names' || e.message === 'player' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください' : '保存できませんでした。通信を確認して「最新に更新」'; st.className = 'st ng'; return false; }
   }
   box.querySelectorAll('input.rname').forEach(inp => inp.addEventListener('change', async () => {
