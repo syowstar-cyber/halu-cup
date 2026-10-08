@@ -156,18 +156,19 @@ function renderParty(party, roster, plog){
   h += '<h4>出席者ごとの希望（ここで直せる）</h4>';
   // 回答済みの人は「未回答」を選べない＝この画面から回答を消せない（消すのは参加者本人の取り消しだけ）
   const opts = v => (!v ? '<option value="" selected>未回答</option>' : '') + ['1', '2', '3', '4', '5'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
-  h += '<div class="tw"><table class="roster"><tr><th>No</th><th>名前</th><th>希望</th><th>回答</th></tr>';
+  // プレイヤーNoの列は出さない（2026-10-09 主催の指示）。行は名簿の順（P1〜P30）のまま、名前欄が data-p で枠を覚える
+  h += '<div class="tw"><table class="roster"><tr><th>名前</th><th>希望</th><th>回答</th></tr>';
   const used = new Set();
   PNOS.forEach(p => {
     const v = partyOf(p); if (v) used.add(ROSTER[p] && PARTY[ROSTER[p]] === v ? ROSTER[p] : Object.keys(PARTY).find(k => PARTY[k] === v));
-    h += '<tr><td>' + p + '</td><td><input class="rname" data-p="' + p + '" maxlength="20" value="' + esc(ROSTER[p] || '') + '" placeholder="（空き）"></td>'
+    h += '<tr><td><input class="rname" data-p="' + p + '" maxlength="20" value="' + esc(ROSTER[p] || '') + '" placeholder="（空き）"></td>'
       + '<td><select class="rch" data-p="' + p + '"' + (ROSTER[p] ? '' : ' disabled') + '>' + opts(v ? v.choice : '') + '</select></td><td>' + (v ? fmtTs(v.ts) : '') + '</td></tr>';
   });
   Object.entries(PARTY).filter(([n]) => !used.has(n)).forEach(([n, v]) => {
-    h += '<tr><td>一覧外</td><td>' + esc(n) + (v.no ? '（' + esc(v.no) + '）' : '') + '</td><td>' + (PMARK[v.choice] || '') + '</td><td>' + fmtTs(v.ts) + '</td></tr>';
+    h += '<tr><td>' + esc(n) + '（一覧外）</td><td>' + (PMARK[v.choice] || '') + '</td><td>' + fmtTs(v.ts) + '</td></tr>';
   });
   h += '</table></div>';
-  h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
+  h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
   // 回答の履歴（受け口の PARTY_LOG＝送信のたびに1件。変更・取り消しの前の回答も残る）。新しい順
   if (Array.isArray(PLOG)) {
     const what = r => r.from ? '名前を「' + esc(r.from) + '」から変更（' + (PMARK[r.choice] || '') + '）' : !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));

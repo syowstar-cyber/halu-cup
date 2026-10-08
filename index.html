@@ -313,7 +313,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 </table></div>
 <p>事前の希望日、大会の順位、希望人数に沿って、大会後にメンバーを発表する。</p>
 <h3>出席者一覧と打ち上げ希望</h3>
-<p>下に出席者（仮のプレイヤーNo）の一覧と、各人の打ち上げ希望が出る。名前と希望はここで直せる（LINEで受けた分も同じ）。</p>
+<p>下に出席者の一覧と、各人の打ち上げ希望が出る（名前だけ。並びは名簿の順）。名前と希望はここで直せる（LINEで受けた分も同じ）。</p>
 <p>名前の置き場所と登録の手順は、運営システムまとめMDの「参加者名簿」の行のとおり。</p>
 <p>回答の履歴（新規・変更・取り消し）は一覧の下の「回答の履歴」で見られる。2026-10-08 から記録し、消せない。</p>
 <div id="party" class="party"></div>
@@ -626,6 +626,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-08</td><td>準決勝のメンバーの境目が予選の合計で同点のときは、集計係が年齢で決める手順にした（5章）。点数報告ページは境目の同点を準決勝・決勝の欄に【注意】として出す</td><td>主催の決定</td></tr>
 <tr><td>2026-10-09</td><td>幹部用ページ8章の打ち上げの回答一覧（希望ごとの名前・未回答・文字で写す・回答の履歴）からプレイヤーNoを外し、名前だけにした。名前を登録する「出席者ごとの希望」の表はNoの列を残す</td><td>主催の指示</td></tr>
 <tr><td>2026-10-09</td><td>14章の確認事項から、ページ開発の項目（受け口のデプロイ・キーの設定など8件）を外した。開発の記録と残りは運営システムまとめMDで管理する。幹-22 は対戦表の確定と印刷だけにした</td><td>主催の指示</td></tr>
+<tr><td>2026-10-09</td><td>幹部用ページ8章の「出席者ごとの希望」の表からもプレイヤーNoの列を外し、名前・希望・回答だけにした（並びは名簿の順のまま）。名簿外の回答は名前に「（一覧外）」を付ける</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
@@ -695,18 +696,19 @@ function renderParty(party, roster, plog){
   h += '<h4>出席者ごとの希望（ここで直せる）</h4>';
   // 回答済みの人は「未回答」を選べない＝この画面から回答を消せない（消すのは参加者本人の取り消しだけ）
   const opts = v => (!v ? '<option value="" selected>未回答</option>' : '') + ['1', '2', '3', '4', '5'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
-  h += '<div class="tw"><table class="roster"><tr><th>No</th><th>名前</th><th>希望</th><th>回答</th></tr>';
+  // プレイヤーNoの列は出さない（2026-10-09 主催の指示）。行は名簿の順（P1〜P30）のまま、名前欄が data-p で枠を覚える
+  h += '<div class="tw"><table class="roster"><tr><th>名前</th><th>希望</th><th>回答</th></tr>';
   const used = new Set();
   PNOS.forEach(p => {
     const v = partyOf(p); if (v) used.add(ROSTER[p] && PARTY[ROSTER[p]] === v ? ROSTER[p] : Object.keys(PARTY).find(k => PARTY[k] === v));
-    h += '<tr><td>' + p + '</td><td><input class="rname" data-p="' + p + '" maxlength="20" value="' + esc(ROSTER[p] || '') + '" placeholder="（空き）"></td>'
+    h += '<tr><td><input class="rname" data-p="' + p + '" maxlength="20" value="' + esc(ROSTER[p] || '') + '" placeholder="（空き）"></td>'
       + '<td><select class="rch" data-p="' + p + '"' + (ROSTER[p] ? '' : ' disabled') + '>' + opts(v ? v.choice : '') + '</select></td><td>' + (v ? fmtTs(v.ts) : '') + '</td></tr>';
   });
   Object.entries(PARTY).filter(([n]) => !used.has(n)).forEach(([n, v]) => {
-    h += '<tr><td>一覧外</td><td>' + esc(n) + (v.no ? '（' + esc(v.no) + '）' : '') + '</td><td>' + (PMARK[v.choice] || '') + '</td><td>' + fmtTs(v.ts) + '</td></tr>';
+    h += '<tr><td>' + esc(n) + '（一覧外）</td><td>' + (PMARK[v.choice] || '') + '</td><td>' + fmtTs(v.ts) + '</td></tr>';
   });
   h += '</table></div>';
-  h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
+  h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
   // 回答の履歴（受け口の PARTY_LOG＝送信のたびに1件。変更・取り消しの前の回答も残る）。新しい順
   if (Array.isArray(PLOG)) {
     const what = r => r.from ? '名前を「' + esc(r.from) + '」から変更（' + (PMARK[r.choice] || '') + '）' : !r.choice ? (PMARK[r.prev] || '') + ' → 取り消し' : (r.prev ? (PMARK[r.prev] || '') + ' → ' + PMARK[r.choice] : '新規 ' + (PMARK[r.choice] || ''));
