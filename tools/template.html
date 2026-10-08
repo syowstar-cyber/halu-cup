@@ -143,7 +143,19 @@ function renderParty(party, roster){
   const cnt = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }; Object.values(PARTY).forEach(v => { if (cnt[v.choice] !== undefined) cnt[v.choice]++; });
   const named = PNOS.filter(p => ROSTER[p]).length;
   let h = '<div class="cnt"><span>出席者 ' + named + '人</span><span>①当日 ' + cnt['1'] + '人</span><span>②翌週 ' + cnt['2'] + '人</span><span>③当日のみ ' + cnt['3'] + '人</span><span>④翌週のみ ' + cnt['4'] + '人</span><span>⑤不参加 ' + cnt['5'] + '人</span><span>回答 ' + Object.keys(PARTY).length + '人</span></div>';
-  const opts = v => '<option value=""' + (!v ? ' selected' : '') + '>未回答</option>' + ['1', '2', '3', '4', '5'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
+  // 回答一覧（読むだけ・受け口へは何も送らない）。希望ごとに回答の早い順。未回答は出席者一覧のうち回答のない人
+  const PLABEL = { '1': '①当日希望（翌週も可）', '2': '②翌週希望（当日も可）', '3': '③当日だけ', '4': '④翌週だけ', '5': '⑤参加しない' };
+  const who = (n, v) => n + (v.no ? '（' + v.no + '）' : '');
+  const byCh = { '1': [], '2': [], '3': [], '4': [], '5': [] };
+  Object.entries(PARTY).sort((a, b) => String(a[1].ts).localeCompare(String(b[1].ts))).forEach(([n, v]) => { if (byCh[v.choice]) byCh[v.choice].push(who(n, v)); });
+  const yet = PNOS.filter(p => ROSTER[p] && !partyOf(p)).map(p => ROSTER[p] + '（' + p + '）');
+  h += '<h4>回答一覧（' + Object.keys(PARTY).length + '人・回答の早い順）</h4><div class="tw"><table><tr><th>希望</th><th>人数</th><th>名前</th></tr>';
+  ['1', '2', '3', '4', '5'].forEach(c => { h += '<tr><td>' + PLABEL[c] + '</td><td>' + byCh[c].length + '</td><td>' + (byCh[c].length ? byCh[c].map(esc).join('、') : '—') + '</td></tr>'; });
+  h += '<tr><td>未回答</td><td>' + yet.length + '</td><td>' + (yet.length ? yet.map(esc).join('、') : '—') + '</td></tr></table></div>';
+  h += '<button type="button" id="pcopy">回答一覧を文字で写す</button><span class="st" id="pcst"></span>';
+  h += '<h4>出席者ごとの希望（ここで直せる）</h4>';
+  // 回答済みの人は「未回答」を選べない＝この画面から回答を消せない（消すのは参加者本人の取り消しだけ）
+  const opts = v => (!v ? '<option value="" selected>未回答</option>' : '') + ['1', '2', '3', '4', '5'].map(c => '<option value="' + c + '"' + (v === c ? ' selected' : '') + '>' + PMARK[c] + '</option>').join('');
   h += '<div class="tw"><table class="roster"><tr><th>No</th><th>名前</th><th>希望</th><th>回答</th></tr>';
   const used = new Set();
   PNOS.forEach(p => {
@@ -155,7 +167,7 @@ function renderParty(party, roster){
     h += '<tr><td>一覧外</td><td>' + esc(n) + (v.no ? '（' + esc(v.no) + '）' : '') + '</td><td>' + (PMARK[v.choice] || '') + '</td><td>' + fmtTs(v.ts) + '</td></tr>';
   });
   h += '</table></div>';
-  h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。</p>';
+  h += '<p class="st">名前を直すと受け口に保存（空にすると消える）。希望は参加者ページの回答が出る。LINEで受けた分はここで選べば同じ場所に入る（プレイヤーNoは仮）。回答済みの希望を変えるときは確認が出る。この画面から回答は消せない。</p>';
   h += '<details><summary>出席者一覧を貼り付け（P番号と名前の行をまとめて登録）</summary><textarea id="rpaste" rows="8" placeholder="P1&#9;名前&#10;P2&#9;名前&#10;…（1行1人。番号と名前の間は空白かタブ）"></textarea><button type="button" id="rpost">この内容で登録する</button><div class="st" id="rst"></div></details>';
   box.innerHTML = h;
   async function postRoster(names, st){
@@ -168,12 +180,23 @@ function renderParty(party, roster){
     } catch (e) { st.textContent = e.message === 'names' || e.message === 'player' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください' : '保存できませんでした。通信を確認して「最新に更新」'; st.className = 'st ng'; return false; }
   }
   box.querySelectorAll('input.rname').forEach(inp => inp.addEventListener('change', async () => {
-    const st = box.querySelector('.st'); const names = {}; names[inp.dataset.p] = inp.value.trim();
+    const st = box.querySelector('p.st'); const names = {}; names[inp.dataset.p] = inp.value.trim();
     if (await postRoster(names, st)) renderParty(PARTY, ROSTER);
   }));
+  box.querySelector('#pcopy').addEventListener('click', async () => {
+    const lines = ['打ち上げ回答一覧（' + new Date().toLocaleString('ja-JP') + ' 時点・回答 ' + Object.keys(PARTY).length + '人）'];
+    ['1', '2', '3', '4', '5'].forEach(c => lines.push(PLABEL[c] + ' ' + byCh[c].length + '人: ' + (byCh[c].join('、') || '—')));
+    lines.push('未回答 ' + yet.length + '人: ' + (yet.join('、') || '—'));
+    const t = lines.join('\n'), cst = box.querySelector('#pcst');
+    try { await navigator.clipboard.writeText(t); cst.textContent = ' 写しました（LINE などに貼れる）'; }
+    catch (e) { window.prompt('下の文字をコピーしてください', t); }
+  });
   box.querySelectorAll('select.rch').forEach(sel => sel.addEventListener('change', async () => {
     const p = sel.dataset.p, n = ROSTER[p]; if (!n) return;
-    const st = box.querySelector('.st'); st.textContent = '保存中…'; st.className = 'st'; sel.disabled = true;
+    const old = partyOf(p);
+    if (!sel.value) { renderParty(PARTY, ROSTER); return; }
+    if (old && !confirm(n + ' さんの回答を ' + (PMARK[old.choice] || '') + ' から ' + PMARK[sel.value] + ' に変えます。よいですか？')) { sel.value = old.choice; return; }
+    const st = box.querySelector('p.st'); st.textContent = '保存中…'; st.className = 'st'; sel.disabled = true;
     try {
       const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'party', name: n, no: p, choice: sel.value }) });
       const j = await r.json(); if (!j.ok) throw new Error(j.error || 'ng');
