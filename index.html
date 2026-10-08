@@ -307,7 +307,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>当日の発表</h3>
 <p>18:20の閉会で当日メンバーを発表 → 18:30終了 → Haluへ移動。</p>
 <h2 id="s9">9. 対戦表（プレイヤーNo）</h2>
-<p><strong>製作中・未定（2026-10-08 主催の指示）。下は旧案で、参加者ページからは外した。決まったら<a class="xref" href="sanka/#s8">参加者案内8章</a>へ戻す。</strong></p>
+<p><strong>製作中・未定（2026-10-08 主催の指示）。下は旧案で、参加者ページと点数報告ページからは外した。決まったら <code>make_schedule.py</code> で作り直し、<a class="xref" href="sanka/#s8">参加者案内8章</a>と点数報告ページ（<code>score/schedule.js</code>）へ戻す。</strong></p>
 <p><strong>プレイヤーNoは名簿順の仮割り（<a class="xref" href="#s8">8章</a>の出席者一覧）。正式な決め方は幹-7。</strong></p>
 <p>本田プロ＋P1〜P15 が1〜4卓、ゆうこママ＋P16〜P30 が5〜8卓で4半荘を打つ。</p>
 <ul>
@@ -613,7 +613,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-08</td><td>出席者一覧の名前を LINE 表示名から主催の呼び名に切り替える。参加者1名が撮影係に回って抜け、代わりに1名が入った（Noは引き継ぎ）。名簿の名前を変えると、打ち上げ希望も回答時刻ごと新しい名前へ移り、履歴に「名前を変更」と1件残る（幹-21: 再デプロイが要る）。名前の正典は保管庫の参加者名簿</td><td>主催の指示</td></tr>
 <tr><td>2026-10-08</td><td>ルール訂正。連荘は南場の親の和了だけにした（親は和了後に連荘か親流れを選べる）。東場は親が和了しても親が移る。流局は東場・南場とも必ず親が移る（ノーテン罰符はある）。ラス親は順位に関係なくアガリやめを選べる。親が和了して親が移るときは0本場に戻す。<a class="xref" href="#s4">4章</a>・<a class="xref" href="sanka/#s4">参加者案内4章</a>・ルールページの早見表・<a class="xref" href="#s2">2章</a>・<a class="xref" href="#s3">3章</a>を同時に更新</td><td>主催の指示</td></tr>
 <tr><td>2026-10-08</td><td>チョンボの訂正。チョンボが起きたらその局は流局として満貫払いし、やり直さない。次局は流局と同じく親が移り、本場を1本積む。聴牌・ノーテンの点棒のやり取りはしない。<a class="xref" href="#s4">4章</a>・ルールページの早見表・<a class="xref" href="#s2">2章</a>・<a class="xref" href="#s13">13章</a>を同時に更新</td><td>主催の指示</td></tr>
-<tr><td>2026-10-08</td><td>対戦表を製作中・未定にした。<a class="xref" href="sanka/#s8">参加者案内8章</a>から予選の表と選手別の表を外し、「製作中」の一文だけにした（出席者一覧は残す）。幹部用<a class="xref" href="#s9">9章</a>の表は旧案として残す</td><td>主催の指示</td></tr>
+<tr><td>2026-10-08</td><td>対戦表を製作中・未定にした。<a class="xref" href="sanka/#s8">参加者案内8章</a>から予選の表と選手別の表を外し、「製作中」の一文だけにした（出席者一覧は残す）。点数報告ページも予選の卓選び・入力・組み合わせ表を「製作中（未定）」の表示にした（<code>score/schedule.js</code> を空に。旧案は seed 固定で再生成できる）。準決勝・決勝の入力は変えない。幹部用<a class="xref" href="#s9">9章</a>の表は旧案として残す</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
