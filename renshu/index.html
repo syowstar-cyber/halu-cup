@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1f5a48">
+<title>Halu杯 点数入力の練習</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#1f5a48;--accent-fg:#fff;--card:#fff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db;--ok:#1b6e2f;--ng:#b00020}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.7;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 84px}
+header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
+header h1{font-size:1.3rem;margin:0}
+header .sub{color:var(--muted);font-size:.9rem}
+h2{font-size:1.1rem;margin:26px 0 10px;padding:9px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
+h3{font-size:1.02rem;margin:18px 0 6px;border-left:5px solid var(--accent);padding-left:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0}
+label{display:block;font-weight:700;margin:12px 0 4px}
+select,input{width:100%;font-size:1.15rem;padding:12px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+input[type=number]{text-align:right}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font-size:1.05rem;padding:14px;border:0;border-radius:8px;font-weight:700;cursor:pointer}
+.primary{width:100%;background:var(--accent);color:var(--accent-fg);margin-top:14px}
+.ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line);padding:8px 12px;font-size:.95rem}
+.msg{min-height:1.5em;margin-top:8px;font-weight:700}
+.msg.ok{color:var(--ok)}.msg.ng{color:var(--ng)}
+.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
+.pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+@media (min-width:560px){.pnav a{flex:1 1 0}}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--card)}
+th,td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:right;white-space:nowrap}
+th{background:#ececE8;font-weight:700;position:sticky;top:0}
+#tbl td:nth-child(1),#tbl td:nth-child(2),#tbl th:nth-child(1),#tbl th:nth-child(2),#raw td:nth-child(1),#raw th:nth-child(1){text-align:left}
+tr:nth-child(even) td{background:var(--card2)}
+tr.top6 td:nth-child(2){font-weight:700;color:var(--accent)}
+tr.line6 td{border-bottom:4px solid #b00020}
+tr.guest td{color:var(--muted)}
+td.neg,.neg{color:var(--ng)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.small{color:var(--muted);font-size:.9rem}
+.hint{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.95rem}
+.renshu{border:2px solid var(--accent);background:#eef6f2}
+.renshu ol{margin:6px 0 4px;padding-left:1.4em}
+/* 卓入力 */
+.seat{display:grid;grid-template-columns:2.2em 1fr 7.5em 6em;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.seat .w{font-weight:700;text-align:center;background:var(--soft);border-radius:6px;padding:6px 0}
+.seat .nm{font-weight:700}
+.seat input{padding:10px;font-size:1.1rem}
+.seat .in{display:flex;align-items:center;gap:2px;min-width:0}.seat .in input{flex:1;width:100%;min-width:0}.seat .in span{font-weight:700;font-size:1.1rem}.seat input.auto{background:var(--soft);color:var(--accent);font-weight:700}
+.seat .pt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.sum{display:flex;justify-content:space-between;padding:8px 0;font-weight:700}
+.status span{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:.9rem}
+.status span.done{background:#e3f2e6;border-color:#9fcfa9;color:var(--ok)}
+#sched table{table-layout:fixed}
+#sched th,#sched td{text-align:left;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;padding:8px 5px;font-size:.92rem}
+#sched th:first-child,#sched td:first-child{width:14%}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
+summary{cursor:pointer;font-weight:700}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media (max-width:420px){.seat{grid-template-columns:2em 1fr 6em 4.8em;gap:6px}.seat input{padding:8px 6px;font-size:1rem}.seat .pt{font-size:.95rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🀄 Halu杯 点数入力の練習</h1>
+    <div class="sub">点数報告ページと同じ入力を、本番の前に試せるページです。</div>
+  </header>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告（本番）</a><a href="../fu/">点数計算</a></nav>
+
+  <div class="hint renshu"><b>練習用のページです。ここで送った点数は、本番の集計に入りません。</b>
+    <ol>
+      <li>半荘と卓を選ぶ</li>
+      <li>3人分の点棒を百点単位で入れる（25,300点なら 253）</li>
+      <li>4人目は自動で入るので、確かめて送信する</li>
+      <li>下の集計に出るのを見る。取り消しも試せます</li>
+    </ol>
+    <div class="small">点数はこのスマホの中だけに残ります。名前は出さず、P番号で表示します。卓の組み合わせは練習用の仮のもので、本番の対戦表とは関係ありません。</div>
+  </div>
+
+  <h2>点数の報告（練習・予選／準決勝／決勝）</h2>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="qround">半荘</label>
+        <select id="qround">
+          <option value="1">予選 1半荘目</option>
+          <option value="2">予選 2半荘目</option>
+          <option value="3">予選 3半荘目</option>
+          <option value="4">予選 4半荘目</option>
+          <option value="S1">準決勝 S1卓</option>
+          <option value="S2">準決勝 S2卓</option>
+          <option value="F">決勝</option>
+        </select>
+      </div>
+      <div>
+        <label for="qtable">卓</label>
+        <select id="qtable"></select>
+      </div>
+    </div>
+    <div id="seats"></div>
+    <div class="small">00は打ちません（25,300点 → 253）。3人入れると4人目は自動で入ります。</div>
+    <div id="qhint" class="small"></div>
+    <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
+    <div id="qwarn" class="small neg"></div>
+    <button class="primary" type="button" id="qsend">この卓の4人分を送信する（練習）</button>
+    <div id="qmsg" class="msg" aria-live="polite"></div>
+    <div class="tools"><button class="ghost" type="button" id="qclear">この卓の点数を取り消す</button></div>
+  </div>
+  <div class="hint">
+    <b>ポイントの計算</b>（25,000点持ち・30,000点返し。Mリーグ公式規定と同じ）<br>
+    ①（点棒−30,000）÷1,000。100点＝0.1ポイント（丸めない）<br>
+    ② 順位点 1位 +50／2位 +10／3位 −10／4位 −30 を足す<br>
+    <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「-」を付けてそのまま入れてください。<br>チョンボの局が流局したら満貫払い（子のチョンボ＝親4,000・子2,000ずつ、親のチョンボ＝4,000オール）。払った後の点棒を入れてください。</span>
+  </div>
+
+  <h2>集計（練習・予選は4半荘の合計ポイント）</h2>
+  <div class="tools">
+    <button class="ghost" type="button" id="reset">練習の点数をぜんぶ消す</button>
+    <span class="small" id="updated"></span>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="tw">
+    <table id="tbl">
+      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th>6位ライン</th><th>準決</th><th>決勝</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <ul class="small" style="padding-left:1.3em;margin:8px 0">
+    <li>順位は参加者（P1〜P30）だけで数えます（本田プロとゆうこママは準決勝S1卓に固定）。</li>
+    <li>卓の4人がそろうまで、その半荘のポイントは出ません。</li>
+    <li>4半荘合計の同点は年齢が上の方が上位です。ページは「同点」と出すだけなので、集計係が確認します。</li>
+  </ul>
+  <h2>6位ライン（準決勝に行ける目安）</h2>
+  <div class="card">
+    <label for="bdplayer">プレイヤー</label>
+    <select id="bdplayer"></select>
+    <div id="bd" style="margin-top:8px"></div>
+  </div>
+  <details>
+    <summary>点棒（素点）の一覧</summary>
+    <div class="tw" style="margin-top:8px">
+      <table id="raw">
+        <thead><tr><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>準決</th><th>決勝</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </details>
+  <details>
+    <summary>組み合わせ表（練習用の仮の卓）</summary>
+    <div id="sched"></div>
+  </details>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告（本番）</a><a href="../fu/">点数計算</a></nav>
+</div>
+
+<script>
+// 練習用（tools/make_renshu.py が score/index.html から生成。手で直さない）。受け口（API）へは送らない
+const API = '';
+// 点数はこのブラウザの localStorage だけに置く（本番ページのキー halu:* とは別）
+const STORE = 'halu-renshu:data';
+// 練習用の仮の卓。本番の対戦表とは関係ない（毎半荘同じ顔ぶれで、起家だけ1つずつ回す）
+const SCHED = (() => {
+  const P = i => 'P' + i;
+  const g = [[P(1), P(2), P(3), '本田プロ']];
+  for (let i = 4; i <= 15; i += 4) g.push([P(i), P(i + 1), P(i + 2), P(i + 3)]);
+  g.push([P(16), P(17), P(18), 'ゆうこママ']);
+  for (let i = 19; i <= 30; i += 4) g.push([P(i), P(i + 1), P(i + 2), P(i + 3)]);
+  const s = {};
+  for (let r = 1; r <= 4; r++) s[r] = g.map((m, t) => ({ table: t + 1, seats: m.slice(r - 1).concat(m.slice(0, r - 1)) }));
+  return s;
+})();
+// 予選の対戦表が未定（schedule.js が空）。予選の卓選び・入力・組み合わせ表を「製作中」の表示にする
+const SCHED_TBD = !['1', '2', '3', '4'].some(r => (SCHED[r] || []).length);
+const TBD_TEXT = '予選の対戦表は製作中です（未定）。前に載っていた表は使いません。決まったら、ここで卓を選んで点棒を入れられます。';
+const WINDS = ['東', '南', '西', '北'];
+// 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0（Mリーグ公式規定）
+const BONUS = [500, 100, -100, -300], RETURN = 30000;
+const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
+let DATA = null, ROSTER = {};
+// 点棒を打ち始めたら true。1分ごとの自動更新で入力中の欄を作り直さない（送信・取り消し・卓の切り替えで false）
+let EDITING = false;
+// 表示名: 受け口の出席者一覧に名前があれば名前、なければ P番号
+const dn = p => (p && ROSTER[p]) || p;
+
+const fmt = n => (n === null || n === undefined) ? '' : n.toLocaleString('ja-JP');
+// ポイントは 0.1 単位の整数（tenths）で持ち、表示で小数1桁にする（浮動小数の誤差を出さない）
+const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : n < 0 ? '−' : '') + (Math.abs(n) / 10).toLocaleString('ja-JP', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+function say(id, t, ok) { const m = document.getElementById(id); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
+
+// 1卓4人の点棒 → ポイント（0.1単位の整数）。seats: [{name, raw}] 東（起家）から順。4人そろっていなければ null
+// Mリーグ公式規定: (点棒−30,000)÷1,000 に順位点を足す。丸めない。
+// 同点は、その人たちで順位点を分ける。0.1で割り切れない分は起家に近い方が多く取る。
+function calcTable(seats) {
+  if (seats.some(s => s.raw === null || s.raw === undefined || Number.isNaN(s.raw))) return seats.map(() => null);
+  const order = seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i);
+  const res = seats.map(() => null);
+  let k = 0;
+  while (k < 4) {
+    let j = k; while (j + 1 < 4 && order[j + 1].raw === order[k].raw) j++;
+    const n = j - k + 1, sum = BONUS.slice(k, j + 1).reduce((a, b) => a + b, 0);
+    const base = Math.floor(sum / n), rem = sum - base * n;
+    for (let m = k; m <= j; m++) {
+      const o = order[m];
+      res[o.i] = { raw: o.raw, rank: k + 1, tie: n > 1, pts: (o.raw - RETURN) / 100 + base + (m - k < rem ? 1 : 0) };
+    }
+    k = j + 1;
+  }
+  return res;
+}
+// 全体のポイント表: name -> {1..4: pts|null}
+function calcAll(d) {
+  const pts = {};
+  PLAYERS.forEach(p => pts[p] = { '1': null, '2': null, '3': null, '4': null });
+  for (const r of ['1', '2', '3', '4']) {
+    for (const t of (SCHED[r] || [])) {
+      const res = calcTable(t.seats.map(n => ({ name: n, raw: (d.players[n] || {})[r] ?? null })));
+      t.seats.forEach((n, i) => { pts[n][r] = res[i] ? res[i].pts : null; });
+    }
+  }
+  return pts;
+}
+
+// ---- 集計表 ----
+function render(d) {
+  DATA = d; ROSTER = d.roster || {};
+  document.querySelectorAll('#bdplayer option').forEach(o => { if (o.value) o.textContent = dn(o.value); });
+  document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
+  const pts = calcAll(d);
+  computeTotals(d);
+  const rows = PLAYERS.map(p => {
+    const q = ['1', '2', '3', '4'].map(k => pts[p][k]);
+    const done = q.filter(v => v !== null);
+    const s = d.players[p] || {};
+    return { p, q, total: done.length ? done.reduce((a, b) => a + b, 0) : null, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
+  });
+  const players = rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity));
+  let rank = 0; players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
+  // 4半荘の合計が同点＝年齢が上の方が上位（Mリーグ規定にない部分）。ページでは判定できないので並び順で仮置きし「同点」を付ける
+  players.forEach((r, i) => { r.tie = r.total !== null && ((i > 0 && players[i - 1].total === r.total) || (i + 1 < players.length && players[i + 1].total === r.total)); });
+  const tb = document.querySelector('#tbl tbody'); tb.innerHTML = '';
+  rows.filter(r => r.guest).concat(players).forEach(r => {
+    const tr = document.createElement('tr');
+    if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
+    if (r.rank === 6) tr.classList.add('line6');
+    const bd = r.guest ? '' : borderText(r.p);
+    const cells = [r.rank ? (r.tie ? r.rank + ' 同点' : r.rank) : '', dn(r.p), ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
+    cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+  const rb = document.querySelector('#raw tbody'); rb.innerHTML = '';
+  PLAYERS.forEach(p => {
+    const s = d.players[p] || {}; const tr = document.createElement('tr');
+    [dn(p), s['1'], s['2'], s['3'], s['4'], s.S, s.F].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
+    rb.appendChild(tr);
+  });
+  // 卓の入力状況
+  const st = document.getElementById('status'); st.innerHTML = '';
+  if (SCHED_TBD) { const sp = document.createElement('span'); sp.textContent = '予選の対戦表は製作中（未定）'; sp.style.fontWeight = '700'; st.appendChild(sp); }
+  else for (const r of ['1', '2', '3', '4']) {
+    const tables = SCHED[r] || [];
+    const done = tables.filter(t => t.seats.every(n => (d.players[n] || {})[r] !== null && (d.players[n] || {})[r] !== undefined)).length;
+    const sp = document.createElement('span'); sp.textContent = r + '半荘目 ' + done + '/' + tables.length + '卓'; if (done === tables.length && tables.length) sp.className = 'done'; st.appendChild(sp);
+  }
+  if (!EDITING) fillSeats();
+  renderBorder();
+}
+
+// ---- 6位ライン（準決勝ボーダー） ----
+let TOTALS = {};   // name -> {total, n}
+function computeTotals(d) {
+  const pts = calcAll(d); TOTALS = {};
+  PLAYERS.forEach(p => { const q = ['1','2','3','4'].map(k => pts[p][k]).filter(v => v !== null); TOTALS[p] = { total: q.length ? q.reduce((a, b) => a + b, 0) : null, n: q.length }; });
+}
+// 自分を除いた参加者の合計の上から6番目。6人に満たなければ null
+function borderFor(name) {
+  const others = PLAYERS.filter(p => p.startsWith('P') && p !== name && TOTALS[p] && TOTALS[p].total !== null).map(p => TOTALS[p].total).sort((a, b) => b - a);
+  if (others.length < 6) return null;
+  return others[5];
+}
+function borderText(name) {
+  const me = TOTALS[name]; if (!me || me.total === null) return '';
+  const B = borderFor(name); if (B === null) return '';
+  const D = B - me.total;
+  return D >= 0 ? 'あと ' + fpt(D + 1) : '圏内 (' + fpt(-D) + ')';
+}
+function renderBorder() {
+  const box = document.getElementById('bd'); const name = document.getElementById('bdplayer').value;
+  const me = TOTALS[name]; if (!me) { box.textContent = ''; return; }
+  const B = borderFor(name);
+  let h = '';
+  if (me.total === null) h += '<p>' + dn(name) + ' はまだポイントがありません。</p>';
+  else h += '<p>' + dn(name) + ' の現在: 合計 <b>' + fpt(me.total) + '</b>（' + me.n + '/4半荘）</p>';
+  if (B === null) { box.innerHTML = h + '<p class="small">6位ラインは、6人以上のポイントがそろってから出ます。</p>'; return; }
+  const D = B - (me.total ?? 0);
+  h += '<p>6位ライン（自分を除いた6番目の合計）: <b>' + fpt(B) + '</b></p>';
+  if (D < 0) h += '<p>いまは<b>圏内</b>。7位との差は ' + fpt(-D) + ' です。</p>';
+  else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（同点は年齢順のため、上回る数字）。</p>';
+  if (me.n >= 4) { box.innerHTML = h + '<p class="small">予選4半荘は終了しています。</p>'; return; }
+  const need = D + 1;
+  h += '<p>次の半荘で圏内に入る目安（順位ごとに、この点棒以上ならOK）:</p><div class="tw"><table><thead><tr><th style="text-align:left">順位</th><th>必要ポイント</th><th>必要な点棒</th></tr></thead><tbody>';
+  const labels = ['1位', '2位', '3位', '4位'];
+  for (let r = 0; r < 4; r++) {
+    const needPts = need;
+    const raw = (needPts - BONUS[r]) * 100 + RETURN;
+    let cell;
+    if (raw > 100000) cell = '届かない';
+    else if (raw <= -200000) cell = 'どんな点数でもOK';
+    else cell = fmt(raw) + ' 以上';
+    h += '<tr><td style="text-align:left">' + labels[r] + '</td><td>' + fpt(needPts) + '</td><td>' + cell + '</td></tr>';
+  }
+  h += '</tbody></table></div><p class="small">他の人の結果でラインは動きます。目安として見てください。</p>';
+  box.innerHTML = h;
+}
+document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu-renshu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
+
+// ---- 卓入力（予選・準決勝・決勝 共通）----
+const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
+const STAGE = { S1: { api: 'S', name: '準決勝 S1卓' }, S2: { api: 'S', name: '準決勝 S2卓' }, F: { api: 'F', name: '決勝' } };
+function isPrelim() { return !STAGE[qround.value]; }
+function apiRound() { return isPrelim() ? qround.value : STAGE[qround.value].api; }
+// 予選順位（参加者だけ・合計ポイント順）。並びは集計表と同じ
+function prelimRanking() {
+  return PLAYERS.filter(p => p.startsWith('P') && TOTALS[p] && TOTALS[p].total !== null)
+    .map(p => ({ p, total: TOTALS[p].total, n: TOTALS[p].n }))
+    .sort((a, b) => b.total - a.total);
+}
+// 準決勝の卓: S1 = 本田プロ・ゆうこママ・予選3位・6位 / S2 = 予選1位・2位・4位・5位（幹部用3章と同じ規則）
+function semiTables() {
+  const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + dn(r[i].p) } : null;
+  return { S1: [{ p: '本田プロ', label: '本田プロ' }, { p: 'ゆうこママ', label: 'ゆうこママ' }, at(2), at(5)], S2: [at(0), at(1), at(3), at(4)] };
+}
+// 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順）。同点は起家に近い方が上位で、ページでは判定できない（並び順で仮置き＝集計係が確認）
+function finalTable() {
+  const t = semiTables(), top2 = (name, mem) => {
+    const done = mem.filter(m => m && DATA && DATA.players[m.p] && DATA.players[m.p].S !== null && DATA.players[m.p].S !== undefined);
+    if (done.length < 4) return [null, null];
+    return done.map((m, i) => ({ m, i, s: DATA.players[m.p].S })).sort((a, b) => b.s - a.s || a.i - b.i).slice(0, 2)
+      .map((x, k) => ({ p: x.m.p, label: name + '卓' + (k + 1) + '位 ' + dn(x.m.p) }));
+  };
+  const a = top2('S1', t.S1), b = top2('S2', t.S2);
+  return [a[0], b[0], a[1], b[1]];
+}
+// 今の卓。予選は対戦表から、準決勝・決勝は順位から導く（seats: 名前（未確定は null）、labels: 表示名）
+function currentTable() {
+  if (isPrelim()) {
+    const t = (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value);
+    return t ? { name: qround.value + '半荘目 ' + t.table + '卓', seats: t.seats, labels: t.seats.map(dn), missing: 0 } : null;
+  }
+  const mem = qround.value === 'F' ? finalTable() : semiTables()[qround.value];
+  return { name: STAGE[qround.value].name, seats: mem.map(m => m ? m.p : null), labels: mem.map(m => m ? m.label : '（未確定）'), missing: mem.filter(m => !m).length };
+}
+function fillTables() {
+  qtable.innerHTML = '';
+  if (isPrelim()) {
+    (SCHED[qround.value] || []).forEach(t => { const o = document.createElement('option'); o.value = t.table; o.textContent = t.table + '卓'; qtable.appendChild(o); });
+    if (!qtable.options.length) { const o = document.createElement('option'); o.value = ''; o.textContent = '未定'; qtable.appendChild(o); }
+    try { const last = localStorage.getItem('halu-renshu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
+  } else {
+    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value + '卓'; qtable.appendChild(o);
+  }
+  qtable.disabled = !isPrelim() || !(SCHED[qround.value] || []).length;
+  fillSeats();
+}
+function fillSeats() {
+  const t = currentTable(); const box = document.getElementById('seats'); box.innerHTML = '';
+  const hint = document.getElementById('qhint'); hint.textContent = '';
+  EDITING = false;
+  if (!t) { if (isPrelim()) hint.innerHTML = '<b>' + TBD_TEXT + '</b>'; document.getElementById('qsum').textContent = '0'; document.getElementById('qwarn').textContent = ''; return; }
+  t.seats.forEach((n, i) => {
+    const row = document.createElement('div'); row.className = 'seat';
+    const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
+    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><input type="number" inputmode="numeric" step="1" min="-2000" max="3000" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
+    row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur / 100;
+    box.appendChild(row);
+  });
+  if (!isPrelim()) {
+    const note = [];
+    if (t.missing) note.push(qround.value === 'F' ? '決勝の4名は準決勝2卓がそろうと出ます。' : '予選の順位がまだ出ていません。');
+    const rk = prelimRanking(), cnt = rk.filter(x => x.n === 4).length;
+    if (qround.value !== 'F' && cnt < 30) note.push('予選を終えたのは ' + cnt + '/30名（メンバーは暫定）。');
+    // メンバーが変わる境目（2位/3位・3位/4位・5位/6位＝S1とS2の入れ替え、6位/7位＝進出）の同点。年齢で決めるのでページでは判定できない
+    const ties = [[1, 2], [2, 3], [4, 5], [5, 6]].filter(([a, b]) => rk[a] && rk[b] && rk[a].total === rk[b].total).map(([a, b]) => (a + 1) + '位と' + (b + 1) + '位（' + dn(rk[a].p) + '・' + dn(rk[b].p) + '）');
+    if (ties.length) note.push('【注意】予選の合計が同点: ' + ties.join('、') + '。年齢が上の方が上位なので、メンバーは集計係が決めます（ここの並びは仮）。');
+    note.push('素点で順位を決めます（ウマ・オカなし）。並びは席順ではありません。同点は起家に近い方が上位です（集計係が確認）。');
+    hint.textContent = note.join(' ');
+  }
+  box.querySelectorAll('input').forEach(inp => {
+    // 自動の欄を手で打つと手入力に変わる。自動の欄を押したら全選択（打てば置き換わる）
+    inp.addEventListener('input', () => { EDITING = true; delete inp.dataset.auto; inp.classList.remove('auto'); autoFill(); preview(); });
+    inp.addEventListener('blur', () => { autoFill(); preview(); });
+    inp.addEventListener('focus', () => { if (inp.dataset.auto) inp.select(); });
+  });
+  autoFill(); preview();
+}
+// 3人分が入ったら、残る1人を 100,000 − 3人の合計 で埋める（卓の合計は必ず100,000）。
+// 打とうとしている空欄（フォーカス中）は埋めない（force は送信時）。条件が崩れたら自動の値は消す
+function autoFill(force) {
+  const ins = [...document.querySelectorAll('#seats input')];
+  if (ins.length !== 4 || ins.some(i => i.disabled)) return;
+  const manual = ins.filter(i => !i.dataset.auto && i.value.trim() !== '');
+  const units = manual.map(i => Number(i.value));
+  const ok = manual.length === 3 && units.every(u => Number.isInteger(u) && u >= -2000 && u <= 3000);
+  const target = ok ? ins.find(i => !manual.includes(i)) : null;
+  ins.forEach(i => { if (i.dataset.auto && i !== target) { i.value = ''; delete i.dataset.auto; i.classList.remove('auto'); } });
+  if (!target || (!force && !target.dataset.auto && target === document.activeElement)) return;
+  target.value = 1000 - units.reduce((a, b) => a + b, 0);
+  target.dataset.auto = '1'; target.classList.add('auto');
+}
+// 4席ぶん（未確定の席は name '' / raw null）
+// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜300,000）は bad にして raw を NaN にする
+function readSeats() {
+  return [...document.querySelectorAll('#seats input')].map(inp => {
+    if (inp.disabled || inp.value.trim() === '') return { name: inp.dataset.name, raw: null, bad: false };
+    const u = Number(inp.value), bad = !Number.isInteger(u) || u < -2000 || u > 3000;
+    return { name: inp.dataset.name, raw: bad ? NaN : u * 100, bad };
+  });
+}
+const BAD_UNIT = '百点単位の整数で入れてください（25,300点なら 253）';
+function preview() {
+  const seats = readSeats();
+  const pts = document.querySelectorAll('#seats .pt');
+  if (isPrelim()) {
+    const res = calcTable(seats);
+    pts.forEach((el, i) => { el.textContent = res[i] ? res[i].rank + '位' + (res[i].tie ? '(同点)' : '') + ' ' + fpt(res[i].pts) : ''; el.className = 'pt' + (res[i] && res[i].pts < 0 ? ' neg' : ''); });
+  } else {
+    const all = seats.every(s => s.raw !== null && !Number.isNaN(s.raw));
+    const order = all ? seats.map((s, i) => ({ i, raw: s.raw })).sort((a, b) => b.raw - a.raw || a.i - b.i) : [];
+    pts.forEach((el, i) => { const k = order.findIndex(x => x.i === i); el.textContent = k >= 0 ? (k + 1) + '位' : ''; el.className = 'pt'; });
+  }
+  const filled = seats.filter(s => s.raw !== null && !Number.isNaN(s.raw));
+  const sum = filled.reduce((a, s) => a + s.raw, 0);
+  document.getElementById('qsum').textContent = fmt(sum);
+  const warn = [];
+  if (seats.some(s => s.bad)) warn.push(BAD_UNIT + '。直すまで送れません。');
+  if (filled.length === 4 && sum !== 100000) warn.push('合計が100,000ではありません。点棒を確かめてください（送信はできます）。');
+  if (new Set(filled.map(s => s.raw)).size < filled.length) warn.push(isPrelim() ? '同じ点棒の人がいます。順位点を分けています（起家に近い方が多く）。' : '同じ点棒の人がいます。起家に近い方が上位です（集計係に伝えてください）。');
+  document.getElementById('qwarn').textContent = warn.join(' ');
+}
+qround.addEventListener('change', fillTables);
+qtable.addEventListener('change', () => { try { localStorage.setItem('halu-renshu:table', qtable.value); } catch (e) {} fillSeats(); });
+
+// 練習用の受け口: 本番の受け口と同じ検査をして、このブラウザの中だけに記録する
+function readStore() { try { const d = JSON.parse(localStorage.getItem(STORE) || 'null'); if (d && d.players) return d; } catch (e) {} return { players: {}, updated: '', roster: {} }; }
+function writeStore(d) { try { localStorage.setItem(STORE, JSON.stringify(d)); } catch (e) {} }
+let LOCAL = readStore();
+async function post(body) {
+  if (!PLAYERS.includes(body.player)) return { ok: false, error: 'player' };
+  if (!['1', '2', '3', '4', 'S', 'F'].includes(body.round)) return { ok: false, error: 'round' };
+  const p = LOCAL.players[body.player] = LOCAL.players[body.player] || {};
+  if (body.action === 'clear') delete p[body.round];
+  else if (!Number.isInteger(body.score) || body.score < -200000 || body.score > 300000) return { ok: false, error: 'score' };
+  else p[body.round] = body.score;
+  LOCAL.updated = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+  writeStore(LOCAL);
+  return { ok: true, data: JSON.parse(JSON.stringify(LOCAL)) };
+}
+const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
+document.getElementById('qsend').addEventListener('click', async () => {
+  const t = currentTable(); if (!t) { if (isPrelim()) say('qmsg', '予選の対戦表が未定のため、まだ送れません', false); return; }
+  autoFill(true); preview();
+  if (readSeats().some(s => s.bad)) { say('qmsg', BAD_UNIT, false); return; }
+  const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
+  if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
+  say('qmsg', '送信中…（' + seats.length + '人分）', true);
+  let last = null;
+  for (const s of seats) {
+    const j = await post({ player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
+    if (!j.ok) { say('qmsg', s.name + ': ' + (ERR[j.error] || '送信に失敗しました'), false); if (last) render(last); return; }
+    last = j.data;
+  }
+  EDITING = false; render(last);
+  say('qmsg', t.name + 'の ' + seats.length + '人分を記録しました（練習）', true);
+});
+document.getElementById('qclear').addEventListener('click', async () => {
+  const t = currentTable(); if (!t) return;
+  const names = t.seats.filter(Boolean); if (!names.length) return;
+  if (!confirm(t.name + 'の' + names.length + '人の点数を取り消しますか？')) return;
+  let last = null;
+  for (const n of names) {
+    const j = await post({ player: n, round: apiRound(), action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
+    if (!j.ok) { say('qmsg', n + ': ' + (ERR[j.error] || '取り消しに失敗しました'), false); if (last) render(last); return; }
+    last = j.data;
+  }
+  EDITING = false; render(last); say('qmsg', '取り消しました', true);
+});
+
+const bdsel = document.getElementById('bdplayer');
+PLAYERS.filter(p => p.startsWith('P')).forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; bdsel.appendChild(o); });
+try { const v = localStorage.getItem('halu-renshu:bdplayer'); if (v) bdsel.value = v; } catch (e) {}
+
+// ---- 読み込み・その他 ----
+function load() { LOCAL = readStore(); render(JSON.parse(JSON.stringify(LOCAL))); }
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm('練習で入れた点数をぜんぶ消しますか？')) return;
+  LOCAL = { players: {}, updated: '', roster: {} }; writeStore(LOCAL);
+  EDITING = false; load(); say('qmsg', '練習の点数をぜんぶ消しました', true);
+});
+(function renderSched() {
+  const box = document.getElementById('sched'); let h = '';
+  if (SCHED_TBD) { box.innerHTML = '<p><b>予選の対戦表は製作中です（未定）。前に載っていた表は使いません。</b></p>'; return; }
+  for (const r of ['1', '2', '3', '4']) {
+    h += '<h3>予選' + r + '半荘目</h3><div class="tw"><table><thead><tr><th>卓</th><th>東</th><th>南</th><th>西</th><th>北</th></tr></thead><tbody>';
+    (SCHED[r] || []).forEach(t => { h += '<tr><td>' + t.table + '卓</td>' + t.seats.map(n => '<td style="text-align:left">' + n + '</td>').join('') + '</tr>'; });
+    h += '</tbody></table></div><div class="small">東が起家です</div>';
+  }
+  box.innerHTML = h;
+})();
+fillTables();
+load();
+</script>
+</body>
+</html>
