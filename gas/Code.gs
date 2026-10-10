@@ -10,6 +10,9 @@
 //   出席者一覧（幹部）… キーなし。{action:'roster', names:{P1:'名前', ...}}（'' で消す。渡したキーだけ更新）
 //     名前はここ（スクリプト プロパティ ROSTER）にだけ置く。公開リポにはファイルとして置かない（2026-09-17）
 //   閲覧ログ（参加者ページ）… キーなし。{action:'view', page:'sanka', who:'名前'|''}。日ごとの回数と直近 VIEW_MAX 件を VIEWS に持つ
+//   本田プロ確認事項（プロ用ページ）… キーなし。{action:'pro', who:'名前（立場）', items:{'1':{c:'選択', n:'補足'}, …}}（2026-10-10）
+//     中身は PRO_ANS に持ち、GET では返さない（到着時刻・前後の予定を公開しない）。返すのは項目ごとの最終送信時刻だけ。
+//     届いたら、このスクリプトの持ち主へメールで知らせる（1日 PRO_MAIL_MAX 通まで）
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -19,6 +22,10 @@ const PLAYERS = (function () {
 })();
 const LOG_MAX = 120;   // 保存領域の上限（1項目9KB）に収める
 const VIEW_MAX = 100;  // 閲覧ログの直近件数
+// 本田プロ確認事項（幹部用MD 14章の連-1〜8）。キーは番号、値はメールに出す見出し
+const PRO_ITEMS = { '1': '進行表のご了承', '2': '撮影・SNS投稿', '3': 'サイン色紙', '4': '休憩の長さ', '5': '軽食のご希望', '6': '前後のご予定', '7': '当日の到着時刻', '8': '打ち上げ' };
+const PRO_LOG_MAX = 50;   // 送信履歴（時刻・名前・項目番号だけ）
+const PRO_MAIL_MAX = 30;  // 1日に送る知らせメールの上限
 
 function props_() { return PropertiesService.getScriptProperties(); }
 
@@ -45,7 +52,18 @@ function load_() {
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
   let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) { partyLog = []; }
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog };
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog, pro: proStatus_(loadPro_()) };
+}
+
+// 本田プロ確認事項の回答。ans[番号] = {c, n, who, ts}（同じ番号を送り直すと上書き）
+function loadPro_() {
+  try { return JSON.parse(props_().getProperty('PRO_ANS') || '{}') || {}; } catch (e) { return {}; }
+}
+// 公開してよいのは項目ごとの最終送信時刻だけ
+function proStatus_(ans) {
+  const st = {};
+  Object.keys(ans).forEach(function (k) { if (ans[k] && ans[k].ts) st[k] = ans[k].ts; });
+  return st;
 }
 
 function saveViews_(views) {
@@ -124,6 +142,7 @@ function doPost(e) {
   if (body.action === 'party') return doParty_(body);
   if (body.action === 'roster') return doRoster_(body);
   if (body.action === 'view') return doView_(body);
+  if (body.action === 'pro') return doPro_(body);
 
   const player = String(body.player || '');
   const round = String(body.round || '');
@@ -262,6 +281,54 @@ function doView_(body) {
   }
 }
 
+// 本田プロ確認事項。答えのある項目だけ上書きし、送信履歴（時刻・名前・番号だけ）を PRO_LOG に積み、持ち主へメールで知らせる
+function doPro_(body) {
+  const who = String(body.who || '').replace(/[<>"'\n\r\t]/g, '').trim().slice(0, 40);
+  if (!who) return out_({ ok: false, error: 'who' });
+  const items = body.items;
+  if (!items || typeof items !== 'object') return out_({ ok: false, error: 'items' });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const p = props_(), ans = loadPro_(), ts = now_(), got = [];
+    Object.keys(PRO_ITEMS).forEach(function (k) {
+      const it = items[k];
+      if (!it || typeof it !== 'object') return;
+      const c = String(it.c || '').replace(/[<>"'\n\r\t]/g, '').trim().slice(0, 20);
+      const n = String(it.n || '').replace(/[<>\r\t]/g, '').trim().slice(0, 200);
+      if (!c && !n) return;
+      ans[k] = { c: c, n: n, who: who, ts: ts };
+      got.push(k);
+    });
+    if (!got.length) return out_({ ok: false, error: 'items' });
+    p.setProperty('PRO_ANS', JSON.stringify(ans));
+    let log; try { log = JSON.parse(p.getProperty('PRO_LOG') || '[]'); } catch (e) { log = []; }
+    log.push({ ts: ts, who: who, items: got });
+    p.setProperty('PRO_LOG', JSON.stringify(log.slice(-PRO_LOG_MAX)));
+    try { mailPro_(who, got, ans, ts); } catch (e) {}   // メールが送れなくても回答の保存は止めない
+    return out_({ ok: true, pro: proStatus_(ans) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function mailPro_(who, got, ans, ts) {
+  const p = props_(), day = ts.slice(0, 10);
+  let m; try { m = JSON.parse(p.getProperty('PRO_MAIL') || '{}'); } catch (e) { m = {}; }
+  if (m.day !== day) m = { day: day, n: 0 };
+  if (m.n >= PRO_MAIL_MAX) return;
+  m.n += 1;
+  p.setProperty('PRO_MAIL', JSON.stringify(m));
+  const lines = ['第20回 Halu杯 本田プロ確認用ページから回答が届きました。', '', '送った人: ' + who, '時刻: ' + ts, ''];
+  got.forEach(function (k) {
+    lines.push(k + '. ' + PRO_ITEMS[k]);
+    if (ans[k].c) lines.push('  選択: ' + ans[k].c);
+    if (ans[k].n) lines.push('  補足: ' + ans[k].n);
+  });
+  lines.push('', '名前を確かめる仕組みはありません。心当たりのない送信は無視してください。');
+  MailApp.sendEmail(Session.getEffectiveUser().getEmail(), '[Halu杯] 本田プロ確認事項に回答（' + who + '）', lines.join('\n'));
+}
+
 // 全消去（エディタから手で実行する用。ウェブからは呼べない）。点数とチョンボ回数を消す。チェック・打ち上げ希望・出席者一覧・閲覧ログは消さない
 function resetAll() {
   const p = props_();
@@ -289,4 +356,12 @@ function resetRoster() {
 // 閲覧ログだけ全消去（エディタから手で実行する用）
 function resetViews() {
   props_().deleteProperty('VIEWS');
+}
+
+// 本田プロ確認事項の回答・送信履歴だけ全消去（エディタから手で実行する用）
+function resetPro() {
+  const p = props_();
+  p.deleteProperty('PRO_ANS');
+  p.deleteProperty('PRO_LOG');
+  p.deleteProperty('PRO_MAIL');
 }
