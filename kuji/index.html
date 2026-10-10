@@ -38,7 +38,6 @@ td.mama{background:var(--mama);color:var(--mama-fg);font-weight:700}
 .big{font-size:1.05rem;font-weight:700}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.88rem;color:var(--muted);margin:6px 0}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:4px}
-.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 label{font-weight:700;font-size:.95rem}
 input[type=text]{width:100%;font:inherit;font-size:1.05rem;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
 button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-fg);width:100%;margin-top:10px;cursor:pointer}
@@ -54,9 +53,9 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 <div class="wrap">
   <header>
     <h1>第20回 Halu杯 対戦表のくじ</h1>
-    <div class="sub">予選の卓と席を、公開の数字で決めます。最終更新: 2026-10-10</div>
+    <div class="sub">予選の卓と席を、ナンバーズ4の当せん番号で決めます。最終更新: 2026-10-10</div>
   </header>
-  <p class="lead">予選の対戦表は、くじで決めます。くじの種は、<b>10月23日（金）に発表される2つの公開の数字</b>です。主催を含めて、発表まで誰にも分かりません。<br>発表の後は、誰でもこのページで同じ結果を計算できます。</p>
+  <p class="lead">予選の対戦表は、くじで決めます。くじの種は、<b>10月23日（金）のナンバーズ4の当せん番号</b>です。抽せん会はネットで生中継され、主催を含めて誰にも操作できません。<br>抽せんの後は、誰でもこのページで同じ結果を計算できます。</p>
 
 <h2 id="s1">1. 結果</h2>
 <div id="result"></div>
@@ -66,32 +65,27 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 <thead><tr><th>いつ</th><th>決まること</th></tr></thead>
 <tbody>
 <tr><td>10月22日（木）まで</td><td class="wrap">出席者一覧（P1〜P30）を確定し、LINEグループに貼る（6章）</td></tr>
-<tr><td>10月23日（金）15:30</td><td class="wrap">日経平均株価の終値が決まる</td></tr>
-<tr><td>10月23日（金）夕方</td><td class="wrap">ナンバーズ4の当せん番号が決まる（抽せん会はネットで生中継）</td></tr>
-<tr><td>10月23日（金）夜</td><td class="wrap">2つの数字をこのページに入れて、結果を発表する</td></tr>
+<tr><td>10月23日（金）夕方</td><td class="wrap">ナンバーズ4の抽せん（ネットで生中継）</td></tr>
+<tr><td>10月23日（金）夜</td><td class="wrap">当せん番号をこのページに入れて、結果を発表する</td></tr>
 <tr><td>10月24日（土）</td><td class="wrap">対戦表のとおりに打つ</td></tr>
 </tbody></table></div>
 
 <h2 id="s3">3. 公平にするための決まり</h2>
 <ul>
-<li>くじの種は、主催を含めて、発表まで誰にも分からない数字です。</li>
-<li>計算の手順・対戦表の型・出席者一覧は、数字が出る前に公開して固定します。</li>
-<li>数字が出た後に、くじを引き直すことはできません。同じ数字からは、いつ誰が計算しても同じ結果です。</li>
+<li>くじの種は、主催を含めて、抽せんまで誰にも分からない番号です。</li>
+<li>計算の手順・対戦表の型・出席者一覧は、抽せんの前に公開して固定します。</li>
+<li>抽せんの後に、くじを引き直すことはできません。同じ番号からは、いつ誰が計算しても同じ結果です。</li>
 <li>本田プロ・ゆうこママと同じ組になるか、同卓になるかも、くじだけで決まります。</li>
-<li>このページの変更履歴は、誰でも見られます（<a href="https://github.com/syowstar-cyber/halu-cup/commits/main/kuji" target="_blank" rel="noopener">GitHub の変更履歴</a>）。</li>
 </ul>
 
 <h2 id="s4">4. 計算してみる（検算）</h2>
-<p>2つの数字を入れて「計算する」を押すと、くじの結果が出ます。発表の前は、好きな数字で仕組みを試せます。</p>
+<p>ナンバーズ4の当せん番号を入れて「計算する」を押すと、くじの結果が出ます。抽せんの前は、好きな4桁で仕組みを試せます。</p>
 <form id="calc" autocomplete="off">
-<div class="row">
-<div><label for="n225">日経平均株価の終値</label><input type="text" id="n225" inputmode="decimal" placeholder="例 72,353.96"></div>
-<div><label for="n4">ナンバーズ4の当せん番号</label><input type="text" id="n4" inputmode="numeric" placeholder="例 0482"></div>
-</div>
+<label for="n4">ナンバーズ4の当せん番号（4桁）</label><input type="text" id="n4" inputmode="numeric" maxlength="4" placeholder="例 0482">
 <button type="submit">計算する</button>
 <div id="cmsg" class="msg" aria-live="polite"></div>
 </form>
-<p class="note">数字の確かめ先: <a href="https://indexes.nikkei.co.jp/nkave/" target="_blank" rel="noopener">日経平均プロフィル（日本経済新聞社）</a>／<a href="https://www.takarakuji-official.jp/check/" target="_blank" rel="noopener">宝くじ公式サイト 当せん番号のご案内</a></p>
+<p class="note">当せん番号の確かめ先: <a href="https://www.takarakuji-official.jp/check/" target="_blank" rel="noopener">宝くじ公式サイト 当せん番号のご案内</a></p>
 <div id="calcout"></div>
 
 <h2 id="s5">5. 対戦表の型（枠1〜枠30）</h2>
@@ -111,14 +105,14 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 
 <h2 id="s7">7. 計算のしかた（くわしく）</h2>
 <ol>
-<li>種の文字列を作ります。<br><span class="mono">HALU20|2026-10-23|N225=日経平均の終値|N4=ナンバーズ4</span><br>終値はカンマを除いて小数2桁、ナンバーズ4は先頭の0も残して4桁で書きます。</li>
-<li>P1〜P30 それぞれ、種の後ろに「|P番号」を付けて SHA-256 で計算します（例 <span class="mono">…|N4=0482|P7</span>）。出てきた64桁の英数字が、その人のくじ値です。</li>
+<li>種の文字列を作ります。<br><span class="mono">HALU20|2026-10-23|N4=ナンバーズ4の当せん番号</span><br>当せん番号は、先頭の0も残して4桁で書きます（例 <span class="mono">HALU20|2026-10-23|N4=0482</span>）。</li>
+<li>P1〜P30 それぞれ、種の後ろに「|P番号」を付けて SHA-256 で計算します（例 <span class="mono">HALU20|2026-10-23|N4=0482|P7</span>）。出てきた64桁の英数字が、その人のくじ値です。</li>
 <li>くじ値の小さい順に、枠1・枠2…枠30 を割り当てます（0〜9、a〜f の順で比べます）。</li>
 <li>5章の型のとおりに、卓と席が決まります。</li>
 </ol>
 <ul class="note">
 <li>SHA-256 は世界共通の計算方法です。Webの計算サイトやパソコンでも、同じくじ値になります。</li>
-<li>片方の数字が発表されなかったときは、その数字を「-」にして、もう片方だけで決めます。</li>
+<li>万一、10月23日にナンバーズ4の抽せんがなかったときは、同じ日の日経平均株価の終値（小数2桁）を種にします（<span class="mono">HALU20|2026-10-23|N225=終値</span>）。</li>
 </ul>
 </div>
 
@@ -169,7 +163,9 @@ function normN225(s) {
   return String(parseInt(m[1], 10)) + '.' + (m[2] || '').padEnd(2, '0');
 }
 function normN4(s) { s = half(s); if (s === '-' || s === 'なし') return '-'; return /^\d{4}$/.test(s) ? s : null; }
-const seedOf = (a, b) => 'HALU20|' + DATE + '|N225=' + a + '|N4=' + b;
+// 種: ふつうはナンバーズ4。抽せんがなかったとき（n4 が "-"）だけ日経平均の終値
+const seedN4 = n4 => 'HALU20|' + DATE + '|N4=' + n4;
+const seedN225 = v => 'HALU20|' + DATE + '|N225=' + v;
 
 // くじ: P1〜P30 のくじ値を小さい順に並べ、先頭から枠1〜枠30
 function draw(seed) {
@@ -222,9 +218,12 @@ function resultHtml(seed, tag) {
 // 1章: 本番の結果（kuji/seed.js に数字が入ったら出す）
 function renderResult() {
   const box = document.getElementById('result');
-  if (!(KUJI.n225 && KUJI.n4)) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; return; }
-  const seed = seedOf(normN225(KUJI.n225), normN4(KUJI.n4));
-  box.innerHTML = '<div class="box"><div class="big">本番の数字</div>日経平均株価の終値（10月23日）: <b>' + esc(KUJI.n225 === '-' ? '発表なし' : Number(KUJI.n225).toLocaleString('ja-JP', { minimumFractionDigits: 2 })) + '</b><br>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4 === '-' ? '発表なし' : KUJI.n4) + '</b></div>' + resultHtml(seed, '<span class="tag real">本番</span>');
+  if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; return; }
+  const backup = KUJI.n4 === '-', seed = backup ? seedN225(normN225(KUJI.n225)) : seedN4(normN4(KUJI.n4));
+  const head = backup
+    ? '10月23日はナンバーズ4の抽せんがなかったため、日経平均株価の終値で決めました: <b>' + esc(Number(KUJI.n225).toLocaleString('ja-JP', { minimumFractionDigits: 2 })) + '</b>'
+    : 'ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b>';
+  box.innerHTML = '<div class="box"><div class="big">本番の番号</div>' + head + '</div>' + resultHtml(seed, '<span class="tag real">本番</span>');
 }
 // 5章: 型
 function renderKata() {
@@ -246,18 +245,16 @@ function renderRoster() {
 
 document.getElementById('calc').addEventListener('submit', ev => {
   ev.preventDefault();
-  const a = normN225(document.getElementById('n225').value), b = normN4(document.getElementById('n4').value), msg = document.getElementById('cmsg');
+  const b = normN4(document.getElementById('n4').value), msg = document.getElementById('cmsg');
   msg.textContent = ''; msg.className = 'msg';
-  if (a === null) { msg.textContent = '日経平均の終値の形が違います（例 72,353.96）'; msg.className = 'msg ng'; return; }
-  if (b === null) { msg.textContent = 'ナンバーズ4は4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
-  if (a === '-' && b === '-') { msg.textContent = '2つとも「-」では決められません'; msg.className = 'msg ng'; return; }
-  const real = KUJI.n225 && KUJI.n4 && a === normN225(KUJI.n225) && b === normN4(KUJI.n4);
-  document.getElementById('calcout').innerHTML = resultHtml(seedOf(a, b), real ? '<span class="tag real">本番と同じ数字</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>');
+  if (!b || b === '-') { msg.textContent = 'ナンバーズ4の当せん番号を4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
+  const real = KUJI.n4 && KUJI.n4 !== '-' && b === normN4(KUJI.n4);
+  document.getElementById('calcout').innerHTML = resultHtml(seedN4(b), real ? '<span class="tag real">本番と同じ番号</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>');
 });
 
 async function load() {
   renderKata(); renderRoster(); renderResult();
-  if (KUJI.n225 && KUJI.n4) { document.getElementById('n225').value = KUJI.n225; document.getElementById('n4').value = KUJI.n4; }
+  if (KUJI.n4 && KUJI.n4 !== '-') document.getElementById('n4').value = KUJI.n4;
   if (!API) return;
   try {
     const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json();

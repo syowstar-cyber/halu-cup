@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """予選の対戦表をくじで決める（kuji/index.html と同じ計算。2026-10-10〜）。
-種   = "HALU20|2026-10-23|N225=<日経平均の終値>|N4=<ナンバーズ4の当せん番号>"
+種   = "HALU20|2026-10-23|N4=<ナンバーズ4の当せん番号>"（先頭の0も残して4桁）
+       10月23日にナンバーズ4の抽せんがなかったときだけ "HALU20|2026-10-23|N225=<日経平均の終値>"（カンマを除いて小数2桁）
 くじ値 = SHA-256(種 + "|P" + 番号) の16進64桁（P1〜P30 それぞれ）
 くじ値の小さい順に 枠1〜枠30 を割り当て、型（kuji/kata.js・tools/make_schedule.py が生成）の枠を P番号に置き換える。
-終値はカンマを除いて小数2桁、ナンバーズ4は先頭の0も残して4桁。発表されなかった数字は "-"（片方だけで決める）。
 
 使い方:
-  python tools/kuji.py 72353.96 0482           … 計算して表示だけ（何も書かない）
-  python tools/kuji.py 72353.96 0482 --write   … 本番: kuji/seed.js・score/schedule.js・.work/schedule.md を書く
-  python tools/kuji.py --check                 … kuji/seed.js の本番の数字で計算し、score/schedule.js と一致するか確かめる"""
+  python tools/kuji.py 0482                    … 計算して表示だけ（何も書かない）
+  python tools/kuji.py 0482 --write            … 本番: kuji/seed.js・score/schedule.js・.work/schedule.md を書く
+  python tools/kuji.py --n225 72353.96 --write … 抽せんがなかったときの代わり（日経平均の終値）
+  python tools/kuji.py --check                 … kuji/seed.js の本番の番号で計算し、score/schedule.js と一致するか確かめる"""
 import hashlib, json, re, sys, unicodedata
 from pathlib import Path
 
@@ -16,33 +17,30 @@ sys.stdout.reconfigure(encoding="utf-8")
 repo = Path(__file__).resolve().parents[1]
 DATE = "2026-10-23"          # 種の日付（ページの DATE と同じ）
 WINDS = ["東", "南", "西", "北"]
-SEED_HEAD = ("// くじの本番の数字（tools/kuji.py --write が書く。発表の後だけ入れる。空＝まだ、\"-\"＝発表されなかった）\n")
+SEED_HEAD = "// くじの本番の番号（tools/kuji.py --write が書く。抽せんの後だけ入れる。n4 が空＝まだ、\"-\"＝抽せんがなく日経平均の終値 n225 で決めた）\n"
+
+
+def norm_n4(s):
+    s = unicodedata.normalize("NFKC", str(s)).replace(" ", "")
+    if not re.fullmatch(r"\d{4}", s):
+        raise SystemExit(f"ナンバーズ4の形が違う: {s!r}（4桁。例 0482）")
+    return s
 
 
 def norm_n225(s):
     s = unicodedata.normalize("NFKC", str(s)).replace(",", "").replace(" ", "").replace("円", "")
-    if s in ("-", "なし"):
-        return "-"
     m = re.fullmatch(r"(\d+)(?:\.(\d{1,2}))?", s)
     if not m:
         raise SystemExit(f"日経平均の終値の形が違う: {s!r}（例 72353.96）")
     return f"{int(m.group(1))}.{(m.group(2) or '').ljust(2, '0')}"
 
 
-def norm_n4(s):
-    s = unicodedata.normalize("NFKC", str(s)).replace(" ", "")
-    if s in ("-", "なし"):
-        return "-"
-    if not re.fullmatch(r"\d{4}", s):
-        raise SystemExit(f"ナンバーズ4の形が違う: {s!r}（4桁。例 0482）")
-    return s
+def seed_n4(n4):
+    return f"HALU20|{DATE}|N4={norm_n4(n4)}"
 
 
-def seed_of(n225, n4):
-    a, b = norm_n225(n225), norm_n4(n4)
-    if a == "-" and b == "-":
-        raise SystemExit("数字が2つとも「-」では決められない")
-    return f"HALU20|{DATE}|N225={a}|N4={b}"
+def seed_n225(v):
+    return f"HALU20|{DATE}|N225={norm_n225(v)}"
 
 
 def draw(seed):
@@ -87,28 +85,39 @@ def md_of(schedule, order, seed):
 
 
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    argv = sys.argv[1:]
     kata = load_js(repo / "kuji" / "kata.js", "HALU_KATA")
-    if "--check" in sys.argv:
+    if "--check" in argv:
         k = load_js(repo / "kuji" / "seed.js", "HALU_KUJI")
-        if not (k.get("n225") and k.get("n4")):
-            raise SystemExit("kuji/seed.js に本番の数字がまだ無い")
-        seed = seed_of(k["n225"], k["n4"])
-        sched = schedule_of(kata, draw(seed))
+        if not k.get("n4"):
+            raise SystemExit("kuji/seed.js に本番の番号がまだ無い")
+        seed = seed_n225(k["n225"]) if k["n4"] == "-" else seed_n4(k["n4"])
         now = load_js(repo / "score" / "schedule.js", "HALU_SCHEDULE")
-        print("一致" if now == sched else "不一致（score/schedule.js を kuji.py --write で作り直す）")
+        print("一致" if now == schedule_of(kata, draw(seed)) else "不一致（score/schedule.js を kuji.py --write で作り直す）")
         return
-    if len(args) != 2:
-        raise SystemExit(__doc__)
-    seed = seed_of(*args)
+    n225 = None
+    if "--n225" in argv:
+        i = argv.index("--n225")
+        if i + 1 >= len(argv):
+            raise SystemExit(__doc__)
+        n225 = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]
+    args = [a for a in argv if not a.startswith("--")]
+    if n225 is not None:
+        if args:
+            raise SystemExit("ナンバーズ4と --n225 は同時に使わない（--n225 は抽せんがなかったときだけ）")
+        seed, rec = seed_n225(n225), {"n4": "-", "n225": norm_n225(n225)}
+    else:
+        if len(args) != 1:
+            raise SystemExit(__doc__)
+        seed, rec = seed_n4(args[0]), {"n4": norm_n4(args[0]), "n225": ""}
     order = draw(seed)
     sched = schedule_of(kata, order)
     print("種:", seed)
     for k, (p, h) in enumerate(order, 1):
         print(f"枠{k:>2} {p:>3} {h[:16]}")
-    if "--write" in sys.argv:
-        a, b = seed.split("N225=")[1].split("|N4=")
-        (repo / "kuji" / "seed.js").write_text(SEED_HEAD + "window.HALU_KUJI = " + json.dumps({"n225": a, "n4": b}) + ";\n", encoding="utf-8")
+    if "--write" in argv:
+        (repo / "kuji" / "seed.js").write_text(SEED_HEAD + "window.HALU_KUJI = " + json.dumps(rec) + ";\n", encoding="utf-8")
         (repo / "score" / "schedule.js").write_text(
             "// 予選の組み合わせ表（tools/kuji.py がくじの結果から生成。手で直さない）\n"
             "window.HALU_SCHEDULE = " + json.dumps(sched, ensure_ascii=False) + ";\n", encoding="utf-8")

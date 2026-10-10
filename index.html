@@ -150,7 +150,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <ul>
 <li>対戦相手は前半組（本田プロ＋参加者15名＝1〜4卓）と後半組（ゆうこママ＋参加者15名＝5〜8卓）に分かれる。どちらの組かもくじで決まる（<a class="xref" href="#s9">9章</a>）</li>
 <li>順位は組を分けず、参加者30名全体の合計ポイントで決める</li>
-<li>対戦表はくじで決める。型（枠1〜枠30）を先に公開し、10月23日（金）の公開の数字で、各プレイヤーNoがどの枠に入るかを決める（<a class="xref" href="#s9">9章</a>）</li>
+<li>対戦表はくじで決める。型（枠1〜枠30）を先に公開し、10月23日（金）のナンバーズ4の当せん番号で、各プレイヤーNoがどの枠に入るかを決める（<a class="xref" href="#s9">9章</a>）</li>
 <li>順位は4半荘の合計ポイントで決める（点数計算は<a class="xref" href="#s4">4章</a>）。合計の同点は年齢が上の方が上位</li>
 <li><strong>参加者の上位6名が準決勝へ</strong>（本田プロとゆうこママは準決勝S1卓に固定）</li>
 </ul>
@@ -330,9 +330,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h3>当日の発表</h3>
 <p>18:20の閉会で当日メンバーを発表 → 18:30終了 → Haluへ移動。</p>
 <h2 id="s9">9. 対戦表（くじで決める）</h2>
-<p><strong>くじで決める。下の表は型（枠1〜枠30）。10月23日（金）の日経平均株価の終値とナンバーズ4の当せん番号を種にして、各プレイヤーNoがどの枠に入るかを決める。手順・検算・結果はくじページ（<code>kuji/</code>）。</strong></p>
+<p><strong>くじで決める。下の表は型（枠1〜枠30）。10月23日（金）のナンバーズ4の当せん番号を種にして、各プレイヤーNoがどの枠に入るかを決める。手順・検算・結果はくじページ（<code>kuji/</code>）。</strong></p>
 <p><strong>プレイヤーNo（P1〜P30）は、10月22日（木）の出席者一覧（<a class="xref" href="#s8">8章</a>）で確定してLINEグループに貼る。それより後に出席者が変わっても、くじは引き直さない。</strong></p>
-<p>結果（各プレイヤーNoの卓と席）は、独立した対戦ページ（くじページ <code>kuji/</code>）だけに出す。参加者ページには載せない（載せる時期は主催が決める）。数字が出たら <code>python tools/kuji.py &lt;終値&gt; &lt;ナンバーズ4&gt; --write</code> で本番の数字（<code>kuji/seed.js</code>）と点数報告ページの対戦表（<code>score/schedule.js</code>）を作る。この章の表は型のまま残す。片方の数字が発表されなかったときは、その数字を「-」にして、もう片方だけで決める。</p>
+<p>結果（各プレイヤーNoの卓と席）は、独立した対戦ページ（くじページ <code>kuji/</code>）だけに出す。参加者ページには載せない（載せる時期は主催が決める）。抽せんの後に <code>python tools/kuji.py &lt;当せん番号&gt; --write</code> で本番の番号（<code>kuji/seed.js</code>）と点数報告ページの対戦表（<code>score/schedule.js</code>）を作る。この章の表は型のまま残す。万一その日にナンバーズ4の抽せんがなかったときは、同じ日の日経平均株価の終値で決める（<code>--n225 &lt;終値&gt;</code>）。</p>
 <p>本田プロ＋枠1〜枠15 が1〜4卓、ゆうこママ＋枠16〜枠30 が5〜8卓で4半荘を打つ。</p>
 <ul>
 <li>同じ相手とは2度当たらない。全員が東南西北を1回ずつ起家で回る</li>
@@ -569,7 +569,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td><label><input type="checkbox" data-k="14幹10賞品の内容" data-legacy=""><span>幹-10</span></label></td><td>賞品の内容</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹11実況役を誰がやるか" data-legacy=""><span>幹-11</span></label></td><td>実況役を誰がやるか</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹13集計係入力サポート1名を誰がやるか" data-legacy=""><span>幹-13</span></label></td><td>集計係（入力サポート1名）を誰がやるか</td></tr>
-<tr><td><label><input type="checkbox" data-k="14幹22対戦表を確定するくじで決める1022木出席者一覧を確定してLINEに貼" data-legacy=""><span>幹-22</span></label></td><td>対戦表を確定する。くじで決める（10/22 木 出席者一覧を確定してLINEに貼る → 10/23 金 日経平均の終値とナンバーズ4でくじ → 夜に発表。<a class="xref" href="#s9">9章</a>）</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹22対戦表を確定するくじで決める1022木出席者一覧を確定してLINEに貼" data-legacy=""><span>幹-22</span></label></td><td>対戦表を確定する。くじで決める（10/22 木 出席者一覧を確定してLINEに貼る → 10/23 金 ナンバーズ4の当せん番号でくじ → 夜に発表。<a class="xref" href="#s9">9章</a>）</td></tr>
 </table></div>
 <h2 id="s15">15. 逆算スケジュール</h2>
 <div class="tw"><table>
@@ -667,6 +667,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-10</td><td>撮影担当を岩田さんで確定（10章）。名字を公開の幹部用ページに載せるのは主催の判断</td><td>主催の決定</td></tr>
 <tr><td>2026-10-10</td><td>対戦表をくじで決めることにした。プレイヤーNoは10月22日（木）の出席者一覧で確定し、10月23日（金）の日経平均株価の終値とナンバーズ4の当せん番号を種にして、各Noがどの枠（型＝旧案の表のP番号を枠番号に読み替えたもの）に入るかを決める。くじページ（<code>kuji/</code>）で手順・検算・結果を公開。3章・9章・14章（幹-7 解消・幹-22）を更新</td><td>主催の決定</td></tr>
 <tr><td>2026-10-10</td><td>対戦ページ（くじページ <code>kuji/</code>）を独立させた。くじの結果と対戦表はこのページだけに出し、参加者ページには載せない（載せる時期は主催が決める）。くじページから他のページへのリンクも外した。9章の表は型のまま残す</td><td>主催の指示</td></tr>
+<tr><td>2026-10-10</td><td>くじの種をナンバーズ4の当せん番号だけにした（日経平均株価の終値は、その日に抽せんがなかったときの代わりだけ）。くじページから変更履歴（GitHub）の案内を外した。3章・9章・14章（幹-22）を更新</td><td>主催の指示</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
