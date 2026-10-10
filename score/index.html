@@ -548,6 +548,8 @@ function preview() {
   const warn = [];
   if (seats.some(s => s.bad)) warn.push(BAD_UNIT + '。直すまで送れません。');
   if (filled.length === 4 && sum !== 100000) warn.push('合計が100,000ではありません。点棒を確かめてください（送信はできます）。');
+  // 10万点以上は打ち間違い（2530 など）が多いので注意を出す。トビ終了なしでありうる値なので止めはしない（送る時に確認する）
+  if (filled.some(s => s.raw >= 100000)) warn.push('10万点以上の点棒があります。合っていますか（送る時にもう一度確かめます）。');
   if (new Set(filled.map(s => s.raw)).size < filled.length) warn.push(isPrelim() ? '同じ点棒の人がいます。順位点を分けています（起家に近い方が多く）。' : '同じ点棒の人がいます。起家に近い方が上位です（集計係に伝えてください）。');
   document.getElementById('qwarn').textContent = warn.join(' ');
 }
@@ -566,6 +568,8 @@ document.getElementById('qsend').addEventListener('click', async () => {
   if (readSeats().some(s => s.bad)) { say('qmsg', BAD_UNIT, false); return; }
   const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
   if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
+  const big = seats.filter(s => s.raw >= 100000);
+  if (big.length && !confirm('10万点以上です。合っていますか？\n' + big.map(s => dn(s.name) + ' ' + fmt(s.raw) + '点').join('\n'))) { say('qmsg', '送るのをやめました。点棒を確かめてください', false); return; }
   say('qmsg', '送信中…（' + seats.length + '人分）', true);
   let last = null;
   for (const s of seats) {
