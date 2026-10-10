@@ -155,10 +155,10 @@ summary{cursor:pointer;font-weight:700}
     <div id="stage"></div>
     <div class="small">準決勝の時間は全員が打ちます。準決勝に進めなかった24名は、予選の順位で4人ずつ卓を作ります（点数を送ります。最終順位に使います）。席と起家は自動卓のサイコロで決めます。予選の合計が同点の境目は、集計係が年齢で決めます。決勝はみんなで観戦します。</div>
   </div>
-  <h2>最終順位（参加者30名）</h2>
+  <h2>最終順位（32名）</h2>
   <div class="card">
     <div id="final"></div>
-    <div class="small">決勝に出た参加者を決勝の素点順 → 準決勝で敗退した参加者を準決勝の素点順 → 7位以下を準決勝の時間の卓ごとに素点順（卓をまたいで入れ替わりません）。同点はページでは決められないので、集計係が確かめます。第3位と飛び賞（10位・20位）は、この順位で決まります。</div>
+    <div class="small">1〜4位は決勝の4名（決勝の素点順）、5〜8位は準決勝で敗退した4名（準決勝の素点順）、9〜32位は準決勝の時間の卓ごとに素点順です（卓をまたいで入れ替わりません）。本田プロとゆうこママも入ります。優勝・準優勝・第3位は参加者の中の順、飛び賞はこの表の10位・20位です。同点はページでは決められないので、集計係が確かめます。</div>
   </div>
   <details>
     <summary>点棒（素点）の一覧</summary>
@@ -381,44 +381,49 @@ function renderStage() {
   box.appendChild(note);
 }
 
-// ---- 最終順位（幹部用5章と同じ規則）----
-// 決勝に出た参加者を決勝の素点順 → 準決勝で敗退した参加者を準決勝の素点順（ここまで6位）→ 予選7〜30位を準決勝の時間の卓ごとに素点順。
-// 卓をまたいで入れ替わらない。同点は「同点」と出すだけ（起家はページで分からない＝集計係が確かめる）
+// ---- 最終順位（32名。幹部用5章と同じ規則）----
+// 1〜4位＝決勝の4名を決勝の素点順、5〜8位＝準決勝で敗退した4名を準決勝の素点順、9〜32位＝予選7〜30位を準決勝の時間の卓ごとに素点順
+// （卓をまたいで入れ替わらない）。本田プロ・ゆうこママも入る（必ず1〜8位）。優勝・準優勝・第3位は参加者の中の順（ゲストは飛ばす）、飛び賞は10位・20位。
+// 同点は「同点」と出すだけ（起家はページで分からない＝集計係が確かめる）
 function renderFinal() {
   const box = document.getElementById('final'); box.innerHTML = '';
   const val = (p, k) => { const v = DATA && DATA.players[p] ? DATA.players[p][k] : null; return v === undefined ? null : v; };
-  const isP = m => m && m.p.startsWith('P');
-  const rows = [];   // [順位, 名前, 決め方, 素点]
+  const rows = [];   // {rank, tie, p, how, raw, award}
   const group = (start, mem, key, how) => {
-    const done = mem.length > 0 && mem.every(m => val(m.p, key) !== null);
+    const done = mem.length > 0 && mem.every(m => m && val(m.p, key) !== null);
     const list = done ? mem.slice().sort((a, b) => val(b.p, key) - val(a.p, key)) : mem;
-    list.forEach((m, i) => {
-      const tie = done && list.some((o, j) => j !== i && val(o.p, key) === val(m.p, key));
-      rows.push([done ? (start + i) + (tie ? ' 同点' : '') : '', dn(m.p), how + (done ? '' : '（未確定）'), done ? fmt(val(m.p, key)) : '']);
-    });
+    list.forEach((m, i) => rows.push({ rank: done ? start + i : null, tie: done && list.some((o, j) => j !== i && val(o.p, key) === val(m.p, key)),
+      p: m ? m.p : null, how: how + (done ? '' : '（未確定）'), raw: done ? val(m.p, key) : null, award: '' }));
   };
   const semi = semiTables(), fin = finalTable();
   if (fin.every(Boolean)) {
-    const ps = fin.map(m => m.p), fp = fin.filter(isP);
-    group(1, fp, 'F', '決勝');
-    group(1 + fp.length, semi.S1.concat(semi.S2).filter(m => isP(m) && !ps.includes(m.p)), 'S', '準決勝');
+    const ps = fin.map(m => m.p);
+    group(1, fin, 'F', '決勝');
+    group(5, semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)), 'S', '準決勝');
   } else {
-    [semi.S1[2], semi.S1[3]].concat(semi.S2).forEach(m => rows.push(['', m ? dn(m.p) : '（未確定）', '準決勝・決勝の後に決まる', '']));
+    semi.S1.concat(semi.S2).forEach(m => rows.push({ rank: null, tie: false, p: m ? m.p : null, how: '準決勝・決勝の後に決まる', raw: null, award: '' }));
   }
   const band = bandTables();
-  for (let t = 3; t <= 8; t++) {
-    const mem = band['B' + t];
-    if (mem.some(m => !m)) { mem.forEach(m => rows.push(['', m ? dn(m.p) : '（未確定）', t + '卓（未確定）', ''])); continue; }
-    group(7 + (t - 3) * 4, mem, 'S', t + '卓');
+  for (let t = 3; t <= 8; t++) group(9 + (t - 3) * 4, band['B' + t], 'S', t + '卓');
+  if (rows.slice(0, 8).every(r => r.rank !== null)) {
+    rows.filter(r => r.p && r.p.startsWith('P')).slice(0, 3).forEach((r, i) => { r.award = ['優勝', '準優勝', '第3位'][i]; });
   }
+  rows.forEach(r => { if (r.rank === 10 || r.rank === 20) r.award = '飛び賞'; });
   const tw = document.createElement('div'); tw.className = 'tw';
   const tb = document.createElement('table'); tb.className = 'stage';
-  tb.innerHTML = '<thead><tr><th>順位</th><th>プレイヤー</th><th>決め方</th><th>素点</th></tr></thead>';
+  tb.innerHTML = '<thead><tr><th>順位</th><th>プレイヤー</th><th>決め方</th><th>素点</th><th>賞</th></tr></thead>';
   const body = document.createElement('tbody');
-  rows.forEach(r => { const tr = document.createElement('tr'); r.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (i === 3) td.style.textAlign = 'right'; tr.appendChild(td); }); body.appendChild(tr); });
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    if (r.p && !r.p.startsWith('P')) tr.className = 'guest';
+    [r.rank !== null ? r.rank + (r.tie ? ' 同点' : '') : '', r.p ? dn(r.p) : '（未確定）', r.how, r.raw !== null ? fmt(r.raw) : '', r.award].forEach((c, i) => {
+      const td = document.createElement('td'); td.textContent = c; if (i === 3) td.style.textAlign = 'right'; tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
   tb.appendChild(body); tw.appendChild(tb); box.appendChild(tw);
-  const n = rows.filter(r => r[0]).length, p = document.createElement('p'); p.className = 'small';
-  p.textContent = n >= 30 ? '30名の順位がそろいました（「同点」の行は集計係が確かめます）。' : '順位が出ているのは ' + n + '/30名です。';
+  const n = rows.filter(r => r.rank !== null).length, p = document.createElement('p'); p.className = 'small';
+  p.textContent = n >= 32 ? '32名の順位がそろいました（「同点」の行は集計係が確かめます）。' : '順位が出ているのは ' + n + '/32名です。';
   box.appendChild(p);
 }
 
