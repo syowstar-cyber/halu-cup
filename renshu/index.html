@@ -351,14 +351,21 @@ function borderText(name) {
   if (D === 0 && lineTie(name)) return lineTie(name);
   return D >= 0 ? 'あと ' + fpt(D + 1) : '圏内 (' + fpt(-D) + ')';
 }
-// 6位ラインと同じ合計のとき（同点は年齢が上の方が上位）: 年齢で6位以内に決まっていれば「圏内（年齢）」、まだ決まらなければ「同点（年齢で決まる）」。
-// 年齢で7位以下に決まった人は ''（ふつうの「あと」を出す）
+// 6位ラインと同じ合計のとき（同点は年齢が上の方が上位）: 決まらない同点のかたまり（tieRun）が6位と7位の境目をまたぐかで分ける。
+// 6位以内に収まれば「圏内（年齢）」、7位以下なら ''（ふつうの「あと」を出す）。
+// またぐときは、生年月日が足りなければ「同点（年齢で決まる）」、全員入っても同じ日で決まらなければ「同点（集計係が決める）」
 function lineTie(name) {
-  const x = prelimRanking().find(r => r.p === name);
-  if (!x) return '';
-  if (x.tie) return '同点（年齢で決まる）';
-  return x.byAge && x.rank <= 6 ? '圏内（年齢）' : '';
+  const rk = prelimRanking(), i = rk.findIndex(r => r.p === name);
+  if (i < 0) return '';
+  const [lo, hi] = tieRun(rk, i, i, r => r.total);
+  if (lo > 5) return '';
+  if (hi <= 5) return rk[i].byAge || rk[i].tie ? '圏内（年齢）' : '';
+  return rk[i].ageOk ? '同点（集計係が決める）' : '同点（年齢で決まる）';
 }
+// 6位ラインの逆算で使う、入力できる点棒の上限（練習は 99,900 点）
+const RAW_MAX = 99900;
+// r 位（0 始まり）で取れる点棒の上限。卓の合計 100,000・1人の下限 −200,000 から、上の人が自分と同じ・下の人が下限のとき（1位 700,000／2位 250,000／3位 100,000／4位 25,000）
+const rawCap = r => Math.min(RAW_MAX, Math.floor((100000 + (3 - r) * 200000) / (r + 1)));
 function renderBorder() {
   const box = document.getElementById('bd'); const name = document.getElementById('bdplayer').value;
   const me = TOTALS[name]; if (!me) { box.textContent = ''; return; }
@@ -370,7 +377,8 @@ function renderBorder() {
   const D = B - (me.total ?? 0);
   h += '<p>6位ライン（自分を除いた6番目の合計）: <b>' + fpt(B) + '</b></p>';
   if (D < 0) h += '<p>いまは<b>圏内</b>。7位との差は ' + fpt(-D) + ' です。</p>';
-  else if (D === 0 && lineTie(name)) h += '<p>6位ラインと同じ合計です。' + (lineTie(name) === '圏内（年齢）' ? 'いまは<b>圏内</b>です（年齢が上のため）。' : '同点は年齢が上の方が上位なので、生年月日で決まります。') + '</p>';
+  else if (D === 0 && lineTie(name)) h += '<p>6位ラインと同じ合計です。' + (lineTie(name) === '圏内（年齢）' ? 'いまは<b>圏内</b>です（年齢が上のため）。'
+    : lineTie(name) === '同点（集計係が決める）' ? '生年月日も同じなので、集計係が決めます。' : '同点は年齢が上の方が上位なので、生年月日で決まります。') + '</p>';
   else h += '<p>圏内に入るには <b>あと ' + fpt(D + 1) + '</b> 必要です（同点は年齢順のため、上回る数字）。</p>';
   if (me.n >= 4) { box.innerHTML = h + '<p class="small">予選4半荘は終了しています。</p>'; return; }
   const need = D + 1;
@@ -380,7 +388,7 @@ function renderBorder() {
     const needPts = need;
     const raw = (needPts - BONUS[r]) * 100 + RETURN;
     let cell;
-    if (raw > 100000) cell = '届かない';
+    if (raw > rawCap(r)) cell = '届かない';   // その順位では取れない点棒（トビ終了なし・箱下ありの上限で見る）
     else if (raw <= -200000) cell = 'どんな点数でもOK';
     else cell = fmt(raw) + ' 以上';
     h += '<tr><td style="text-align:left">' + labels[r] + '</td><td>' + fpt(needPts) + '</td><td>' + cell + '</td></tr>';
@@ -688,7 +696,7 @@ function autoFill(force) {
   target.dataset.auto = '1'; target.classList.add('auto'); delete target.dataset.neg;
 }
 // 4席ぶん（未確定の席は name '' / raw null）
-// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜999,900）は bad にして raw を NaN にする
+// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（練習は −200,000〜99,900）は bad にして raw を NaN にする
 function readSeats() {
   return [...document.querySelectorAll('#seats input')].map(inp => {
     if (inp.disabled || inp.value.trim() === '') return { name: inp.dataset.name, raw: null, bad: false };

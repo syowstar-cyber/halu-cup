@@ -2,7 +2,7 @@
 // ドライブは使わない。スクリプト プロパティ（このスクリプト専用の保存領域）に JSON を持つ。
 // 配置手順は gas/README.md を見る。
 //
-// 受け口は2つ:
+// 受け口（URL は1つ。POST の本文の action で分ける）:
 //   点数報告（参加者）… キーなし。{player, round, score, chombo?} / {action:'clear', player, round}
 //     chombo はその半荘のチョンボ回数（0〜9。省くと変えない）。CHOMBO に player→round→回数 で持つ（2026-09-25）
 //   チェック共有（幹部）… キーなし（幹部用ページは公開のため）。{action:'check', k, v, by}（受付の出席 k='出席_…' は ATTEND に分けて持つ）
@@ -182,6 +182,7 @@ function doGet(e) {
 //   {action:'check', k:'項目キー', v:true|false, by:'名前'}   … 幹部のチェック共有（キー不要）
 //   {action:'party', name:'名前', no:'P12'|'', choice:'1'|'2'|'3'|'4'|'5'|''}   … 打ち上げ希望（キー不要。'' で取り消し）
 //   {action:'birth', player:'P12', date:'YYYY-MM-DD'|''}   … 生年月日（同点のときだけ。返事は agerank だけ）
+//   roster（出席者一覧）・view（閲覧ログ）・pro（本田プロ確認事項）の形は、このファイル冒頭の一覧を見る
 function doPost(e) {
   let body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad_json' }); }

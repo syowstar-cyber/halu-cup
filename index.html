@@ -321,9 +321,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <h2 id="s7">7. イベント</h2>
 <h3>トークショー（13:00〜13:15・15分）</h3>
 <p>昼の軽食休憩の直後。MCが進行役に入る。</p>
-<p>15分のままにする場合、質問の事前募集は告知から外す。</p>
-<p>30分に延ばす選択肢もある（13:00 トーク30分 → 13:35 予選3回戦）。</p>
-<p>この場合は後ろが15分ずれるので、サイン会を35分に縮め、準決勝15:55開始は変えない。</p>
+<p>15分のため、質問の事前募集は告知から外す。</p>
 <h3>サイン会・写真会（15:05〜15:55・50分）</h3>
 <p>本田プロとママが準決勝・決勝を打つため、予選終了後に独立枠を置く。</p>
 <p>30名を50分、1人約100秒で回す。</p>
@@ -519,7 +517,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li><label><input type="checkbox" data-k="印刷物一式卓番号札8名札32" data-legacy="印刷物一式案内カード32卓番号札8QRカード8対戦表1部記録用紙卓上ルール表8点"><span>印刷物一式: 卓番号札8・名札32</span></label></li>
 <li><label><input type="checkbox" data-k="集計係の端末は充電100充電器とモバイルバッテリー" data-legacy=""><span>集計係の端末は充電100%。充電器とモバイルバッテリー</span></label></li>
 <li><label><input type="checkbox" data-k="点数報告ページを開いて最新に更新が通ること集計表が空1023の試し送信を全消去済" data-legacy=""><span>点数報告ページを開いて「最新に更新」が通ること。集計表が空（10/23の試し送信を全消去済み）であること</span></label></li>
-<li><label><input type="checkbox" data-k="参加者ページを開いて対戦表が最新であること" data-legacy=""><span>参加者ページを開いて対戦表が最新であること</span></label></li>
+<li><label><input type="checkbox" data-k="点数報告ページを開いて組み合わせ表に本番の対戦表が出ていること" data-legacy=""><span>点数報告ページを開いて「組み合わせ表」に本番の対戦表が出ていること</span></label></li>
 <li><label><input type="checkbox" data-k="LINEグループの固定アナウンスに各ページのリンクがあること" data-legacy=""><span>LINEグループの固定（アナウンス）に、各ページのリンクがあること</span></label></li>
 <li><label><input type="checkbox" data-k="筆記具" data-legacy="筆記具電卓1台"><span>筆記具</span></label></li>
 <li><label><input type="checkbox" data-k="受付名簿申込30名当日の連絡先" data-legacy=""><span>受付名簿（申込30名・当日の連絡先）</span></label></li>
@@ -748,6 +746,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-11</td><td>11章に「当日の出席者チェック（受付）」を作った。出席はチェック共有。同点のときだけ、その人たちの生年月日を入れると、点数報告ページの順位・準決勝のメンバー・32名中8位の判定が全員の画面で年上から並ぶ。生年月日は受け口（<code>BIRTH</code>）に置き、どのページにも出さない（返すのは入れた人どうしの上下だけ）。3章・5章を更新</td><td>主催の指示</td></tr>
 <tr><td>2026-10-11</td><td>生年月日を入れるまでは、同点の人を同じ順位の数字で出すようにした（次の人はその人数ぶん飛ばす）。並べ直すには同点の人全員（ゲストを含む）の生年月日が要ることを5章に明記。順位から抜くゲストは同点を並べる前に外す。受付の出席チェックは、チェックの置き場が上限（1項目9KB）を超えないよう受け口の別の置き場（<code>ATTEND</code>）に分けた。生年月日の入力に合言葉は付けない（幹部用ページで、幹部は全員が集計係のため）</td><td>主催の指示</td></tr>
 <tr><td>2026-10-11</td><td>年齢で同点を決める仕組みの見直し（2回目の点検）。大会後に生年月日を消しても順位が元に戻らないよう、消す前の上下の順を受け口に固定するようにした（以後の入力は断る）。準決勝の別の卓どうしの同点は、卓ごとのまとまりで年上から並べる。準決勝の同じ卓で2位と3位が同点（決勝に進む境目）のときは、最終順位に「同点」と【注意】を出す。6位ラインと同じ合計で年齢で決まった人は「圏内（年齢）」と出す。チェックの置き場をさらに分けた</td><td>点検</td></tr>
+<tr><td>2026-10-11</td><td>整合性の点検で、古い記述を直した。13章の出発前チェックを「点数報告ページの組み合わせ表」を見る形にした（対戦表は参加者ページに載せないため）。7章のトークショーから、15分に決まる前の30分案を外した。点数報告ページの6位ライン欄で、生年月日も同じ人の表示を直した。6位と7位の境目をまたぐときは「同点（集計係が決める）」、6位以内に収まるときは「圏内（年齢）」、7位以下なら「あと」と出す（前はどれも「同点（年齢で決まる）」）。6位ラインの逆算の「届かない」を、順位ごとに取れる点棒の上限で決めるようにした（1位70万・2位25万・3位10万・4位2.5万点。前は一律10万点で、トビ終了なしで取れる1位・2位の点棒を「届かない」とし、4位では取れない点棒を出していた）。本田プロ用ページの冒頭の「8つの質問」を「4つ」に直した</td><td>整合性の点検</td></tr>
 </table></div></main>
   <nav class="pnav" aria-label="ページ切り替え"><a href="sanka/">参加者用ページ</a><a href="score/">点数報告・集計</a><a href="renshu/">点数入力の練習</a><a href="rule/">ルール</a><a href="fu/">点数計算</a><a href="kuji/">対戦表のくじ</a><a href="pro/">本田プロ確認用</a></nav>
   <a class="top" href="#" title="上へ">↑</a>
@@ -891,7 +890,7 @@ function renderParty(party, roster, plog){
     if (await postRoster(names, st)) renderParty(PARTY, ROSTER);
   });
 }
-// 9章（対戦表）: 表の P番号の下に受け口の名前を添える（仮のNo）
+// 9章（対戦表）: 表の P番号を受け口の名前に置き換える（9章が型＝枠番号のあいだは、置き換える P番号がないので何もしない）
 function nameSchedule(roster){
   const h2 = [...document.querySelectorAll('#content h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
   for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {

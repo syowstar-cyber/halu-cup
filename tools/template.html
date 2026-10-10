@@ -243,7 +243,7 @@ function renderParty(party, roster, plog){
     if (await postRoster(names, st)) renderParty(PARTY, ROSTER);
   });
 }
-// 9章（対戦表）: 表の P番号の下に受け口の名前を添える（仮のNo）
+// 9章（対戦表）: 表の P番号を受け口の名前に置き換える（9章が型＝枠番号のあいだは、置き換える P番号がないので何もしない）
 function nameSchedule(roster){
   const h2 = [...document.querySelectorAll('#content h2')].find(h => /対戦表/.test(h.textContent)); if (!h2) return;
   for (let el = h2.nextElementSibling; el && el.tagName !== 'H2'; el = el.nextElementSibling) {
