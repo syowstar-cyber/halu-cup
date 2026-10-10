@@ -145,10 +145,10 @@ summary{cursor:pointer;font-weight:700}
     <div id="stage"></div>
     <div class="small">準決勝の時間は全員が打ちます。準決勝に進めなかった24名は、予選の順位で4人ずつ卓を作ります（点数を送ります。最終順位に使います）。席と起家は自動卓のサイコロで決めます。予選の合計が同点の境目は、集計係が年齢で決めます。決勝はみんなで観戦します。</div>
   </div>
-  <h2>最終順位（32名）</h2>
+  <h2>最終順位</h2>
   <div class="card">
     <div id="final"></div>
-    <div class="small">1〜4位は決勝の4名（決勝の素点順）、5〜8位は準決勝で敗退した4名（準決勝の素点順）、9〜32位は準決勝の時間の卓ごとに素点順です（卓をまたいで入れ替わりません）。本田プロとゆうこママも入ります。優勝・準優勝・第3位は参加者の中の順、飛び賞はこの表の10位・20位です。同点はページでは決められないので、集計係が確かめます。</div>
+    <div class="small">決勝の4名（決勝の素点順）→ 準決勝で敗退した4名（準決勝の素点順）→ 準決勝の時間の卓ごとに素点順、の順に並べます（卓をまたいで入れ替わりません）。本田プロとゆうこママは、予選の合計が32名中8位以内なら順位に入り、8位より下なら抜いて下を繰り上げます。優勝・準優勝・第3位は参加者の中の順、飛び賞はこの表の10位・20位です。同点はページでは決められないので、集計係が確かめます。</div>
   </div>
   <details>
     <summary>点棒（素点）の一覧</summary>
@@ -360,31 +360,44 @@ function renderStage() {
   box.appendChild(note);
 }
 
-// ---- 最終順位（32名。幹部用5章と同じ規則）----
-// 1〜4位＝決勝の4名を決勝の素点順、5〜8位＝準決勝で敗退した4名を準決勝の素点順、9〜32位＝予選7〜30位を準決勝の時間の卓ごとに素点順
-// （卓をまたいで入れ替わらない）。本田プロ・ゆうこママも入る（必ず1〜8位）。優勝・準優勝・第3位は参加者の中の順（ゲストは飛ばす）、飛び賞は10位・20位。
+// ---- 最終順位（幹部用5章と同じ規則）----
+// 並び順: 決勝の4名を決勝の素点順 → 準決勝で敗退した4名を準決勝の素点順 → 予選7〜30位を準決勝の時間の卓ごとに素点順（卓をまたいで入れ替わらない）。
+// ゲスト（本田プロ・ゆうこママ）は、予選の合計を32名で並べて8位以内（予選の実力で準決勝に入った）なら順位に入れ、
+// 8位より下なら抜いて下を繰り上げる（表は30〜32名）。優勝・準優勝・第3位は参加者の中の順、飛び賞は表の10位・20位。
 // 同点は「同点」と出すだけ（起家はページで分からない＝集計係が確かめる）
 function renderFinal() {
   const box = document.getElementById('final'); box.innerHTML = '';
   const val = (p, k) => { const v = DATA && DATA.players[p] ? DATA.players[p][k] : null; return v === undefined ? null : v; };
-  const rows = [];   // {rank, tie, p, how, raw, award}
-  const group = (start, mem, key, how) => {
+  let rows = [];   // {p, grp, done, tie, how, raw, rank, award}
+  const group = (grp, mem, key, how) => {
     const done = mem.length > 0 && mem.every(m => m && val(m.p, key) !== null);
     const list = done ? mem.slice().sort((a, b) => val(b.p, key) - val(a.p, key)) : mem;
-    list.forEach((m, i) => rows.push({ rank: done ? start + i : null, tie: done && list.some((o, j) => j !== i && val(o.p, key) === val(m.p, key)),
-      p: m ? m.p : null, how: how + (done ? '' : '（未確定）'), raw: done ? val(m.p, key) : null, award: '' }));
+    list.forEach((m, i) => rows.push({ p: m ? m.p : null, grp, done, tie: done && list.some((o, j) => j !== i && val(o.p, key) === val(m.p, key)),
+      how: how + (done ? '' : '（未確定）'), raw: done ? val(m.p, key) : null, rank: null, award: '' }));
   };
   const semi = semiTables(), fin = finalTable();
   if (fin.every(Boolean)) {
     const ps = fin.map(m => m.p);
-    group(1, fin, 'F', '決勝');
-    group(5, semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)), 'S', '準決勝');
+    group('top', fin, 'F', '決勝');
+    group('top', semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)), 'S', '準決勝');
   } else {
-    semi.S1.concat(semi.S2).forEach(m => rows.push({ rank: null, tie: false, p: m ? m.p : null, how: '準決勝・決勝の後に決まる', raw: null, award: '' }));
+    semi.S1.concat(semi.S2).forEach(m => rows.push({ p: m ? m.p : null, grp: 'top', done: false, tie: false, how: '準決勝・決勝の後に決まる', raw: null, rank: null, award: '' }));
   }
   const band = bandTables();
-  for (let t = 3; t <= 8; t++) group(9 + (t - 3) * 4, band['B' + t], 'S', t + '卓');
-  if (rows.slice(0, 8).every(r => r.rank !== null)) {
+  for (let t = 3; t <= 8; t++) group('band', band['B' + t], 'S', t + '卓');
+  // ゲストを順位に入れるか（予選が終わるまでは仮に入れておく）
+  const all = PLAYERS.filter(p => TOTALS[p] && TOTALS[p].total !== null && TOTALS[p].n === 4).sort((a, b) => TOTALS[b].total - TOTALS[a].total);
+  const prelimDone = all.length === PLAYERS.length;
+  const notes = [];
+  ['本田プロ', 'ゆうこママ'].forEach(g => {
+    if (!prelimDone) return;
+    const i = all.indexOf(g), edge = all[7] && all[8] && TOTALS[all[7]].total === TOTALS[all[8]].total && TOTALS[g].total === TOTALS[all[7]].total;
+    notes.push(g + 'は予選の合計が32名中' + (i + 1) + '位のため、順位に' + (i < 8 ? '入れます' : '入れません（抜いて下を繰り上げ）') + '。' + (edge ? '【注意】8位と9位が同点なので、集計係が確かめます。' : ''));
+    if (i >= 8) rows = rows.filter(r => r.p !== g);
+  });
+  if (!prelimDone) notes.push('本田プロ・ゆうこママを順位に入れるかは、予選の後に決まります（予選の合計が32名中8位以内なら入れる）。');
+  rows.forEach((r, i) => { r.rank = r.done ? i + 1 : null; });
+  if (fin.every(Boolean) && rows.filter(r => r.grp === 'top').every(r => r.done)) {
     rows.filter(r => r.p && r.p.startsWith('P')).slice(0, 3).forEach((r, i) => { r.award = ['優勝', '準優勝', '第3位'][i]; });
   }
   rows.forEach(r => { if (r.rank === 10 || r.rank === 20) r.award = '飛び賞'; });
@@ -401,9 +414,9 @@ function renderFinal() {
     body.appendChild(tr);
   });
   tb.appendChild(body); tw.appendChild(tb); box.appendChild(tw);
-  const n = rows.filter(r => r.rank !== null).length, p = document.createElement('p'); p.className = 'small';
-  p.textContent = n >= 32 ? '32名の順位がそろいました（「同点」の行は集計係が確かめます）。' : '順位が出ているのは ' + n + '/32名です。';
-  box.appendChild(p);
+  const n = rows.filter(r => r.rank !== null).length;
+  notes.unshift(n >= rows.length ? rows.length + '名の順位がそろいました（「同点」の行は集計係が確かめます）。' : '順位が出ているのは ' + n + '/' + rows.length + '名です。');
+  notes.forEach(t => { const p = document.createElement('p'); p.className = 'small'; p.textContent = t; box.appendChild(p); });
 }
 
 // ---- 卓入力（予選・準決勝・決勝 共通）----
