@@ -48,11 +48,12 @@ td.neg,.neg{color:var(--ng)}
 .renshu{border:2px solid var(--accent);background:#eef6f2}
 .renshu ol{margin:6px 0 4px;padding-left:1.4em}
 /* 卓入力 */
-.seat{display:grid;grid-template-columns:2.2em 1fr 7.5em 6em;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.seat{display:grid;grid-template-columns:2.2em 1fr 9.6em 6em;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .seat .w{font-weight:700;text-align:center;background:var(--soft);border-radius:6px;padding:6px 0}
 .seat .nm{font-weight:700}
 .seat input{padding:10px;font-size:1.1rem}
 .seat .in{display:flex;align-items:center;gap:2px;min-width:0}.seat .in input{flex:1;width:100%;min-width:0}.seat .in span{font-weight:700;font-size:1.1rem}.seat input.auto{background:var(--soft);color:var(--accent);font-weight:700}
+.seat .sign{flex:none;width:2em;padding:8px 0;font-size:1.15rem;line-height:1.2;background:var(--card2);color:var(--fg);border:1px solid var(--line);border-radius:6px}.seat .sign.on{background:var(--ng);border-color:var(--ng);color:#fff}.seat .sign:disabled{opacity:.4;cursor:default}
 .seat .pt{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .sum{display:flex;justify-content:space-between;padding:8px 0;font-weight:700}
 .status span{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:.9rem}
@@ -64,7 +65,7 @@ td.neg,.neg{color:var(--ng)}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:700}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-@media (max-width:420px){.seat{grid-template-columns:2em 1fr 6em 4.8em;gap:6px}.seat input{padding:8px 6px;font-size:1rem}.seat .pt{font-size:.95rem}}
+@media (max-width:420px){.seat{grid-template-columns:2em 1fr 7.6em 4.4em;gap:6px}.seat .sign{width:1.9em}.seat input{padding:8px 6px;font-size:1rem}.seat .pt{font-size:.95rem}}
 </style>
 </head>
 <body>
@@ -112,7 +113,7 @@ summary{cursor:pointer;font-weight:700}
       </div>
     </div>
     <div id="seats"></div>
-    <div class="small">00は打ちません（25,300点 → 253）。上限は 999（99,900点）です。3人入れると4人目は自動で入ります。</div>
+    <div class="small">00は打ちません（25,300点 → 253）。上限は 999（99,900点）です。マイナスは「−」ボタンで付けます（先に押しても、後で押しても同じ）。3人入れると4人目は自動で入ります。</div>
     <div id="qhint" class="small"></div>
     <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
     <div id="qwarn" class="small neg"></div>
@@ -124,7 +125,7 @@ summary{cursor:pointer;font-weight:700}
     <b>ポイントの計算</b>（25,000点持ち・30,000点返し）<br>
     ①（点棒−30,000）÷1,000。100点＝0.1ポイント（丸めない）<br>
     ② 順位点 1位 +50／2位 +10／3位 −10／4位 −30 を足す<br>
-    <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「-」を付けてそのまま入れてください。<br>チョンボの局が流局したら満貫払い（子のチョンボ＝親4,000・子2,000ずつ、親のチョンボ＝4,000オール）。払った後の点棒を入れてください。</span>
+    <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「−」ボタンを押して、そのまま入れてください。<br>チョンボの局が流局したら満貫払い（子のチョンボ＝親4,000・子2,000ずつ、親のチョンボ＝4,000オール）。払った後の点棒を入れてください。</span>
   </div>
 
   <h2>集計（練習・予選は4半荘の合計ポイント）</h2>
@@ -503,7 +504,7 @@ function fillSeats() {
   t.seats.forEach((n, i) => {
     const row = document.createElement('div'); row.className = 'seat';
     const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
-    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><input type="number" inputmode="numeric" step="1" min="-2000" max="999" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
+    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><button type="button" class="sign" aria-label="マイナス" aria-pressed="false"' + (n ? '' : ' disabled') + '>−</button><input type="number" inputmode="numeric" step="1" min="-2000" max="999" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
     row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur / 100;
     box.appendChild(row);
   });
@@ -522,9 +523,32 @@ function fillSeats() {
   }
   box.querySelectorAll('input').forEach(inp => {
     // 自動の欄を手で打つと手入力に変わる。自動の欄を押したら全選択（打てば置き換わる）
-    inp.addEventListener('input', () => { EDITING = true; delete inp.dataset.auto; inp.classList.remove('auto'); autoFill(); preview(); });
+    // 範囲外（min〜max を超える・小数）になる入力は受け付けず、直前の値に戻す（2530 のような打ち間違いを入れさせない）
+    inp.addEventListener('input', () => {
+      // 「−」を先に押してあれば、打った数をマイナスにする（スマホの数字キーにはマイナスがない）
+      const v0 = inp.value.trim();
+      if (inp.dataset.neg && v0 !== '') { if (/^\d/.test(v0)) inp.value = '-' + v0; delete inp.dataset.neg; }
+      const v = inp.value.trim(), u = Number(v);
+      if (v !== '' && (!Number.isInteger(u) || u < Number(inp.min) || u > Number(inp.max))) { inp.value = inp.dataset.good || ''; return; }
+      if (!inp.validity.badInput) inp.dataset.good = inp.value;
+      EDITING = true; delete inp.dataset.auto; inp.classList.remove('auto'); autoFill(); preview();
+    });
     inp.addEventListener('blur', () => { autoFill(); preview(); });
-    inp.addEventListener('focus', () => { if (inp.dataset.auto) inp.select(); });
+    inp.addEventListener('focus', () => { inp.dataset.good = inp.value; if (inp.dataset.auto) inp.select(); });
+    // 「−」ボタン: 数が入っていれば符号を変える。空なら、次に打つ数をマイナスにする（もう一度押すと取り消し）
+    inp.parentNode.querySelector('.sign').addEventListener('click', () => {
+      if (inp.disabled) return;
+      inp.focus();
+      const v = inp.value.trim();
+      if (v === '') { if (inp.dataset.neg) delete inp.dataset.neg; else inp.dataset.neg = '1'; }
+      else {
+        const u = -Number(v);
+        if (!Number.isInteger(u) || u < Number(inp.min) || u > Number(inp.max)) { say('qmsg', '範囲（' + inp.min.replace('-', '−') + '〜' + inp.max + '）を超えるため、' + (u < 0 ? 'マイナスにできません' : 'プラスに戻せません'), false); return; }
+        inp.value = String(u); inp.dataset.good = inp.value;
+        EDITING = true; delete inp.dataset.auto; inp.classList.remove('auto');
+      }
+      autoFill(); preview();
+    });
   });
   autoFill(); preview();
 }
@@ -540,7 +564,7 @@ function autoFill(force) {
   ins.forEach(i => { if (i.dataset.auto && i !== target) { i.value = ''; delete i.dataset.auto; i.classList.remove('auto'); } });
   if (!target || (!force && !target.dataset.auto && target === document.activeElement)) return;
   target.value = 1000 - units.reduce((a, b) => a + b, 0);
-  target.dataset.auto = '1'; target.classList.add('auto');
+  target.dataset.auto = '1'; target.classList.add('auto'); delete target.dataset.neg;
 }
 // 4席ぶん（未確定の席は name '' / raw null）
 // 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜999,900）は bad にして raw を NaN にする
@@ -553,6 +577,8 @@ function readSeats() {
 }
 const BAD_UNIT = '百点単位の整数で入れてください（25,300点なら 253。上限は 999＝99,900点）';
 function preview() {
+  // 「−」ボタンは、マイナスの数が入っているか、次に打つ数をマイナスにする待ちのときに色を付ける
+  document.querySelectorAll('#seats .seat').forEach(r => { const i = r.querySelector('input'), b = r.querySelector('.sign'); if (!i || !b) return; const on = !!i.dataset.neg || Number(i.value) < 0; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
   const seats = readSeats();
   const pts = document.querySelectorAll('#seats .pt');
   if (isPrelim()) {
