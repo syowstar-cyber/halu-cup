@@ -218,6 +218,9 @@ while i < len(src):
     if line.strip() == "<!--views-->":          # 参加者ページの閲覧ログ（ページの JS が埋める）
         out.append('<div id="views" class="party"></div>')
         continue
+    if line.strip() == "<!--attend-->":         # 当日の出席者チェック（受付）と、同点のときの生年月日（ページの JS が埋める）
+        out.append('<div id="attend" class="party"></div>')
+        continue
     out.append(f"<p>{inline(line)}</p>")
 
 flush_table(); flush_list()

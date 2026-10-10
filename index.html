@@ -66,6 +66,14 @@ table.todo .meta{display:inline;margin-left:6px}
 .party table.roster select{font-size:1rem;padding:8px 6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--fg)}
 .party textarea{width:100%;font-size:1rem;padding:8px;border:1px solid var(--line);border-radius:6px;font-family:inherit;margin-top:6px}
 .party button{margin-top:8px;padding:10px 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:1rem}
+.party table.attend td{padding:6px 8px;vertical-align:middle}
+.party table.attend input[type=checkbox]{width:24px;height:24px;accent-color:var(--accent)}
+.party table.attend input[type=date]{font-size:1rem;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--fg)}
+.party table.attend button{margin:4px 0 0 4px;padding:6px 10px;font-size:.9rem}
+.party table.attend button.ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line)}
+.party table.attend tr.here td{background:#e3f2e6}
+.party table.attend .meta{display:inline;margin-left:6px}
+.party table.attend td:last-child,.party table.attend th:last-child{white-space:normal;min-width:9em}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:bold}
 code{background:var(--card2);padding:1px 5px;border-radius:4px}
@@ -172,7 +180,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li>点数報告ページの卓メンバーは、この規則で自動で決まる</li>
 <li>準決勝の時間は全員が打つ。S1卓は1卓、S2卓は2卓を使う</li>
 <li>準決勝に進めなかった24名は、予選の順位で4人ずつ3〜8卓に分かれる（7〜10位＝3卓、11〜14位＝4卓、15〜18位＝5卓、19〜22位＝6卓、23〜26位＝7卓、27〜30位＝8卓）。席と起家は自動卓のサイコロ。準決勝と同じ時刻で打ち切り、点数を送る（最終順位に使う。<a class="xref" href="#s5">5章</a>）</li>
-<li>この6卓のメンバーも点数報告ページに自動で出る（予選の合計が同点の境目は、集計係が年齢で決める）</li>
+<li>この6卓のメンバーも点数報告ページに自動で出る（予選の合計が同点の境目は年齢で決める。<a class="xref" href="#s5">5章</a>）</li>
 </ul>
 <h3>決勝（1卓・1半荘・時間制限なし）</h3>
 <ul>
@@ -290,11 +298,15 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>準決勝で敗退した4名</td><td>次に、準決勝の素点順に</td><td>準決勝終了後（16:55）</td></tr>
 <tr><td>予選7〜30位の24名</td><td>次に、準決勝の時間の6卓ごとに素点順（3卓 … 8卓の順）。卓をまたいで入れ替わらない</td><td>準決勝の時間の終了後（16:55）</td></tr>
 </table></div>
-<p>順位から抜くゲストがいれば、その行を飛ばして下を繰り上げる（ゲストを2人とも入れれば32名、2人とも抜けば30名）。予選の8位と9位が同点でゲストが関わるときは、集計係が確かめる。</p>
-<p>予選4半荘の合計が同点なら、年齢が上の方が上位（点数報告ページは「同点」と出すだけ。集計係が確かめる）。</p>
-<p>準決勝・決勝・準決勝の時間の6卓の、同じ卓の中の同点は、起家に近い方が上位。準決勝の別の卓どうしの同点（準決勝で敗退した4名の並び・第3位）は、年齢が上の方が上位（点数報告ページは「同点」と出すだけ。集計係が確かめる）。</p>
-<p>準決勝のメンバーが変わる境目（2位と3位・3位と4位・5位と6位・6位と7位）が同点のときは、集計係が年齢で決める。</p>
-<p>点数報告ページは並び順で仮に置き、準決勝・決勝の欄に【注意】を出すだけ。</p>
+<p>順位から抜くゲストがいれば、その行を飛ばして下を繰り上げる（ゲストを2人とも入れれば32名、2人とも抜けば30名）。予選の8位と9位が同点でゲストが関わるときも、生年月日を入れれば決まる（入れるまでは集計係が確かめる）。</p>
+<p>予選4半荘の合計が同点なら、年齢が上の方が上位。準決勝の別の卓どうしの同点（準決勝で敗退した4名の並び・第3位）も、年齢が上の方が上位。</p>
+<p>生年月日を入れるまでは、同点の人は同じ順位で「同点」と出る（4回戦が終わって同じ順位の人がいたら、幹部が入れて差をつける）。</p>
+<p>同点が出たら、集計係（幹部は全員が集計係）がその人たち全員の生年月日を聞き、<a class="xref" href="#s11">11章</a>「当日の出席者チェック」に入れる（2026-10-11〜）。ゲストが入る同点ならゲストの分も入れる。1人でも欠けると並びは変わらない。</p>
+<p>入れると、点数報告ページの順位・準決勝のメンバー・32名中8位の判定が、全員の画面で年上から並ぶ（順位に「年齢」と出る）。生年月日も同じなら「同点」のまま（集計係が決める）。</p>
+<p>生年月日はどのページにも出さない。受け口（<code>BIRTH</code>）は、入れた人どうしの上下だけを返す。</p>
+<p>準決勝・決勝・準決勝の時間の6卓の、同じ卓の中の同点は、起家に近い方が上位（ページでは決められない。「同点」と出し、集計係が確かめる）。</p>
+<p>準決勝のメンバーが変わる境目（2位と3位・3位と4位・5位と6位・6位と7位）が同点のときも、生年月日を入れれば決まる。</p>
+<p>入れるまでは、点数報告ページは並び順で仮に置き、準決勝・決勝の欄に【注意】を出す。</p>
 <p>ページのメンバーと違う人になったら、その卓の準決勝は集計係が手元で集計し、決勝のメンバーも集計係が決める。</p>
 <p>打ち上げの振り分けに全30名の順位が必要。</p>
 <p>準決勝の時間の6卓の分は、準決勝の時間の終了後（16:55ごろ）に確定するため、振り分け表の作成はそこから始められる（表からゲストを除いて使う）。点数報告ページの「最終順位」に出る。</p>
@@ -470,6 +482,12 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li><label><input type="checkbox" data-k="サイン会の列の導線を確認" data-legacy=""><span>サイン会の列の導線を確認</span></label></li>
 <li><label><input type="checkbox" data-k="賞品トロフィーの配置置き場所は店10で確認" data-legacy="賞品の配置"><span>賞品・トロフィーの配置（置き場所は店-10で確認）</span></label></li>
 </ul>
+<h3>当日の出席者チェック（受付）</h3>
+<p>受付で来た人の出席にチェックを入れる（幹部で共有。チェックした人と時刻が残る）。</p>
+<p>生年月日の欄は、同点が出たときだけ使う（受付で全員に聞かない）。使い方は<a class="xref" href="#s5">5章</a>。</p>
+<p>生年月日はどのページにも出ない。入れた後は「入力済み」とだけ出る。間違えたら「消す」で消して入れ直す。</p>
+<p>出席チェックと生年月日は、受け口につながっているときだけ使える（端末には保存しない）。つながらないときは「最新に更新」で再試行する。</p>
+<div id="attend" class="party"></div>
 <h3>精算5分で回すためのルール</h3>
 <ol class=todo>
 <li>終局時に各卓4名で点棒を確かめ合う（記録用紙は使わない。送った点数が正）</li>
@@ -478,7 +496,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <li>集計係1名は入力方法を教え、頼まれた卓の分は自分で入れる。集計表の「入力済み n/8卓」を見て、未入力の卓に声をかける</li>
 </ol>
 <h2 id="s12">12. 手配物</h2>
-<p>11〜<a class="xref" href="#s14">14章</a>のチェックは幹部で共有される（点数報告と同じ受け口に、誰がいつ付けたかつきで保存）。受け口につながらないときは、その端末だけに保存される。</p>
+<p>11〜<a class="xref" href="#s14">14章</a>のチェックは幹部で共有される（点数報告と同じ受け口に、誰がいつ付けたかつきで保存）。受け口につながらないときは、その端末だけに保存される（<a class="xref" href="#s11">11章</a>の出席チェックと生年月日は除く）。</p>
 <ul class=todo>
 <li><label><input type="checkbox" data-k="色紙32枚予備込み" data-legacy=""><span>色紙 32枚（予備込み）</span></label></li>
 <li><label><input type="checkbox" data-k="賞品優勝準優勝第3位とトロフィー" data-legacy=""><span>賞品（優勝／準優勝／第3位）とトロフィー</span></label></li>
@@ -727,6 +745,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-11</td><td>出席者一覧（P1〜P30）を確定済みにした。参加者ページのお知らせ・<a class="xref" href="sanka/#s8">参加者案内8章</a>・くじページ（流れの表・6章）・9章・14章（幹-7・幹-22）・15章から「10月22日（木）に確定」「仮のNo」を外し、10月22日にLINEへ貼る作業をなくした。出席者が変わってもくじは引き直さない</td><td>主催の指示</td></tr>
 <tr><td>2026-10-11</td><td>本田プロ・ゆうこママも表彰の対象にした。予選の合計が32名中8位以内なら最終順位と表彰に入り、9位以下なら抜いて繰り上げる（前は表彰は参加者の中の順）。準決勝に進んだ人が占める順位（ゲストを2人入れれば1〜8位・1人なら1〜7位・0人なら1〜6位）と例を5章に明記。3章・6章・<a class="xref" href="sanka/#s3">参加者案内3章</a>・6章・点数報告ページ・本田プロ用ページを同じ規則にした</td><td>主催の指示</td></tr>
 <tr><td>2026-10-11</td><td>参加者ページのお知らせと<a class="xref" href="sanka/#s3">参加者案内3章</a>に、ルールや大会の進め方は大会の直前まで変わることがあると載せた</td><td>主催の指示</td></tr>
+<tr><td>2026-10-11</td><td>11章に「当日の出席者チェック（受付）」を作った。出席はチェック共有。同点のときだけ、その人たちの生年月日を入れると、点数報告ページの順位・準決勝のメンバー・32名中8位の判定が全員の画面で年上から並ぶ。生年月日は受け口（<code>BIRTH</code>）に置き、どのページにも出さない（返すのは入れた人どうしの上下だけ）。3章・5章を更新</td><td>主催の指示</td></tr>
+<tr><td>2026-10-11</td><td>生年月日を入れるまでは、同点の人を同じ順位の数字で出すようにした（次の人はその人数ぶん飛ばす）。並べ直すには同点の人全員（ゲストを含む）の生年月日が要ることを5章に明記。順位から抜くゲストは同点を並べる前に外す。受付の出席チェックは、チェックの置き場が上限（1項目9KB）を超えないよう受け口の別の置き場（<code>ATTEND</code>）に分けた。生年月日の入力に合言葉は付けない（幹部用ページで、幹部は全員が集計係のため）</td><td>主催の指示</td></tr>
+<tr><td>2026-10-11</td><td>年齢で同点を決める仕組みの見直し（2回目の点検）。大会後に生年月日を消しても順位が元に戻らないよう、消す前の上下の順を受け口に固定するようにした（以後の入力は断る）。準決勝の別の卓どうしの同点は、卓ごとのまとまりで年上から並べる。準決勝の同じ卓で2位と3位が同点（決勝に進む境目）のときは、最終順位に「同点」と【注意】を出す。6位ラインと同じ合計で年齢で決まった人は「圏内（年齢）」と出す。チェックの置き場をさらに分けた</td><td>点検</td></tr>
 </table></div></main>
   <nav class="pnav" aria-label="ページ切り替え"><a href="sanka/">参加者用ページ</a><a href="score/">点数報告・集計</a><a href="renshu/">点数入力の練習</a><a href="rule/">ルール</a><a href="fu/">点数計算</a><a href="kuji/">対戦表のくじ</a><a href="pro/">本田プロ確認用</a></nav>
   <a class="top" href="#" title="上へ">↑</a>
@@ -737,6 +758,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 const API = (window.HALU_API || '').trim();
 let CHECKS = null;           // サーバの状態 k -> {by, ts}
 let SHARED = false;          // 受け口につながっているか
+let WSEQ = 0;                // 送信の始まりと終わりで1ずつ増える。GET の間に変わったら、その GET の CHECKS・AGERANK は古いので使わない
 function fmtTs(ts){ return ts ? ts.slice(5, 16).replace('-', '/') : ''; }
 function setStatus(msg, ng){ document.querySelectorAll('.who .st').forEach(el => { el.textContent = msg; el.className = 'st' + (ng ? ' ng' : ''); }); }
 function applyChecks(c){
@@ -752,19 +774,24 @@ function applyChecks(c){
   });
 }
 async function syncChecks(c){
-  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口（API）が未設定のため、回答一覧を読めません</p>'; applyChecks(c); return; }
+  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口（API）が未設定のため、回答一覧を読めません</p>'; renderAttend(true); applyChecks(c); return; }
   try {
+    const w0 = WSEQ;
     const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
     const j = await r.json();
     if (!j.ok) throw new Error('bad');
-    CHECKS = j.data.checks || {}; SHARED = true;
+    const fresh = WSEQ === w0;   // 送信と重なった GET は、送信の返事より古いことがある
+    if (fresh) { CHECKS = j.data.checks || {}; AGERANK = j.data.agerank || {}; }
+    SHARED = true;
     renderParty(j.data.party || {}, j.data.roster || {}, j.data.partyLog);
     nameSchedule(j.data.roster || {});
     renderViews(j.data.views || { daily: {}, recent: [] });
+    if (fresh) renderAttend(false);
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
   } catch (e) {
     SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
     const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口につながらないため、回答一覧を読めません。「最新に更新」で再試行</p>';
+    renderAttend(true);
   }
   applyChecks(c);
 }
@@ -884,6 +911,85 @@ function renderViews(v){
   h += '<p class="st">参加者ページを開いた記録（同じタブで開き直した分は数えない）。名前は、参加者ページで自分のNoを選んだ人だけ分かる。直近' + rec.length + '件を表示（受け口は直近100件を保持）。</p>';
   box.innerHTML = h;
 }
+// 11章: 当日の出席者チェック（受付）。出席はチェック共有（キー「出席_P番号」）で幹部が共有する（名前と時刻が残る）。
+// 生年月日は同点のときだけ入れる（受け口の BIRTH）。受け口は生年月日を返さず、入れた人どうしの年上からの順（agerank）だけ返す。
+// そのため、ここには「入力済み」だけを出す（日付は出さない。間違えたら消して入れ直す）。点数報告ページは agerank で同点を年上から並べる
+const GUESTS = ['本田プロ', 'ゆうこママ'];
+let AGERANK = {}, ATTMSG = null;
+const BDRAFT = {};   // 打ちかけの生年月日（1分ごとの自動更新で消さない）
+const BUSY = new Set();   // 返事待ちの送信（'att:P番号'・'bd:P番号'）。描き直しても押せないままにする
+const dnA = p => GUESTS.includes(p) ? p : (ROSTER[p] ? ROSTER[p] + '（' + p + '）' : p);
+function renderAttend(force){
+  const box = document.getElementById('attend'); if (!box) return;
+  // 自動更新では、生年月日を打っている最中の表を作り直さない
+  if (!force && box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'date') return;
+  if (!SHARED) { box.innerHTML = '<p class="st ng">受け口につながらないため、出席チェックと生年月日は使えません。「最新に更新」で再試行</p>'; return; }
+  const here = PNOS.filter(p => CHECKS && CHECKS['出席_' + p]).length;
+  let h = '<div class="cnt"><span>出席 ' + here + '/30人</span><span>生年月日 ' + Object.keys(AGERANK).length + '人</span></div>';
+  h += '<div class="tw"><table class="attend"><tr><th>No</th><th>名前</th><th>出席</th><th>生年月日（同点のときだけ）</th></tr>';
+  PNOS.concat(GUESTS).forEach(p => {
+    const v = CHECKS ? CHECKS['出席_' + p] : null, g = GUESTS.includes(p);
+    h += '<tr' + (v ? ' class="here"' : '') + '><td>' + (g ? '—' : p) + '</td><td>' + esc(g ? p : (ROSTER[p] || '（空き）')) + '</td>'
+      + '<td><label><input type="checkbox" class="att" data-p="' + p + '"' + (v ? ' checked' : '') + (BUSY.has('att:' + p) ? ' disabled' : '') + '><span class="meta">' + (v ? esc((v.by ? v.by + ' ' : '') + fmtTs(v.ts)) : '') + '</span></label></td><td>'
+      + (AGERANK[p] ? '入力済み<button type="button" class="ghost bclr" data-p="' + p + '"' + (BUSY.has('bd:' + p) ? ' disabled' : '') + '>消す</button>'
+        : '<input type="date" class="bd" data-p="' + p + '" min="1900-01-01" max="2026-10-24" value="' + esc(BDRAFT[p] || '') + '"><button type="button" class="bset" data-p="' + p + '"' + (BUSY.has('bd:' + p) ? ' disabled' : '') + '>入れる</button>')
+      + '</td></tr>';
+  });
+  h += '</table></div>';
+  if (ATTMSG) h += '<p class="st attmsg' + (ATTMSG[1] ? ' ng' : '') + '">' + esc(ATTMSG[0]) + '</p>';
+  box.innerHTML = h;
+  // 知らせを出す。別の行で生年月日を打っている最中なら、表は作り直さず知らせの行だけ書き換える（打ちかけを消さない）
+  const say = (t, ng) => {
+    ATTMSG = [t, ng];
+    const a = document.activeElement;
+    if (!(box.contains(a) && a.tagName === 'INPUT' && a.type === 'date')) { renderAttend(true); return; }
+    let m = box.querySelector('p.attmsg'); if (!m) { m = document.createElement('p'); box.appendChild(m); }
+    m.className = 'st attmsg' + (ng ? ' ng' : ''); m.textContent = t;
+    // 返事が来た行だけ押せるように戻す（返事待ちの行はそのまま）
+    box.querySelectorAll('input.att, button.bset, button.bclr').forEach(x => { x.disabled = BUSY.has((x.classList.contains('att') ? 'att:' : 'bd:') + x.dataset.p); });
+  };
+  box.querySelectorAll('input.att').forEach(cb => cb.addEventListener('change', async () => {
+    const p = cb.dataset.p, v = cb.checked, w = document.getElementById('who'), by = w ? w.value.trim() : '';
+    cb.disabled = true; WSEQ++; BUSY.add('att:' + p);
+    try {
+      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'check', k: '出席_' + p, v, by }) });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'ng');
+      CHECKS = j.checks || {}; BUSY.delete('att:' + p);
+      say(dnA(p) + (v ? ' を出席にしました' : ' の出席を外しました'), false);
+    } catch (e) {
+      cb.checked = !v; BUSY.delete('att:' + p);
+      say(e.message === 'size' ? 'チェックの保存領域がいっぱいです。主催に連絡してください（gas/README.md の2b）' : '送れませんでした。通信を確認して「最新に更新」', true);
+    } finally { WSEQ++; BUSY.delete('att:' + p); }
+  }));
+  box.querySelectorAll('input.bd').forEach(inp => inp.addEventListener('input', () => { BDRAFT[inp.dataset.p] = inp.value; }));
+  const postBirth = async (p, date) => {
+    WSEQ++; BUSY.add('bd:' + p);
+    try {
+      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'birth', player: p, date }) });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'ng');
+      AGERANK = j.agerank || {}; delete BDRAFT[p]; BUSY.delete('bd:' + p);
+      say(dnA(p) + (date ? ' の生年月日を入れました。同点の人全員の分がそろうと、点数報告ページで年上から並びます（開き直すか、1分ほど待つ）'
+        : ' の生年月日を消しました。その同点は、点数報告ページで「同点」に戻ります（開き直すか、1分ほど待つ）'), false);
+    } catch (e) {
+      BUSY.delete('bd:' + p);
+      say(e.message === 'round' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）'
+        : e.message === 'date' ? '生年月日の形が正しくありません（1900年〜大会の日まで）'
+        : e.message === 'closed' ? '大会後のため、生年月日は受け付けていません（受け口で締め切り済み。gas/README.md の2f）' : '送れませんでした。通信を確認して「最新に更新」', true);
+    } finally { WSEQ++; BUSY.delete('bd:' + p); }
+  };
+  box.querySelectorAll('button.bset').forEach(b => b.addEventListener('click', () => {
+    const p = b.dataset.p, inp = box.querySelector('input.bd[data-p="' + p + '"]'), v = inp ? inp.value : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { say(dnA(p) + ' の生年月日を選んでから「入れる」を押してください', true); return; }
+    if (!confirm(dnA(p) + ' の生年月日を ' + v + ' で入れますか？\n（どのページにも表示されません。同点の順位にだけ使います）')) return;
+    b.disabled = true; postBirth(p, v);
+  }));
+  box.querySelectorAll('button.bclr').forEach(b => b.addEventListener('click', () => {
+    if (!confirm(dnA(b.dataset.p) + ' の生年月日を消しますか？')) return;
+    b.disabled = true; postBirth(b.dataset.p, '');
+  }));
+}
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){
   const first = c.querySelector('ul.todo, table.todo');
@@ -903,7 +1009,7 @@ function setupChecks(c){
       try { localStorage.setItem('halu:' + k, v ? '1' : '0'); } catch(e){}
       if (!SHARED) return;
       const by = name.value.trim();
-      cb.disabled = true;
+      cb.disabled = true; WSEQ++;
       try {
         const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'check', k, v, by }) });
         const j = await r.json();
@@ -911,8 +1017,9 @@ function setupChecks(c){
         CHECKS = j.checks || {};
         setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
       } catch (e) {
-        setStatus(e.message === 'key' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）' : '送れませんでした。通信を確認して「最新に更新」', true);
-      } finally { cb.disabled = false; }
+        setStatus(e.message === 'key' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）'
+          : e.message === 'size' ? 'チェックの保存領域がいっぱいです。主催に連絡してください（gas/README.md の2b）' : '送れませんでした。通信を確認して「最新に更新」', true);
+      } finally { cb.disabled = false; WSEQ++; }
       applyChecks(c);
     });
   });

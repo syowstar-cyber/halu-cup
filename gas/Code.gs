@@ -5,7 +5,7 @@
 // 受け口は2つ:
 //   点数報告（参加者）… キーなし。{player, round, score, chombo?} / {action:'clear', player, round}
 //     chombo はその半荘のチョンボ回数（0〜9。省くと変えない）。CHOMBO に player→round→回数 で持つ（2026-09-25）
-//   チェック共有（幹部）… キーなし（幹部用ページは公開のため）。{action:'check', k, v, by}
+//   チェック共有（幹部）… キーなし（幹部用ページは公開のため）。{action:'check', k, v, by}（受付の出席 k='出席_…' は ATTEND に分けて持つ）
 //   打ち上げ希望（参加者）… キーなし。{action:'party', name, no, choice:'1'|'2'|'3'|'4'|'5'|''}（'' は取り消し）
 //   出席者一覧（幹部）… キーなし。{action:'roster', names:{P1:'名前', ...}}（'' で消す。渡したキーだけ更新）
 //     名前はここ（スクリプト プロパティ ROSTER）にだけ置く。公開リポにはファイルとして置かない（2026-09-17）
@@ -13,6 +13,9 @@
 //   本田プロ確認事項（プロ用ページ）… キーなし。{action:'pro', who:'名前（立場）', items:{'1':{c:'選択', n:'補足'}, …}}（2026-10-10）
 //     中身は PRO_ANS に持ち、GET では返さない（到着時刻・前後の予定を公開しない）。返すのは項目ごとの最終送信時刻だけ。
 //     届いたら、このスクリプトの持ち主へメールで知らせる（1日 PRO_MAIL_MAX 通まで）
+//   生年月日（幹部用ページ）… キーなし。{action:'birth', player:'P12'|'本田プロ'|'ゆうこママ', date:'YYYY-MM-DD'|''}（'' で消す。2026-10-11）
+//     同点（年齢が上の方が上位）のときだけ入れる。BIRTH に持ち、生年月日そのものは GET でも返事でも返さない。
+//     返すのは入れた人どうしの年上からの順 agerank（1 が最年長・同じ日は同じ数）だけ
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -42,7 +45,7 @@ function load_() {
   let players, log, checks, party, roster, views, chombo;
   try { players = JSON.parse(p.getProperty('PLAYERS') || 'null'); } catch (e) { players = null; }
   try { log = JSON.parse(p.getProperty('LOG') || '[]'); } catch (e) { log = []; }
-  try { checks = JSON.parse(p.getProperty('CHECKS') || '{}'); } catch (e) { checks = {}; }
+  checks = loadChecks_();
   try { party = JSON.parse(p.getProperty('PARTY') || '{}'); } catch (e) { party = {}; }
   try { roster = JSON.parse(p.getProperty('ROSTER') || '{}'); } catch (e) { roster = {}; }
   try { views = JSON.parse(p.getProperty('VIEWS') || 'null'); } catch (e) { views = null; }
@@ -52,7 +55,33 @@ function load_() {
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
   let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) { partyLog = []; }
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog, pro: proStatus_(loadPro_()) };
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog, pro: proStatus_(loadPro_()), agerank: ageRankOut_() };
+}
+
+// 生年月日。birth[プレイヤー] = 'YYYY-MM-DD'（公開しない。返すのは ageRank_ の順だけ）
+function loadBirth_() {
+  try { return JSON.parse(props_().getProperty('BIRTH') || '{}') || {}; } catch (e) { return {}; }
+}
+// 入れた人どうしの年上からの順。早く生まれた人ほど小さい数（1 が最年長）。同じ日は同じ数
+function ageRank_(birth) {
+  const keys = Object.keys(birth), r = {};
+  keys.forEach(function (p) { r[p] = 1 + keys.filter(function (q) { return birth[q] < birth[p]; }).length; });
+  return r;
+}
+// 返す agerank。大会後に resetBirth で生年月日を消したら、消す前の順（AGERANK_FROZEN）を返し続ける（順位が元に戻らないように）
+function ageRankOut_() {
+  const frozen = props_().getProperty('AGERANK_FROZEN');
+  if (frozen !== null) { try { return JSON.parse(frozen) || {}; } catch (e) { return {}; } }
+  return ageRank_(loadBirth_());
+}
+// 'YYYY-MM-DD' で、実在する日付で、1900-01-01〜大会の日の範囲
+function validBirth_(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (!m) return false;
+  const y = Number(m[1]), mo = Number(m[2]), d = Number(m[3]);
+  const dt = new Date(Date.UTC(y, mo - 1, d));
+  if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== mo - 1 || dt.getUTCDate() !== d) return false;
+  return s >= '1900-01-01' && s <= '2026-10-24';
 }
 
 // 本田プロ確認事項の回答。ans[番号] = {c, n, who, ts}（同じ番号を送り直すと上書き）
@@ -82,8 +111,26 @@ function save_(d) {
   p.setProperty('CHOMBO', JSON.stringify(d.chombo || {}));
 }
 
-function saveChecks_(checks) {
-  props_().setProperty('CHECKS', JSON.stringify(checks));
+// チェック共有。1項目9KBの上限に収めるため、置き場を分ける（2026-10-11）。
+// 受付の出席（キー「出席_…」）は ATTEND、それ以外はキーから決まる CHECKS・CHECKS_2〜4 のどれか1つ。
+// 読むとき・返すときは全部を合わせた1つの表にする（ページは分かれていることを知らない）
+const ATTEND_PREFIX = '出席_';
+const CHECK_BUCKETS = ['CHECKS', 'CHECKS_2', 'CHECKS_3', 'CHECKS_4'];
+const CHECK_STORES = CHECK_BUCKETS.concat(['ATTEND']);
+const PROP_BYTES = 8500;   // 1項目の上限（9KB）より少し小さく
+function readJson_(name) {
+  try { return JSON.parse(props_().getProperty(name) || '{}') || {}; } catch (e) { return {}; }
+}
+function checkHome_(k) {
+  if (k.indexOf(ATTEND_PREFIX) === 0) return 'ATTEND';
+  let h = 0;
+  for (let i = 0; i < k.length; i++) h = (h + k.charCodeAt(i)) % CHECK_BUCKETS.length;
+  return CHECK_BUCKETS[h];
+}
+function loadChecks_() {
+  const all = {};
+  CHECK_STORES.forEach(function (name) { Object.assign(all, readJson_(name)); });
+  return all;
 }
 
 function saveParty_(party) {
@@ -134,6 +181,7 @@ function doGet(e) {
 //   {action:'clear', player, round}   … 取り消し（null に戻す）
 //   {action:'check', k:'項目キー', v:true|false, by:'名前'}   … 幹部のチェック共有（キー不要）
 //   {action:'party', name:'名前', no:'P12'|'', choice:'1'|'2'|'3'|'4'|'5'|''}   … 打ち上げ希望（キー不要。'' で取り消し）
+//   {action:'birth', player:'P12', date:'YYYY-MM-DD'|''}   … 生年月日（同点のときだけ。返事は agerank だけ）
 function doPost(e) {
   let body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad_json' }); }
@@ -143,6 +191,7 @@ function doPost(e) {
   if (body.action === 'roster') return doRoster_(body);
   if (body.action === 'view') return doView_(body);
   if (body.action === 'pro') return doPro_(body);
+  if (body.action === 'birth') return doBirth_(body);
 
   const player = String(body.player || '');
   const round = String(body.round || '');
@@ -189,10 +238,21 @@ function doCheck_(body) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    const checks = load_().checks;
-    if (body.v) checks[k] = { by: by, ts: now_() }; else delete checks[k];
-    saveChecks_(checks);
-    return out_({ ok: true, checks: checks });
+    // 付けるときは決まった置き場へ入れ、ほかの置き場に古い同じキーがあれば消す。外すときは全部から消す
+    const home = checkHome_(k), store = {}, changed = {};
+    CHECK_STORES.forEach(function (name) {
+      store[name] = readJson_(name);
+      if ((name !== home || !body.v) && store[name][k]) { delete store[name][k]; changed[name] = true; }
+    });
+    if (body.v) { store[home][k] = { by: by, ts: now_() }; changed[home] = true; }
+    const text = {};
+    Object.keys(changed).forEach(function (name) { text[name] = JSON.stringify(store[name]); });
+    // 大きさは付けるときだけ見る（外すときは小さくなるだけ）
+    if (body.v && Utilities.newBlob(text[home]).getBytes().length > PROP_BYTES) return out_({ ok: false, error: 'size' });
+    if (Object.keys(text).length) props_().setProperties(text);
+    const all = {};
+    CHECK_STORES.forEach(function (name) { Object.assign(all, store[name]); });
+    return out_({ ok: true, checks: all });
   } finally {
     lock.releaseLock();
   }
@@ -312,6 +372,25 @@ function doPro_(body) {
   }
 }
 
+// 生年月日（同点のときだけ幹部用ページで入れる）。date '' で消す。返事は agerank だけ（生年月日は返さない）
+function doBirth_(body) {
+  const player = String(body.player || '');
+  if (PLAYERS.indexOf(player) < 0) return out_({ ok: false, error: 'player' });
+  const date = String(body.date || '');
+  if (date && !validBirth_(date)) return out_({ ok: false, error: 'date' });
+  if (props_().getProperty('AGERANK_FROZEN') !== null) return out_({ ok: false, error: 'closed' });   // 大会後（resetBirth の後）は受け付けない
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const birth = loadBirth_();
+    if (date) birth[player] = date; else delete birth[player];
+    props_().setProperty('BIRTH', JSON.stringify(birth));
+    return out_({ ok: true, agerank: ageRank_(birth) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 function mailPro_(who, got, ans, ts) {
   const p = props_(), day = ts.slice(0, 10);
   let m; try { m = JSON.parse(p.getProperty('PRO_MAIL') || '{}'); } catch (e) { m = {}; }
@@ -338,9 +417,9 @@ function resetAll() {
   p.deleteProperty('UPDATED');
 }
 
-// 幹部のチェックだけ全消去（エディタから手で実行する用）
+// 幹部のチェックだけ全消去（エディタから手で実行する用）。CHECKS〜CHECKS_4 と受付の出席チェック（ATTEND）を消す
 function resetChecks() {
-  props_().deleteProperty('CHECKS');
+  CHECK_STORES.forEach(function (name) { props_().deleteProperty(name); });
 }
 
 // 打ち上げ希望だけ全消去（エディタから手で実行する用）
@@ -356,6 +435,18 @@ function resetRoster() {
 // 閲覧ログだけ全消去（エディタから手で実行する用）
 function resetViews() {
   props_().deleteProperty('VIEWS');
+}
+
+// 生年月日だけ全消去（エディタから手で実行する用。大会後に消すときもこれ）
+// 消す前の上下の順（日付は入らない・公開の順位で分かることだけ）を AGERANK_FROZEN に固定し、以後の入力を断る
+function resetBirth() {
+  const p = props_();
+  p.setProperty('AGERANK_FROZEN', JSON.stringify(ageRank_(loadBirth_())));
+  p.deleteProperty('BIRTH');
+}
+// resetBirth の後に、もう一度生年月日を受け付けたいとき（固定した順を捨てる。エディタから手で実行する用）
+function reopenBirth() {
+  props_().deleteProperty('AGERANK_FROZEN');
 }
 
 // 本田プロ確認事項の回答・送信履歴だけ全消去（エディタから手で実行する用）

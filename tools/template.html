@@ -66,6 +66,14 @@ table.todo .meta{display:inline;margin-left:6px}
 .party table.roster select{font-size:1rem;padding:8px 6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--fg)}
 .party textarea{width:100%;font-size:1rem;padding:8px;border:1px solid var(--line);border-radius:6px;font-family:inherit;margin-top:6px}
 .party button{margin-top:8px;padding:10px 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:1rem}
+.party table.attend td{padding:6px 8px;vertical-align:middle}
+.party table.attend input[type=checkbox]{width:24px;height:24px;accent-color:var(--accent)}
+.party table.attend input[type=date]{font-size:1rem;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--fg)}
+.party table.attend button{margin:4px 0 0 4px;padding:6px 10px;font-size:.9rem}
+.party table.attend button.ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line)}
+.party table.attend tr.here td{background:#e3f2e6}
+.party table.attend .meta{display:inline;margin-left:6px}
+.party table.attend td:last-child,.party table.attend th:last-child{white-space:normal;min-width:9em}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:bold}
 code{background:var(--card2);padding:1px 5px;border-radius:4px}
@@ -102,6 +110,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 const API = (window.HALU_API || '').trim();
 let CHECKS = null;           // サーバの状態 k -> {by, ts}
 let SHARED = false;          // 受け口につながっているか
+let WSEQ = 0;                // 送信の始まりと終わりで1ずつ増える。GET の間に変わったら、その GET の CHECKS・AGERANK は古いので使わない
 function fmtTs(ts){ return ts ? ts.slice(5, 16).replace('-', '/') : ''; }
 function setStatus(msg, ng){ document.querySelectorAll('.who .st').forEach(el => { el.textContent = msg; el.className = 'st' + (ng ? ' ng' : ''); }); }
 function applyChecks(c){
@@ -117,19 +126,24 @@ function applyChecks(c){
   });
 }
 async function syncChecks(c){
-  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口（API）が未設定のため、回答一覧を読めません</p>'; applyChecks(c); return; }
+  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口（API）が未設定のため、回答一覧を読めません</p>'; renderAttend(true); applyChecks(c); return; }
   try {
+    const w0 = WSEQ;
     const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
     const j = await r.json();
     if (!j.ok) throw new Error('bad');
-    CHECKS = j.data.checks || {}; SHARED = true;
+    const fresh = WSEQ === w0;   // 送信と重なった GET は、送信の返事より古いことがある
+    if (fresh) { CHECKS = j.data.checks || {}; AGERANK = j.data.agerank || {}; }
+    SHARED = true;
     renderParty(j.data.party || {}, j.data.roster || {}, j.data.partyLog);
     nameSchedule(j.data.roster || {});
     renderViews(j.data.views || { daily: {}, recent: [] });
+    if (fresh) renderAttend(false);
     setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
   } catch (e) {
     SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
     const pb = document.getElementById('party'); if (pb) pb.innerHTML = '<p class="st ng">受け口につながらないため、回答一覧を読めません。「最新に更新」で再試行</p>';
+    renderAttend(true);
   }
   applyChecks(c);
 }
@@ -249,6 +263,85 @@ function renderViews(v){
   h += '<p class="st">参加者ページを開いた記録（同じタブで開き直した分は数えない）。名前は、参加者ページで自分のNoを選んだ人だけ分かる。直近' + rec.length + '件を表示（受け口は直近100件を保持）。</p>';
   box.innerHTML = h;
 }
+// 11章: 当日の出席者チェック（受付）。出席はチェック共有（キー「出席_P番号」）で幹部が共有する（名前と時刻が残る）。
+// 生年月日は同点のときだけ入れる（受け口の BIRTH）。受け口は生年月日を返さず、入れた人どうしの年上からの順（agerank）だけ返す。
+// そのため、ここには「入力済み」だけを出す（日付は出さない。間違えたら消して入れ直す）。点数報告ページは agerank で同点を年上から並べる
+const GUESTS = ['本田プロ', 'ゆうこママ'];
+let AGERANK = {}, ATTMSG = null;
+const BDRAFT = {};   // 打ちかけの生年月日（1分ごとの自動更新で消さない）
+const BUSY = new Set();   // 返事待ちの送信（'att:P番号'・'bd:P番号'）。描き直しても押せないままにする
+const dnA = p => GUESTS.includes(p) ? p : (ROSTER[p] ? ROSTER[p] + '（' + p + '）' : p);
+function renderAttend(force){
+  const box = document.getElementById('attend'); if (!box) return;
+  // 自動更新では、生年月日を打っている最中の表を作り直さない
+  if (!force && box.contains(document.activeElement) && document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'date') return;
+  if (!SHARED) { box.innerHTML = '<p class="st ng">受け口につながらないため、出席チェックと生年月日は使えません。「最新に更新」で再試行</p>'; return; }
+  const here = PNOS.filter(p => CHECKS && CHECKS['出席_' + p]).length;
+  let h = '<div class="cnt"><span>出席 ' + here + '/30人</span><span>生年月日 ' + Object.keys(AGERANK).length + '人</span></div>';
+  h += '<div class="tw"><table class="attend"><tr><th>No</th><th>名前</th><th>出席</th><th>生年月日（同点のときだけ）</th></tr>';
+  PNOS.concat(GUESTS).forEach(p => {
+    const v = CHECKS ? CHECKS['出席_' + p] : null, g = GUESTS.includes(p);
+    h += '<tr' + (v ? ' class="here"' : '') + '><td>' + (g ? '—' : p) + '</td><td>' + esc(g ? p : (ROSTER[p] || '（空き）')) + '</td>'
+      + '<td><label><input type="checkbox" class="att" data-p="' + p + '"' + (v ? ' checked' : '') + (BUSY.has('att:' + p) ? ' disabled' : '') + '><span class="meta">' + (v ? esc((v.by ? v.by + ' ' : '') + fmtTs(v.ts)) : '') + '</span></label></td><td>'
+      + (AGERANK[p] ? '入力済み<button type="button" class="ghost bclr" data-p="' + p + '"' + (BUSY.has('bd:' + p) ? ' disabled' : '') + '>消す</button>'
+        : '<input type="date" class="bd" data-p="' + p + '" min="1900-01-01" max="2026-10-24" value="' + esc(BDRAFT[p] || '') + '"><button type="button" class="bset" data-p="' + p + '"' + (BUSY.has('bd:' + p) ? ' disabled' : '') + '>入れる</button>')
+      + '</td></tr>';
+  });
+  h += '</table></div>';
+  if (ATTMSG) h += '<p class="st attmsg' + (ATTMSG[1] ? ' ng' : '') + '">' + esc(ATTMSG[0]) + '</p>';
+  box.innerHTML = h;
+  // 知らせを出す。別の行で生年月日を打っている最中なら、表は作り直さず知らせの行だけ書き換える（打ちかけを消さない）
+  const say = (t, ng) => {
+    ATTMSG = [t, ng];
+    const a = document.activeElement;
+    if (!(box.contains(a) && a.tagName === 'INPUT' && a.type === 'date')) { renderAttend(true); return; }
+    let m = box.querySelector('p.attmsg'); if (!m) { m = document.createElement('p'); box.appendChild(m); }
+    m.className = 'st attmsg' + (ng ? ' ng' : ''); m.textContent = t;
+    // 返事が来た行だけ押せるように戻す（返事待ちの行はそのまま）
+    box.querySelectorAll('input.att, button.bset, button.bclr').forEach(x => { x.disabled = BUSY.has((x.classList.contains('att') ? 'att:' : 'bd:') + x.dataset.p); });
+  };
+  box.querySelectorAll('input.att').forEach(cb => cb.addEventListener('change', async () => {
+    const p = cb.dataset.p, v = cb.checked, w = document.getElementById('who'), by = w ? w.value.trim() : '';
+    cb.disabled = true; WSEQ++; BUSY.add('att:' + p);
+    try {
+      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'check', k: '出席_' + p, v, by }) });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'ng');
+      CHECKS = j.checks || {}; BUSY.delete('att:' + p);
+      say(dnA(p) + (v ? ' を出席にしました' : ' の出席を外しました'), false);
+    } catch (e) {
+      cb.checked = !v; BUSY.delete('att:' + p);
+      say(e.message === 'size' ? 'チェックの保存領域がいっぱいです。主催に連絡してください（gas/README.md の2b）' : '送れませんでした。通信を確認して「最新に更新」', true);
+    } finally { WSEQ++; BUSY.delete('att:' + p); }
+  }));
+  box.querySelectorAll('input.bd').forEach(inp => inp.addEventListener('input', () => { BDRAFT[inp.dataset.p] = inp.value; }));
+  const postBirth = async (p, date) => {
+    WSEQ++; BUSY.add('bd:' + p);
+    try {
+      const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'birth', player: p, date }) });
+      const j = await r.json();
+      if (!j.ok) throw new Error(j.error || 'ng');
+      AGERANK = j.agerank || {}; delete BDRAFT[p]; BUSY.delete('bd:' + p);
+      say(dnA(p) + (date ? ' の生年月日を入れました。同点の人全員の分がそろうと、点数報告ページで年上から並びます（開き直すか、1分ほど待つ）'
+        : ' の生年月日を消しました。その同点は、点数報告ページで「同点」に戻ります（開き直すか、1分ほど待つ）'), false);
+    } catch (e) {
+      BUSY.delete('bd:' + p);
+      say(e.message === 'round' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）'
+        : e.message === 'date' ? '生年月日の形が正しくありません（1900年〜大会の日まで）'
+        : e.message === 'closed' ? '大会後のため、生年月日は受け付けていません（受け口で締め切り済み。gas/README.md の2f）' : '送れませんでした。通信を確認して「最新に更新」', true);
+    } finally { WSEQ++; BUSY.delete('bd:' + p); }
+  };
+  box.querySelectorAll('button.bset').forEach(b => b.addEventListener('click', () => {
+    const p = b.dataset.p, inp = box.querySelector('input.bd[data-p="' + p + '"]'), v = inp ? inp.value : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { say(dnA(p) + ' の生年月日を選んでから「入れる」を押してください', true); return; }
+    if (!confirm(dnA(p) + ' の生年月日を ' + v + ' で入れますか？\n（どのページにも表示されません。同点の順位にだけ使います）')) return;
+    b.disabled = true; postBirth(p, v);
+  }));
+  box.querySelectorAll('button.bclr').forEach(b => b.addEventListener('click', () => {
+    if (!confirm(dnA(b.dataset.p) + ' の生年月日を消しますか？')) return;
+    b.disabled = true; postBirth(b.dataset.p, '');
+  }));
+}
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){
   const first = c.querySelector('ul.todo, table.todo');
@@ -268,7 +361,7 @@ function setupChecks(c){
       try { localStorage.setItem('halu:' + k, v ? '1' : '0'); } catch(e){}
       if (!SHARED) return;
       const by = name.value.trim();
-      cb.disabled = true;
+      cb.disabled = true; WSEQ++;
       try {
         const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'check', k, v, by }) });
         const j = await r.json();
@@ -276,8 +369,9 @@ function setupChecks(c){
         CHECKS = j.checks || {};
         setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
       } catch (e) {
-        setStatus(e.message === 'key' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）' : '送れませんでした。通信を確認して「最新に更新」', true);
-      } finally { cb.disabled = false; }
+        setStatus(e.message === 'key' ? '受け口が古い版です。gas/Code.gs を新バージョンでデプロイしてください（gas/README.md）'
+          : e.message === 'size' ? 'チェックの保存領域がいっぱいです。主催に連絡してください（gas/README.md の2b）' : '送れませんでした。通信を確認して「最新に更新」', true);
+      } finally { cb.disabled = false; WSEQ++; }
       applyChecks(c);
     });
   });
