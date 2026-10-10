@@ -58,6 +58,7 @@ td.neg,.neg{color:var(--ng)}
 #sched table{table-layout:fixed}
 #sched th,#sched td{text-align:left;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;padding:8px 5px;font-size:.92rem}
 #sched th:first-child,#sched td:first-child{width:14%}
+.stage th,.stage td{text-align:left;white-space:normal}
 details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
 summary{cursor:pointer;font-weight:700}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
@@ -132,6 +133,11 @@ summary{cursor:pointer;font-weight:700}
     <label for="bdplayer">プレイヤー</label>
     <select id="bdplayer"></select>
     <div id="bd" style="margin-top:8px"></div>
+  </div>
+  <h2>準決勝・決勝の時間の卓</h2>
+  <div class="card">
+    <div id="stage"></div>
+    <div class="small">準決勝の時間は全員が打ちます。準決勝に進めなかった24名は、予選の順位で4人ずつ卓を作ります（点数は送りません）。席と起家は自動卓のサイコロで決めます。予選の合計が同点の境目は、集計係が年齢で決めます。決勝はみんなで観戦します。</div>
   </div>
   <details>
     <summary>点棒（素点）の一覧</summary>
@@ -248,6 +254,7 @@ function render(d) {
   }
   if (!EDITING) fillSeats();
   renderBorder();
+  renderStage();
 }
 
 // ---- 6位ライン（準決勝ボーダー） ----
@@ -297,6 +304,49 @@ function renderBorder() {
   box.innerHTML = h;
 }
 document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
+
+// ---- 準決勝・決勝の時間の卓 ----
+// 準決勝の時間は全員が打つ: S1卓＝1卓・S2卓＝2卓、予選7位〜30位は4人ずつ3卓〜8卓（点数は送らない。幹部用3章と同じ規則）。
+// 決勝はみんなで観戦。本田プロが決勝に進めなかったら、準決勝で敗退した4名で横の卓のエキシビジョン戦
+function stageTable(title, rows) {
+  const wrap = document.createElement('div');
+  const h = document.createElement('h3'); h.textContent = title; wrap.appendChild(h);
+  const tw = document.createElement('div'); tw.className = 'tw';
+  const tb = document.createElement('table'); tb.className = 'stage';
+  tb.innerHTML = '<thead><tr><th>卓</th><th>メンバー</th></tr></thead>';
+  const body = document.createElement('tbody');
+  rows.forEach(([t, mem]) => {
+    const tr = document.createElement('tr'), a = document.createElement('td'), b = document.createElement('td');
+    a.textContent = t;
+    mem.forEach((m, i) => { if (i) b.appendChild(document.createElement('br')); b.appendChild(document.createTextNode(m)); });
+    tr.append(a, b); body.appendChild(tr);
+  });
+  tb.appendChild(body); tw.appendChild(tb); wrap.appendChild(tw);
+  return wrap;
+}
+function renderStage() {
+  const box = document.getElementById('stage'); box.innerHTML = '';
+  const rk = prelimRanking(), semi = semiTables(), cnt = rk.filter(x => x.n === 4).length;
+  const lab = m => m ? m.label : '（未確定）';
+  if (cnt < 30) { const p = document.createElement('p'); p.className = 'small'; p.textContent = '予選を終えたのは ' + cnt + '/30名です（メンバーは暫定）。'; box.appendChild(p); }
+  const rows = [['1卓（準決勝S1）', semi.S1.map(lab)], ['2卓（準決勝S2）', semi.S2.map(lab)]];
+  for (let t = 0; t < 6; t++) {
+    const mem = [0, 1, 2, 3].map(j => { const i = 6 + t * 4 + j; return rk[i] ? '予選' + (i + 1) + '位 ' + dn(rk[i].p) : '（未確定）'; });
+    rows.push([(t + 3) + '卓（予選' + (7 + t * 4) + '〜' + (10 + t * 4) + '位）', mem]);
+  }
+  box.appendChild(stageTable('準決勝の時間（全員が打つ）', rows));
+  const fin = finalTable(), note = document.createElement('p'); note.className = 'small';
+  if (fin.some(m => !m)) {
+    note.textContent = '決勝の4名は、準決勝2卓の点数がそろうと出ます。本田プロが決勝に進めなかったときは、準決勝で敗退した4名で、横の卓のエキシビジョン戦をします。';
+  } else if (fin.some(m => m.p === '本田プロ')) {
+    note.textContent = '本田プロは決勝に進みました。決勝はみんなで観戦します（エキシビジョン戦はありません）。';
+  } else {
+    const ps = fin.map(m => m.p);
+    box.appendChild(stageTable('決勝の時間: エキシビジョン戦（横の卓）', [['エキシビジョン', semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)).map(m => m.label)]]));
+    note.textContent = '本田プロが決勝に進めなかったため、準決勝で敗退した4名で、横の卓のエキシビジョン戦をします。ほかの方は決勝を観戦します。';
+  }
+  box.appendChild(note);
+}
 
 // ---- 卓入力（予選・準決勝・決勝 共通）----
 const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
