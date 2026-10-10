@@ -148,7 +148,7 @@ summary{cursor:pointer;font-weight:700}
   <h2>最終順位</h2>
   <div class="card">
     <div id="final"></div>
-    <div class="small">決勝の4名（決勝の素点順）→ 準決勝で敗退した4名（準決勝の素点順）→ 準決勝の時間の卓ごとに素点順、の順に並べます（卓をまたいで入れ替わりません）。本田プロとゆうこママは、予選の合計が32名中8位以内なら順位に入り、8位より下なら抜いて下を繰り上げます。優勝・準優勝・第3位は参加者の中の順、飛び賞はこの表の10位・20位です。同点はページでは決められないので、集計係が確かめます。</div>
+    <div class="small">決勝の4名（決勝の素点順）→ 準決勝で敗退した4名（準決勝の素点順）→ 準決勝の時間の卓ごとに素点順、の順に並べます（卓をまたいで入れ替わりません）。本田プロとゆうこママは、予選の合計が32名中8位以内なら順位に入り、8位より下なら抜いて下を繰り上げます。優勝・準優勝・第3位は参加者の中の順です。同点はページでは決められないので、集計係が確かめます。</div>
   </div>
   <details>
     <summary>点棒（素点）の一覧</summary>
@@ -363,7 +363,7 @@ function renderStage() {
 // ---- 最終順位（幹部用5章と同じ規則）----
 // 並び順: 決勝の4名を決勝の素点順 → 準決勝で敗退した4名を準決勝の素点順 → 予選7〜30位を準決勝の時間の卓ごとに素点順（卓をまたいで入れ替わらない）。
 // ゲスト（本田プロ・ゆうこママ）は、予選の合計を32名で並べて8位以内（予選の実力で準決勝に入った）なら順位に入れ、
-// 8位より下なら抜いて下を繰り上げる（表は30〜32名）。優勝・準優勝・第3位は参加者の中の順、飛び賞は表の10位・20位。
+// 8位より下なら抜いて下を繰り上げる（表は30〜32名）。優勝・準優勝・第3位は参加者の中の順（飛び賞はなし）。
 // 同点は「同点」と出すだけ（起家はページで分からない＝集計係が確かめる）
 function renderFinal() {
   const box = document.getElementById('final'); box.innerHTML = '';
@@ -400,7 +400,6 @@ function renderFinal() {
   if (fin.every(Boolean) && rows.filter(r => r.grp === 'top').every(r => r.done)) {
     rows.filter(r => r.p && r.p.startsWith('P')).slice(0, 3).forEach((r, i) => { r.award = ['優勝', '準優勝', '第3位'][i]; });
   }
-  rows.forEach(r => { if (r.rank === 10 || r.rank === 20) r.award = '飛び賞'; });
   const tw = document.createElement('div'); tw.className = 'tw';
   const tb = document.createElement('table'); tb.className = 'stage';
   tb.innerHTML = '<thead><tr><th>順位</th><th>プレイヤー</th><th>決め方</th><th>素点</th><th>賞</th></tr></thead>';
