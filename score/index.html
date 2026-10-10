@@ -87,6 +87,12 @@ summary{cursor:pointer;font-weight:700}
           <option value="4">予選 4半荘目</option>
           <option value="S1">準決勝 S1卓</option>
           <option value="S2">準決勝 S2卓</option>
+          <option value="B3">準決勝の時間 3卓（予選7〜10位）</option>
+          <option value="B4">準決勝の時間 4卓（予選11〜14位）</option>
+          <option value="B5">準決勝の時間 5卓（予選15〜18位）</option>
+          <option value="B6">準決勝の時間 6卓（予選19〜22位）</option>
+          <option value="B7">準決勝の時間 7卓（予選23〜26位）</option>
+          <option value="B8">準決勝の時間 8卓（予選27〜30位）</option>
           <option value="F">決勝</option>
         </select>
       </div>
@@ -137,7 +143,12 @@ summary{cursor:pointer;font-weight:700}
   <h2>準決勝・決勝の時間の卓</h2>
   <div class="card">
     <div id="stage"></div>
-    <div class="small">準決勝の時間は全員が打ちます。準決勝に進めなかった24名は、予選の順位で4人ずつ卓を作ります（点数は送りません）。席と起家は自動卓のサイコロで決めます。予選の合計が同点の境目は、集計係が年齢で決めます。決勝はみんなで観戦します。</div>
+    <div class="small">準決勝の時間は全員が打ちます。準決勝に進めなかった24名は、予選の順位で4人ずつ卓を作ります（点数を送ります。最終順位に使います）。席と起家は自動卓のサイコロで決めます。予選の合計が同点の境目は、集計係が年齢で決めます。決勝はみんなで観戦します。</div>
+  </div>
+  <h2>最終順位（参加者30名）</h2>
+  <div class="card">
+    <div id="final"></div>
+    <div class="small">決勝に出た参加者を決勝の素点順 → 準決勝で敗退した参加者を準決勝の素点順 → 7位以下を準決勝の時間の卓ごとに素点順（卓をまたいで入れ替わりません）。同点はページでは決められないので、集計係が確かめます。第3位と飛び賞（10位・20位）は、この順位で決まります。</div>
   </div>
   <details>
     <summary>点棒（素点）の一覧</summary>
@@ -255,6 +266,7 @@ function render(d) {
   if (!EDITING) fillSeats();
   renderBorder();
   renderStage();
+  renderFinal();
 }
 
 // ---- 6位ライン（準決勝ボーダー） ----
@@ -306,7 +318,7 @@ function renderBorder() {
 document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
 
 // ---- 準決勝・決勝の時間の卓 ----
-// 準決勝の時間は全員が打つ: S1卓＝1卓・S2卓＝2卓、予選7位〜30位は4人ずつ3卓〜8卓（点数は送らない。幹部用3章と同じ規則）。
+// 準決勝の時間は全員が打つ: S1卓＝1卓・S2卓＝2卓、予選7位〜30位は4人ずつ3卓〜8卓（点数を送り、最終順位に使う。幹部用3章・5章と同じ規則）。
 // 決勝はみんなで観戦。本田プロが決勝に進めなかったら、準決勝で敗退した4名で横の卓のエキシビジョン戦
 function stageTable(title, rows) {
   const wrap = document.createElement('div');
@@ -348,9 +360,52 @@ function renderStage() {
   box.appendChild(note);
 }
 
+// ---- 最終順位（幹部用5章と同じ規則）----
+// 決勝に出た参加者を決勝の素点順 → 準決勝で敗退した参加者を準決勝の素点順（ここまで6位）→ 予選7〜30位を準決勝の時間の卓ごとに素点順。
+// 卓をまたいで入れ替わらない。同点は「同点」と出すだけ（起家はページで分からない＝集計係が確かめる）
+function renderFinal() {
+  const box = document.getElementById('final'); box.innerHTML = '';
+  const val = (p, k) => { const v = DATA && DATA.players[p] ? DATA.players[p][k] : null; return v === undefined ? null : v; };
+  const isP = m => m && m.p.startsWith('P');
+  const rows = [];   // [順位, 名前, 決め方, 素点]
+  const group = (start, mem, key, how) => {
+    const done = mem.length > 0 && mem.every(m => val(m.p, key) !== null);
+    const list = done ? mem.slice().sort((a, b) => val(b.p, key) - val(a.p, key)) : mem;
+    list.forEach((m, i) => {
+      const tie = done && list.some((o, j) => j !== i && val(o.p, key) === val(m.p, key));
+      rows.push([done ? (start + i) + (tie ? ' 同点' : '') : '', dn(m.p), how + (done ? '' : '（未確定）'), done ? fmt(val(m.p, key)) : '']);
+    });
+  };
+  const semi = semiTables(), fin = finalTable();
+  if (fin.every(Boolean)) {
+    const ps = fin.map(m => m.p), fp = fin.filter(isP);
+    group(1, fp, 'F', '決勝');
+    group(1 + fp.length, semi.S1.concat(semi.S2).filter(m => isP(m) && !ps.includes(m.p)), 'S', '準決勝');
+  } else {
+    [semi.S1[2], semi.S1[3]].concat(semi.S2).forEach(m => rows.push(['', m ? dn(m.p) : '（未確定）', '準決勝・決勝の後に決まる', '']));
+  }
+  const band = bandTables();
+  for (let t = 3; t <= 8; t++) {
+    const mem = band['B' + t];
+    if (mem.some(m => !m)) { mem.forEach(m => rows.push(['', m ? dn(m.p) : '（未確定）', t + '卓（未確定）', ''])); continue; }
+    group(7 + (t - 3) * 4, mem, 'S', t + '卓');
+  }
+  const tw = document.createElement('div'); tw.className = 'tw';
+  const tb = document.createElement('table'); tb.className = 'stage';
+  tb.innerHTML = '<thead><tr><th>順位</th><th>プレイヤー</th><th>決め方</th><th>素点</th></tr></thead>';
+  const body = document.createElement('tbody');
+  rows.forEach(r => { const tr = document.createElement('tr'); r.forEach((c, i) => { const td = document.createElement('td'); td.textContent = c; if (i === 3) td.style.textAlign = 'right'; tr.appendChild(td); }); body.appendChild(tr); });
+  tb.appendChild(body); tw.appendChild(tb); box.appendChild(tw);
+  const n = rows.filter(r => r[0]).length, p = document.createElement('p'); p.className = 'small';
+  p.textContent = n >= 30 ? '30名の順位がそろいました（「同点」の行は集計係が確かめます）。' : '順位が出ているのは ' + n + '/30名です。';
+  box.appendChild(p);
+}
+
 // ---- 卓入力（予選・準決勝・決勝 共通）----
 const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
 const STAGE = { S1: { api: 'S', name: '準決勝 S1卓' }, S2: { api: 'S', name: '準決勝 S2卓' }, F: { api: 'F', name: '決勝' } };
+// 準決勝の時間の6卓（予選7〜30位を4人ずつ）。点数は各人の準決勝の枠（S）に入れ、最終順位に使う
+for (let t = 3; t <= 8; t++) STAGE['B' + t] = { api: 'S', name: '準決勝の時間 ' + t + '卓' };
 function isPrelim() { return !STAGE[qround.value]; }
 function apiRound() { return isPrelim() ? qround.value : STAGE[qround.value].api; }
 // 予選順位（参加者だけ・合計ポイント順）。並びは集計表と同じ
@@ -363,6 +418,12 @@ function prelimRanking() {
 function semiTables() {
   const r = prelimRanking(), at = i => r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + dn(r[i].p) } : null;
   return { S1: [{ p: '本田プロ', label: '本田プロ' }, { p: 'ゆうこママ', label: 'ゆうこママ' }, at(2), at(5)], S2: [at(0), at(1), at(3), at(4)] };
+}
+// 準決勝の時間の6卓: 予選7〜10位＝B3 … 27〜30位＝B8（幹部用3章と同じ規則）
+function bandTables() {
+  const r = prelimRanking(), out = {};
+  for (let t = 3; t <= 8; t++) out['B' + t] = [0, 1, 2, 3].map(j => { const i = 6 + (t - 3) * 4 + j; return r[i] ? { p: r[i].p, label: '予選' + (i + 1) + '位 ' + dn(r[i].p) } : null; });
+  return out;
 }
 // 決勝: S1卓1位・S2卓1位・S1卓2位・S2卓2位（準決勝の素点順）。同点は起家に近い方が上位で、ページでは判定できない（並び順で仮置き＝集計係が確認）
 function finalTable() {
@@ -381,7 +442,7 @@ function currentTable() {
     const t = (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value);
     return t ? { name: qround.value + '半荘目 ' + t.table + '卓', seats: t.seats, labels: t.seats.map(dn), missing: 0 } : null;
   }
-  const mem = qround.value === 'F' ? finalTable() : semiTables()[qround.value];
+  const mem = qround.value === 'F' ? finalTable() : (semiTables()[qround.value] || bandTables()[qround.value]);
   return { name: STAGE[qround.value].name, seats: mem.map(m => m ? m.p : null), labels: mem.map(m => m ? m.label : '（未確定）'), missing: mem.filter(m => !m).length };
 }
 function fillTables() {
@@ -391,7 +452,7 @@ function fillTables() {
     if (!qtable.options.length) { const o = document.createElement('option'); o.value = ''; o.textContent = '未定'; qtable.appendChild(o); }
     try { const last = localStorage.getItem('halu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
   } else {
-    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value + '卓'; qtable.appendChild(o);
+    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value.replace('B', '') + '卓'; qtable.appendChild(o);
   }
   qtable.disabled = !isPrelim() || !(SCHED[qround.value] || []).length;
   fillSeats();
@@ -414,7 +475,9 @@ function fillSeats() {
     const rk = prelimRanking(), cnt = rk.filter(x => x.n === 4).length;
     if (qround.value !== 'F' && cnt < 30) note.push('予選を終えたのは ' + cnt + '/30名（メンバーは暫定）。');
     // メンバーが変わる境目（2位/3位・3位/4位・5位/6位＝S1とS2の入れ替え、6位/7位＝進出）の同点。年齢で決めるのでページでは判定できない
-    const ties = [[1, 2], [2, 3], [4, 5], [5, 6]].filter(([a, b]) => rk[a] && rk[b] && rk[a].total === rk[b].total).map(([a, b]) => (a + 1) + '位と' + (b + 1) + '位（' + dn(rk[a].p) + '・' + dn(rk[b].p) + '）');
+    // 準決勝の時間の卓は、その卓の上下の境目だけを見る
+    const pairs = qround.value.startsWith('B') ? (lo => [[lo - 1, lo], [lo + 3, lo + 4]])(6 + (Number(qround.value.slice(1)) - 3) * 4) : [[1, 2], [2, 3], [4, 5], [5, 6]];
+    const ties = pairs.filter(([a, b]) => rk[a] && rk[b] && rk[a].total === rk[b].total).map(([a, b]) => (a + 1) + '位と' + (b + 1) + '位（' + dn(rk[a].p) + '・' + dn(rk[b].p) + '）');
     if (ties.length) note.push('【注意】予選の合計が同点: ' + ties.join('、') + '。年齢が上の方が上位なので、メンバーは集計係が決めます（ここの並びは仮）。');
     note.push('素点で順位を決めます（ウマ・オカなし）。並びは席順ではありません。同点は起家に近い方が上位です（集計係が確認）。');
     hint.textContent = note.join(' ');
