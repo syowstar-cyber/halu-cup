@@ -111,9 +111,7 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 <li>5章の型のとおりに、卓と席が決まります。</li>
 </ol>
 <ul class="note">
-<li>SHA-256 は世界共通の計算方法です。Webの計算サイトやパソコンでも、同じくじ値になります。</li>
-<li>万一、10月23日にナンバーズ4の抽せんがなかったときは、同じ日の日経平均株価の終値（小数2桁）を種にします（<span class="mono">HALU20|2026-10-23|N225=終値</span>）。</li>
-</ul>
+<li>SHA-256 は世界共通の計算方法です。Webの計算サイトやパソコンでも、同じくじ値になります。</li></ul>
 </div>
 
 <script src="../score/config.js"></script>
@@ -155,17 +153,10 @@ function sha256hex(str) {
   return [...H].map(x => x.toString(16).padStart(8, '0')).join('');
 }
 
-// 数字の書き方をそろえる（tools/kuji.py と同じ規則）。null は形の誤り
-const half = s => String(s).normalize('NFKC').replace(/[,\s円]/g, '');
-function normN225(s) {
-  s = half(s); if (s === '-' || s === 'なし') return '-';
-  const m = s.match(/^(\d+)(?:\.(\d{1,2}))?$/); if (!m) return null;
-  return String(parseInt(m[1], 10)) + '.' + (m[2] || '').padEnd(2, '0');
-}
-function normN4(s) { s = half(s); if (s === '-' || s === 'なし') return '-'; return /^\d{4}$/.test(s) ? s : null; }
-// 種: ふつうはナンバーズ4。抽せんがなかったとき（n4 が "-"）だけ日経平均の終値
+// 当せん番号の書き方をそろえる（tools/kuji.py と同じ規則。全角は半角に）。null は形の誤り
+function normN4(s) { s = String(s).normalize('NFKC').replace(/\s/g, ''); return /^\d{4}$/.test(s) ? s : null; }
+// 種: ナンバーズ4の当せん番号
 const seedN4 = n4 => 'HALU20|' + DATE + '|N4=' + n4;
-const seedN225 = v => 'HALU20|' + DATE + '|N225=' + v;
 
 // くじ: P1〜P30 のくじ値を小さい順に並べ、先頭から枠1〜枠30
 function draw(seed) {
@@ -219,11 +210,7 @@ function resultHtml(seed, tag) {
 function renderResult() {
   const box = document.getElementById('result');
   if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; return; }
-  const backup = KUJI.n4 === '-', seed = backup ? seedN225(normN225(KUJI.n225)) : seedN4(normN4(KUJI.n4));
-  const head = backup
-    ? '10月23日はナンバーズ4の抽せんがなかったため、日経平均株価の終値で決めました: <b>' + esc(Number(KUJI.n225).toLocaleString('ja-JP', { minimumFractionDigits: 2 })) + '</b>'
-    : 'ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b>';
-  box.innerHTML = '<div class="box"><div class="big">本番の番号</div>' + head + '</div>' + resultHtml(seed, '<span class="tag real">本番</span>');
+  box.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + resultHtml(seedN4(normN4(KUJI.n4)), '<span class="tag real">本番</span>');
 }
 // 5章: 型
 function renderKata() {
@@ -247,14 +234,14 @@ document.getElementById('calc').addEventListener('submit', ev => {
   ev.preventDefault();
   const b = normN4(document.getElementById('n4').value), msg = document.getElementById('cmsg');
   msg.textContent = ''; msg.className = 'msg';
-  if (!b || b === '-') { msg.textContent = 'ナンバーズ4の当せん番号を4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
-  const real = KUJI.n4 && KUJI.n4 !== '-' && b === normN4(KUJI.n4);
+  if (!b) { msg.textContent = 'ナンバーズ4の当せん番号を4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
+  const real = KUJI.n4 && b === normN4(KUJI.n4);
   document.getElementById('calcout').innerHTML = resultHtml(seedN4(b), real ? '<span class="tag real">本番と同じ番号</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>');
 });
 
 async function load() {
   renderKata(); renderRoster(); renderResult();
-  if (KUJI.n4 && KUJI.n4 !== '-') document.getElementById('n4').value = KUJI.n4;
+  if (KUJI.n4) document.getElementById('n4').value = KUJI.n4;
   if (!API) return;
   try {
     const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json();

@@ -1,2 +1,2 @@
-// くじの本番の番号（tools/kuji.py --write が書く。抽せんの後だけ入れる。n4 が空＝まだ、"-"＝抽せんがなく日経平均の終値 n225 で決めた）
-window.HALU_KUJI = {"n4": "", "n225": ""};
+// くじの本番の番号（tools/kuji.py --write が書く。抽せんの後だけ入れる。空＝まだ）
+window.HALU_KUJI = {"n4": ""};
