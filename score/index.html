@@ -104,7 +104,7 @@ summary{cursor:pointer;font-weight:700}
     <div class="tools"><button class="ghost" type="button" id="qclear">この卓の点数を取り消す</button></div>
   </div>
   <div class="hint">
-    <b>ポイントの計算</b>（25,000点持ち・30,000点返し。Mリーグ公式規定と同じ）<br>
+    <b>ポイントの計算</b>（25,000点持ち・30,000点返し）<br>
     ①（点棒−30,000）÷1,000。100点＝0.1ポイント（丸めない）<br>
     ② 順位点 1位 +50／2位 +10／3位 −10／4位 −30 を足す<br>
     <span class="small">同点は順位点を分けます（1位と2位が同点なら各 +30。割り切れない分は起家に近い方が多く取る）。<br>トビ終了なし。マイナスの点棒は「-」を付けてそのまま入れてください。<br>チョンボの局が流局したら満貫払い（子のチョンボ＝親4,000・子2,000ずつ、親のチョンボ＝4,000オール）。払った後の点棒を入れてください。</span>
@@ -158,7 +158,7 @@ const SCHED = window.HALU_SCHEDULE || {};
 const SCHED_TBD = !['1', '2', '3', '4'].some(r => (SCHED[r] || []).length);
 const TBD_TEXT = '予選の対戦表は製作中です（未定）。前に載っていた表は使いません。決まったら、ここで卓を選んで点棒を入れられます。';
 const WINDS = ['東', '南', '西', '北'];
-// 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0（Mリーグ公式規定）
+// 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0
 const BONUS = [500, 100, -100, -300], RETURN = 30000;
 const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
 let DATA = null, ROSTER = {};
@@ -173,7 +173,7 @@ const fpt = n => (n === null || n === undefined) ? '' : (n > 0 ? '+' : n < 0 ? '
 function say(id, t, ok) { const m = document.getElementById(id); m.textContent = t; m.className = 'msg ' + (ok ? 'ok' : 'ng'); }
 
 // 1卓4人の点棒 → ポイント（0.1単位の整数）。seats: [{name, raw}] 東（起家）から順。4人そろっていなければ null
-// Mリーグ公式規定: (点棒−30,000)÷1,000 に順位点を足す。丸めない。
+// (点棒−30,000)÷1,000 に順位点を足す。丸めない。
 // 同点は、その人たちで順位点を分ける。0.1で割り切れない分は起家に近い方が多く取る。
 function calcTable(seats) {
   if (seats.some(s => s.raw === null || s.raw === undefined || Number.isNaN(s.raw))) return seats.map(() => null);
@@ -220,7 +220,7 @@ function render(d) {
   });
   const players = rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity));
   let rank = 0; players.forEach(r => { r.rank = r.total === null ? null : ++rank; });
-  // 4半荘の合計が同点＝年齢が上の方が上位（Mリーグ規定にない部分）。ページでは判定できないので並び順で仮置きし「同点」を付ける
+  // 4半荘の合計が同点＝年齢が上の方が上位。ページでは判定できないので並び順で仮置きし「同点」を付ける
   players.forEach((r, i) => { r.tie = r.total !== null && ((i > 0 && players[i - 1].total === r.total) || (i + 1 < players.length && players[i + 1].total === r.total)); });
   const tb = document.querySelector('#tbl tbody'); tb.innerHTML = '';
   rows.filter(r => r.guest).concat(players).forEach(r => {
