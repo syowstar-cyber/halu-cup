@@ -94,6 +94,7 @@ summary{cursor:pointer;font-weight:700}
       </div>
     </div>
     <div id="seats"></div>
+    <div class="small">点棒は100点単位で入れてください（50点などの端数はありません）。</div>
     <div id="qhint" class="small"></div>
     <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
     <div id="qwarn" class="small neg"></div>
@@ -374,8 +375,10 @@ function fillSeats() {
 }
 // 4席ぶん（未確定の席は name '' / raw null）
 function readSeats() {
-  return [...document.querySelectorAll('#seats input')].map(inp => ({ name: inp.dataset.name, raw: (inp.disabled || inp.value.trim() === '') ? null : parseInt(inp.value, 10) }));
+  return [...document.querySelectorAll('#seats input')].map(inp => ({ name: inp.dataset.name, raw: (inp.disabled || inp.value.trim() === '') ? null : Number(inp.value) }));
 }
+// 点棒は100点単位だけ（50点などの端数はない）。小数も弾く
+const not100 = seats => seats.filter(s => s.raw !== null && !Number.isNaN(s.raw) && s.raw % 100 !== 0);
 function preview() {
   const seats = readSeats();
   const pts = document.querySelectorAll('#seats .pt');
@@ -391,6 +394,7 @@ function preview() {
   const sum = filled.reduce((a, s) => a + s.raw, 0);
   document.getElementById('qsum').textContent = fmt(sum);
   const warn = [];
+  if (not100(seats).length) warn.push('100点単位になっていない点棒があります（下2桁は00）。直すまで送信できません');
   if (filled.length === 4 && sum !== 100000) warn.push('合計が100,000になっていません。点棒を確認してください（送信はできます）');
   if (new Set(filled.map(s => s.raw)).size < filled.length) warn.push(isPrelim() ? '同じ点棒の人がいます。順位点はその人たちで分けています（起家に近い方が多く）。' : '同じ点棒の人がいます。同点は起家に近い方が上位です（ページの順位は並び順の仮置き。集計係に伝えてください）');
   document.getElementById('qwarn').textContent = warn.join(' ');
@@ -406,6 +410,7 @@ const ERR = { player: 'プレイヤーが不正です', round: '対局の指定�
 document.getElementById('qsend').addEventListener('click', async () => {
   if (!API) { say('qmsg', 'APIが未設定です', false); return; }
   const t = currentTable(); if (!t) { if (isPrelim()) say('qmsg', '予選の対戦表が未定のため、まだ送れません', false); return; }
+  if (not100(readSeats()).length) { say('qmsg', '点棒は100点単位で入れてください（下2桁は00）', false); return; }
   const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
   if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
   say('qmsg', '送信中…（' + seats.length + '人分）', true);
