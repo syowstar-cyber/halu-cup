@@ -543,7 +543,7 @@ function autoFill(force) {
   target.dataset.auto = '1'; target.classList.add('auto');
 }
 // 4席ぶん（未確定の席は name '' / raw null）
-// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜300,000）は bad にして raw を NaN にする
+// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜999,900）は bad にして raw を NaN にする
 function readSeats() {
   return [...document.querySelectorAll('#seats input')].map(inp => {
     if (inp.disabled || inp.value.trim() === '') return { name: inp.dataset.name, raw: null, bad: false };

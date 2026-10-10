@@ -482,7 +482,7 @@ function fillSeats() {
   t.seats.forEach((n, i) => {
     const row = document.createElement('div'); row.className = 'seat';
     const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
-    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><input type="number" inputmode="numeric" step="1" min="-2000" max="3000" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
+    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><input type="number" inputmode="numeric" step="1" min="-2000" max="9999" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
     row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur / 100;
     box.appendChild(row);
   });
@@ -514,7 +514,7 @@ function autoFill(force) {
   if (ins.length !== 4 || ins.some(i => i.disabled)) return;
   const manual = ins.filter(i => !i.dataset.auto && i.value.trim() !== '');
   const units = manual.map(i => Number(i.value));
-  const ok = manual.length === 3 && units.every(u => Number.isInteger(u) && u >= -2000 && u <= 3000);
+  const ok = manual.length === 3 && units.every(u => Number.isInteger(u) && u >= -2000 && u <= 9999);
   const target = ok ? ins.find(i => !manual.includes(i)) : null;
   ins.forEach(i => { if (i.dataset.auto && i !== target) { i.value = ''; delete i.dataset.auto; i.classList.remove('auto'); } });
   if (!target || (!force && !target.dataset.auto && target === document.activeElement)) return;
@@ -522,11 +522,11 @@ function autoFill(force) {
   target.dataset.auto = '1'; target.classList.add('auto');
 }
 // 4席ぶん（未確定の席は name '' / raw null）
-// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜300,000）は bad にして raw を NaN にする
+// 入力は百点単位（253 → 25,300点）。整数でない・範囲外（受け口と同じ −200,000〜999,900）は bad にして raw を NaN にする
 function readSeats() {
   return [...document.querySelectorAll('#seats input')].map(inp => {
     if (inp.disabled || inp.value.trim() === '') return { name: inp.dataset.name, raw: null, bad: false };
-    const u = Number(inp.value), bad = !Number.isInteger(u) || u < -2000 || u > 3000;
+    const u = Number(inp.value), bad = !Number.isInteger(u) || u < -2000 || u > 9999;
     return { name: inp.dataset.name, raw: bad ? NaN : u * 100, bad };
   });
 }

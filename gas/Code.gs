@@ -152,7 +152,7 @@ function doPost(e) {
   let score = null;
   if (body.action !== 'clear') {
     score = Number(body.score);
-    if (!Number.isInteger(score) || score < -200000 || score > 300000) return out_({ ok: false, error: 'score' });
+    if (!Number.isInteger(score) || score < -200000 || score > 999900) return out_({ ok: false, error: 'score' });
   }
   let chombo = null;
   if (body.action !== 'clear' && body.chombo !== undefined && body.chombo !== null) {
