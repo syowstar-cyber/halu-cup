@@ -112,7 +112,7 @@ summary{cursor:pointer;font-weight:700}
       </div>
     </div>
     <div id="seats"></div>
-    <div class="small">00は打ちません（25,300点 → 253）。3人入れると4人目は自動で入ります。</div>
+    <div class="small">00は打ちません（25,300点 → 253）。上限は 999（99,900点）です。3人入れると4人目は自動で入ります。</div>
     <div id="qhint" class="small"></div>
     <div class="sum"><span>合計（100,000になるはず）</span><span id="qsum">0</span></div>
     <div id="qwarn" class="small neg"></div>
@@ -504,7 +504,7 @@ function fillSeats() {
   t.seats.forEach((n, i) => {
     const row = document.createElement('div'); row.className = 'seat';
     const cur = (n && DATA) ? (DATA.players[n] || {})[apiRound()] : null;
-    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><input type="number" inputmode="numeric" step="1" min="-2000" max="3000" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
+    row.innerHTML = '<div class="w">' + (isPrelim() ? WINDS[i] : '－') + '</div><div class="nm">' + t.labels[i] + '</div><div class="in"><input type="number" inputmode="numeric" step="1" min="-2000" max="999" placeholder="例 253" aria-label="点棒（百点単位）" data-name="' + (n || '') + '"' + (n ? '' : ' disabled') + '><span>00</span></div><div class="pt"></div>';
     row.querySelector('input').value = (cur === null || cur === undefined) ? '' : cur / 100;
     box.appendChild(row);
   });
@@ -536,7 +536,7 @@ function autoFill(force) {
   if (ins.length !== 4 || ins.some(i => i.disabled)) return;
   const manual = ins.filter(i => !i.dataset.auto && i.value.trim() !== '');
   const units = manual.map(i => Number(i.value));
-  const ok = manual.length === 3 && units.every(u => Number.isInteger(u) && u >= -2000 && u <= 3000);
+  const ok = manual.length === 3 && units.every(u => Number.isInteger(u) && u >= -2000 && u <= 999);
   const target = ok ? ins.find(i => !manual.includes(i)) : null;
   ins.forEach(i => { if (i.dataset.auto && i !== target) { i.value = ''; delete i.dataset.auto; i.classList.remove('auto'); } });
   if (!target || (!force && !target.dataset.auto && target === document.activeElement)) return;
@@ -548,11 +548,11 @@ function autoFill(force) {
 function readSeats() {
   return [...document.querySelectorAll('#seats input')].map(inp => {
     if (inp.disabled || inp.value.trim() === '') return { name: inp.dataset.name, raw: null, bad: false };
-    const u = Number(inp.value), bad = !Number.isInteger(u) || u < -2000 || u > 3000;
+    const u = Number(inp.value), bad = !Number.isInteger(u) || u < -2000 || u > 999;
     return { name: inp.dataset.name, raw: bad ? NaN : u * 100, bad };
   });
 }
-const BAD_UNIT = '百点単位の整数で入れてください（25,300点なら 253）';
+const BAD_UNIT = '百点単位の整数で入れてください（25,300点なら 253。上限は 999＝99,900点）';
 function preview() {
   const seats = readSeats();
   const pts = document.querySelectorAll('#seats .pt');
@@ -585,7 +585,7 @@ async function post(body) {
   if (!['1', '2', '3', '4', 'S', 'F'].includes(body.round)) return { ok: false, error: 'round' };
   const p = LOCAL.players[body.player] = LOCAL.players[body.player] || {};
   if (body.action === 'clear') delete p[body.round];
-  else if (!Number.isInteger(body.score) || body.score < -200000 || body.score > 300000) return { ok: false, error: 'score' };
+  else if (!Number.isInteger(body.score) || body.score < -200000 || body.score > 99900) return { ok: false, error: 'score' };
   else p[body.round] = body.score;
   LOCAL.updated = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
   writeStore(LOCAL);

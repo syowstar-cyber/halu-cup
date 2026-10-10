@@ -47,7 +47,7 @@ async function post(body) {
   if (!['1', '2', '3', '4', 'S', 'F'].includes(body.round)) return { ok: false, error: 'round' };
   const p = LOCAL.players[body.player] = LOCAL.players[body.player] || {};
   if (body.action === 'clear') delete p[body.round];
-  else if (!Number.isInteger(body.score) || body.score < -200000 || body.score > 300000) return { ok: false, error: 'score' };
+  else if (!Number.isInteger(body.score) || body.score < -200000 || body.score > 99900) return { ok: false, error: 'score' };
   else p[body.round] = body.score;
   LOCAL.updated = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
   writeStore(LOCAL);
@@ -92,6 +92,14 @@ REPS = [
     ("setInterval(load, 60000);\n", "", 1),
     ("'halu:table'", "'halu-renshu:table'", 2),
     ("'halu:bdplayer'", "'halu-renshu:bdplayer'", 2),
+    # 練習ページだけ: 上限は 999（99,900点）。1000以上は入れられない（2530 のような打ち間違いを止める。2026-10-10 主催の指示・本番は 3000 のまま）
+    ('min="-2000" max="3000"', 'min="-2000" max="999"', 1),
+    ("u >= -2000 && u <= 3000)", "u >= -2000 && u <= 999)", 1),
+    ("u < -2000 || u > 3000;", "u < -2000 || u > 999;", 1),
+    ("const BAD_UNIT = '百点単位の整数で入れてください（25,300点なら 253）';",
+     "const BAD_UNIT = '百点単位の整数で入れてください（25,300点なら 253。上限は 999＝99,900点）';", 1),
+    ("00は打ちません（25,300点 → 253）。3人入れると4人目は自動で入ります。",
+     "00は打ちません（25,300点 → 253）。上限は 999（99,900点）です。3人入れると4人目は自動で入ります。", 1),
 ]
 
 # 練習ページに残ってはいけないもの（本番の受け口へ届く道・本番の保存キー）
