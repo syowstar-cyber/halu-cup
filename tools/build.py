@@ -38,7 +38,7 @@ table = []
 lst = None        # ("ul"|"ol", items)
 
 TODO_LIST_SECTIONS = ("11", "12", "13")    # 設営・手配物・出発前チェック（箇条書きにチェック）
-TODO_TABLE_SECTIONS = ("14",)              # 確認事項一覧（表の行にチェック）
+TODO_TABLE_SECTIONS = ("14",)              # 確認事項一覧（見出しが「#」の表の行にチェック）
 
 
 # 対戦表: 本田プロがいる行（予選N半荘目）と、選手別の表でその卓に当たる席に印を付ける
@@ -103,8 +103,9 @@ def flush_table():
     if not table:
         return
     rows = [r for r in table if not re.match(r"^\|\s*-", r)]
-    todo = section in TODO_TABLE_SECTIONS
     rows_cells = [[c.strip() for c in r.strip().strip("|").split("|")] for r in rows]
+    # チェックを付けるのは確認事項の表（見出しの先頭が「#」）だけ。参考の表（本田プロの公開スケジュールなど）には付けない
+    todo = section in TODO_TABLE_SECTIONS and bool(rows_cells) and rows_cells[0][0] == "#"
     row_cls, cell_cls, legend = pro_marks(rows_cells)
     h = [legend + '<div class="tw"><table' + (' class="todo"' if todo else '') + '>']
     for k, cells in enumerate(rows_cells):
