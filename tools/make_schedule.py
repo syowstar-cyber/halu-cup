@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-"""予選の組み合わせ表を作る。
-16名（本田プロ＋P1〜P15 → 1〜4卓／ゆうこママ＋P16〜P30 → 5〜8卓）を4半荘、
+"""予選の対戦表の「型」を作る（2026-10-10〜。誰がどの枠に入るかは tools/kuji.py のくじで決める）。
+16名（本田プロ＋枠1〜枠15 → 1〜4卓／ゆうこママ＋枠16〜枠30 → 5〜8卓）を4半荘、
 ・同じ相手とは2度当たらない（GF(4) のアフィン平面の平行類を4つ使う）
 ・4半荘で 東南西北 を1回ずつ
 ・卓はできるだけ違う卓を回る（全員が4卓とも違うのは数学的に不可能なので最善を取る）
 ・ゲスト2名は卓を固定（本田プロ=1卓、ゆうこママ=5卓。席は動かず、相手が来る）
 ・本田プロとゆうこママは予選で当たらない（1〜4卓と5〜8卓に分かれているので構造上当たらない。検証で保証）
-乱数は固定（seed=20261024）なので、何度作っても同じ表になる。
-出力: score/schedule.js（ページ用）と .work/schedule.md（MD貼り付け用）"""
+乱数は固定（seed=20261024）なので、何度作っても同じ表になる（旧案の P番号を枠番号に読み替えたものと同じ）。
+出力: kuji/kata.js（くじページと kuji.py 用。枠は数値、ゲストは名前）と .work/kata.md（MD貼り付け用）。
+score/schedule.js は書かない（くじの後に tools/kuji.py が書く）"""
 import itertools, json, random
 from pathlib import Path
 import sys
@@ -86,14 +87,17 @@ def find_seats():
     return seat
 seats = find_seats()
 
-# 選手番号 → 名前（点(x,y) を 0..15 に並べ、0 が固定ゲスト）
+# 点 → 枠番号（点(x,y) を 0..15 に並べ、0 が固定ゲスト）。枠は数値、ゲストは名前
 def names_for(group):
     guest = "本田プロ" if group == 0 else "ゆうこママ"
     base = 0 if group == 0 else 15
     m = {order[0]: guest}
     for i, p in enumerate(order[1:], 1):
-        m[p] = f"P{base + i}"
+        m[p] = base + i
     return m
+
+def label(nm):
+    return f"枠{nm}" if isinstance(nm, int) else nm
 
 WINDS = ["東", "南", "西", "北"]
 schedule = {}   # round -> list of {table, seats:[東,南,西,北]}
@@ -128,9 +132,10 @@ assert seen_table["本田プロ"] == {1} and seen_table["ゆうこママ"] == {5
 print("ゲストの卓: 本田プロ=1卓固定 / ゆうこママ=5卓固定 / 予選での直接対戦なし")
 print("卓の種類数の分布（ゲスト除く）:", sorted(len(v) for k, v in seen_table.items() if k not in ("本田プロ", "ゆうこママ")))
 
-(repo / "score" / "schedule.js").write_text(
-    "// 予選の組み合わせ表（tools/make_schedule.py が生成。手で直さない）\n"
-    "window.HALU_SCHEDULE = " + json.dumps(schedule, ensure_ascii=False) + ";\n", encoding="utf-8")
+(repo / "kuji").mkdir(exist_ok=True)
+(repo / "kuji" / "kata.js").write_text(
+    "// 予選の対戦表の型（tools/make_schedule.py が生成。手で直さない）。数値は枠番号、文字はゲスト。誰がどの枠かは tools/kuji.py のくじで決める\n"
+    "window.HALU_KATA = " + json.dumps(schedule, ensure_ascii=False) + ";\n", encoding="utf-8")
 
 # MD 表
 md = []
@@ -139,21 +144,21 @@ for r in range(1, 5):
     md.append("| 卓 | 東（起家） | 南 | 西 | 北 |")
     md.append("|---|---|---|---|---|")
     for row in schedule[str(r)]:
-        md.append(f"| {row['table']}卓 | " + " | ".join(row["seats"]) + " |")
+        md.append(f"| {row['table']}卓 | " + " | ".join(label(s) for s in row["seats"]) + " |")
     md.append("")
-# 選手別
-md.append("### 選手別（卓・席）\n")
-md.append("| 選手 | 1半荘目 | 2半荘目 | 3半荘目 | 4半荘目 |")
+# 枠別
+md.append("### 枠別（卓・席）\n")
+md.append("| 枠 | 1半荘目 | 2半荘目 | 3半荘目 | 4半荘目 |")
 md.append("|---|---|---|---|---|")
-allnames = ["本田プロ"] + [f"P{i}" for i in range(1, 16)] + ["ゆうこママ"] + [f"P{i}" for i in range(16, 31)]
+allnames = ["本田プロ"] + list(range(1, 16)) + ["ゆうこママ"] + list(range(16, 31))
 for nm in allnames:
     cells = []
     for r in range(1, 5):
         for row in schedule[str(r)]:
             if nm in row["seats"]:
                 cells.append(f"{row['table']}卓 {WINDS[row['seats'].index(nm)]}")
-    md.append(f"| {nm} | " + " | ".join(cells) + " |")
+    md.append(f"| {label(nm)} | " + " | ".join(cells) + " |")
 md.append("")
 work = repo / ".work"; work.mkdir(exist_ok=True)
-(work / "schedule.md").write_text("\n".join(md), encoding="utf-8")
-print("OK schedule.js / .work/schedule.md")
+(work / "kata.md").write_text("\n".join(md), encoding="utf-8")
+print("OK kuji/kata.js / .work/kata.md")

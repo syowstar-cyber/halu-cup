@@ -84,7 +84,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
   <div class="hero"><img src="poster.jpg" alt="第20回 Halu杯 ポスター"><span class="badge">幹部用</span></div>
   <header>
     <h1>第20回 Halu杯 幹部用ページ</h1>
-    <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: 2026-10-10 ／ <a href="sanka/">参加者用ページ</a> ／ <a href="score/">点数報告・集計</a> ／ <a href="rule/">ルール</a> ／ <a href="fu/">点数計算</a> ／ <a href="pro/">本田プロ確認用（回答）</a></div>
+    <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: 2026-10-10 ／ <a href="sanka/">参加者用ページ</a> ／ <a href="score/">点数報告・集計</a> ／ <a href="rule/">ルール</a> ／ <a href="fu/">点数計算</a> ／ <a href="kuji/">対戦表のくじ</a> ／ <a href="pro/">本田プロ確認用（回答）</a></div>
   </header>
   <nav class="toc" id="toc"></nav>
   <main id="content"><p class="lead">主催: トミーさん・ゆうこママ。変更の経緯は末尾の「16. 変更履歴」にまとめています。</p>
@@ -148,9 +148,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <p>全体は32名・8卓。参加者30名（P1〜P30）＋本田朋広プロ＋ゆうこママ。</p>
 <h3>予選（8卓・4半荘・40分制）</h3>
 <ul>
-<li>対戦相手は前半組（本田プロ＋P1〜P15＝1〜4卓）と後半組（ゆうこママ＋P16〜P30＝5〜8卓）に分かれる</li>
+<li>対戦相手は前半組（本田プロ＋参加者15名＝1〜4卓）と後半組（ゆうこママ＋参加者15名＝5〜8卓）に分かれる。どちらの組かもくじで決まる（<a class="xref" href="#s9">9章</a>）</li>
 <li>順位は組を分けず、参加者30名全体の合計ポイントで決める</li>
-<li>対戦表はプレイヤーNo（P1〜P30）で組む（<a class="xref" href="#s9">9章</a>）</li>
+<li>対戦表はくじで決める。型（枠1〜枠30）を先に公開し、10月23日（金）の公開の数字で、各プレイヤーNoがどの枠に入るかを決める（<a class="xref" href="#s9">9章</a>）</li>
 <li>順位は4半荘の合計ポイントで決める（点数計算は<a class="xref" href="#s4">4章</a>）。合計の同点は年齢が上の方が上位</li>
 <li><strong>参加者の上位6名が準決勝へ</strong>（本田プロとゆうこママは準決勝S1卓に固定）</li>
 </ul>
@@ -329,99 +329,100 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <div id="party" class="party"></div>
 <h3>当日の発表</h3>
 <p>18:20の閉会で当日メンバーを発表 → 18:30終了 → Haluへ移動。</p>
-<h2 id="s9">9. 対戦表（プレイヤーNo）</h2>
-<p><strong>製作中・未定。下は旧案で、参加者ページと点数報告ページからは外した。決まったら <code>make_schedule.py</code> で作り直し、<a class="xref" href="sanka/#s8">参加者案内8章</a>と点数報告ページ（<code>score/schedule.js</code>）へ戻す。</strong></p>
-<p><strong>プレイヤーNoは名簿順の仮割り（<a class="xref" href="#s8">8章</a>の出席者一覧）。正式な決め方は幹-7。</strong></p>
-<p>本田プロ＋P1〜P15 が1〜4卓、ゆうこママ＋P16〜P30 が5〜8卓で4半荘を打つ。</p>
+<h2 id="s9">9. 対戦表（くじで決める）</h2>
+<p><strong>くじで決める。下の表は型（枠1〜枠30）。10月23日（金）の日経平均株価の終値とナンバーズ4の当せん番号を種にして、各プレイヤーNoがどの枠に入るかを決める。手順・検算・結果はくじページ（<code>kuji/</code>）。</strong></p>
+<p><strong>プレイヤーNo（P1〜P30）は、10月22日（木）の出席者一覧（<a class="xref" href="#s8">8章</a>）で確定してLINEグループに貼る。それより後に出席者が変わっても、くじは引き直さない。</strong></p>
+<p>結果が出たら <code>python tools/kuji.py &lt;終値&gt; &lt;ナンバーズ4&gt; --write</code> で点数報告ページ（<code>score/schedule.js</code>）を作り、この章と<a class="xref" href="sanka/#s8">参加者案内8章</a>の表をくじの結果に差し替える。片方の数字が発表されなかったときは、その数字を「-」にして、もう片方だけで決める。</p>
+<p>本田プロ＋枠1〜枠15 が1〜4卓、ゆうこママ＋枠16〜枠30 が5〜8卓で4半荘を打つ。</p>
 <ul>
 <li>同じ相手とは2度当たらない。全員が東南西北を1回ずつ起家で回る</li>
 <li>席は表のとおり（場決めなし）。卓の場所も固定</li>
 <li><strong>本田プロは1卓、ゆうこママは5卓に固定</strong>（4半荘とも席を動かない。相手が来る）。2人は予選では当たらない</li>
-<li>本田プロと同卓できるのは12名、ゆうこママも12名。全員が同卓できるわけではない点は募集要項に一行入れておく</li>
+<li>本田プロと同卓できるのは12名、ゆうこママも12名（同卓しない枠は8・11・14と23・26・29）。全員が同卓できるわけではない点は募集要項に一行入れておく</li>
 </ul>
 <h3>予選1半荘目</h3>
 <p class="legend"><span class="pro-sw"></span> 色つき＝本田プロと同卓</p><div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr class=pro><td>1卓</td><td>P15</td><td>P2</td><td>P13</td><td>本田プロ</td></tr>
-<tr><td>2卓</td><td>P1</td><td>P11</td><td>P5</td><td>P7</td></tr>
-<tr><td>3卓</td><td>P6</td><td>P9</td><td>P14</td><td>P3</td></tr>
-<tr><td>4卓</td><td>P12</td><td>P10</td><td>P4</td><td>P8</td></tr>
-<tr><td>5卓</td><td>P30</td><td>P17</td><td>P28</td><td>ゆうこママ</td></tr>
-<tr><td>6卓</td><td>P16</td><td>P26</td><td>P20</td><td>P22</td></tr>
-<tr><td>7卓</td><td>P21</td><td>P24</td><td>P29</td><td>P18</td></tr>
-<tr><td>8卓</td><td>P27</td><td>P25</td><td>P19</td><td>P23</td></tr>
+<tr class=pro><td>1卓</td><td>枠15</td><td>枠2</td><td>枠13</td><td>本田プロ</td></tr>
+<tr><td>2卓</td><td>枠1</td><td>枠11</td><td>枠5</td><td>枠7</td></tr>
+<tr><td>3卓</td><td>枠6</td><td>枠9</td><td>枠14</td><td>枠3</td></tr>
+<tr><td>4卓</td><td>枠12</td><td>枠10</td><td>枠4</td><td>枠8</td></tr>
+<tr><td>5卓</td><td>枠30</td><td>枠17</td><td>枠28</td><td>ゆうこママ</td></tr>
+<tr><td>6卓</td><td>枠16</td><td>枠26</td><td>枠20</td><td>枠22</td></tr>
+<tr><td>7卓</td><td>枠21</td><td>枠24</td><td>枠29</td><td>枠18</td></tr>
+<tr><td>8卓</td><td>枠27</td><td>枠25</td><td>枠19</td><td>枠23</td></tr>
 </table></div>
 <h3>予選2半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr class=pro><td>1卓</td><td>P4</td><td>P5</td><td>本田プロ</td><td>P9</td></tr>
-<tr><td>2卓</td><td>P10</td><td>P15</td><td>P6</td><td>P11</td></tr>
-<tr><td>3卓</td><td>P8</td><td>P3</td><td>P2</td><td>P1</td></tr>
-<tr><td>4卓</td><td>P13</td><td>P7</td><td>P12</td><td>P14</td></tr>
-<tr><td>5卓</td><td>P19</td><td>P20</td><td>ゆうこママ</td><td>P24</td></tr>
-<tr><td>6卓</td><td>P25</td><td>P30</td><td>P21</td><td>P26</td></tr>
-<tr><td>7卓</td><td>P23</td><td>P18</td><td>P17</td><td>P16</td></tr>
-<tr><td>8卓</td><td>P28</td><td>P22</td><td>P27</td><td>P29</td></tr>
+<tr class=pro><td>1卓</td><td>枠4</td><td>枠5</td><td>本田プロ</td><td>枠9</td></tr>
+<tr><td>2卓</td><td>枠10</td><td>枠15</td><td>枠6</td><td>枠11</td></tr>
+<tr><td>3卓</td><td>枠8</td><td>枠3</td><td>枠2</td><td>枠1</td></tr>
+<tr><td>4卓</td><td>枠13</td><td>枠7</td><td>枠12</td><td>枠14</td></tr>
+<tr><td>5卓</td><td>枠19</td><td>枠20</td><td>ゆうこママ</td><td>枠24</td></tr>
+<tr><td>6卓</td><td>枠25</td><td>枠30</td><td>枠21</td><td>枠26</td></tr>
+<tr><td>7卓</td><td>枠23</td><td>枠18</td><td>枠17</td><td>枠16</td></tr>
+<tr><td>8卓</td><td>枠28</td><td>枠22</td><td>枠27</td><td>枠29</td></tr>
 </table></div>
 <h3>予選3半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr class=pro><td>1卓</td><td>本田プロ</td><td>P6</td><td>P1</td><td>P12</td></tr>
-<tr><td>2卓</td><td>P2</td><td>P14</td><td>P10</td><td>P5</td></tr>
-<tr><td>3卓</td><td>P9</td><td>P8</td><td>P7</td><td>P15</td></tr>
-<tr><td>4卓</td><td>P3</td><td>P4</td><td>P11</td><td>P13</td></tr>
-<tr><td>5卓</td><td>ゆうこママ</td><td>P21</td><td>P16</td><td>P27</td></tr>
-<tr><td>6卓</td><td>P17</td><td>P29</td><td>P25</td><td>P20</td></tr>
-<tr><td>7卓</td><td>P24</td><td>P23</td><td>P22</td><td>P30</td></tr>
-<tr><td>8卓</td><td>P18</td><td>P19</td><td>P26</td><td>P28</td></tr>
+<tr class=pro><td>1卓</td><td>本田プロ</td><td>枠6</td><td>枠1</td><td>枠12</td></tr>
+<tr><td>2卓</td><td>枠2</td><td>枠14</td><td>枠10</td><td>枠5</td></tr>
+<tr><td>3卓</td><td>枠9</td><td>枠8</td><td>枠7</td><td>枠15</td></tr>
+<tr><td>4卓</td><td>枠3</td><td>枠4</td><td>枠11</td><td>枠13</td></tr>
+<tr><td>5卓</td><td>ゆうこママ</td><td>枠21</td><td>枠16</td><td>枠27</td></tr>
+<tr><td>6卓</td><td>枠17</td><td>枠29</td><td>枠25</td><td>枠20</td></tr>
+<tr><td>7卓</td><td>枠24</td><td>枠23</td><td>枠22</td><td>枠30</td></tr>
+<tr><td>8卓</td><td>枠18</td><td>枠19</td><td>枠26</td><td>枠28</td></tr>
 </table></div>
 <h3>予選4半荘目</h3>
 <div class="tw"><table>
 <tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr>
-<tr class=pro><td>1卓</td><td>P7</td><td>本田プロ</td><td>P3</td><td>P10</td></tr>
-<tr><td>2卓</td><td>P5</td><td>P13</td><td>P8</td><td>P6</td></tr>
-<tr><td>3卓</td><td>P11</td><td>P12</td><td>P9</td><td>P2</td></tr>
-<tr><td>4卓</td><td>P14</td><td>P1</td><td>P15</td><td>P4</td></tr>
-<tr><td>5卓</td><td>P22</td><td>ゆうこママ</td><td>P18</td><td>P25</td></tr>
-<tr><td>6卓</td><td>P20</td><td>P28</td><td>P23</td><td>P21</td></tr>
-<tr><td>7卓</td><td>P26</td><td>P27</td><td>P24</td><td>P17</td></tr>
-<tr><td>8卓</td><td>P29</td><td>P16</td><td>P30</td><td>P19</td></tr>
+<tr class=pro><td>1卓</td><td>枠7</td><td>本田プロ</td><td>枠3</td><td>枠10</td></tr>
+<tr><td>2卓</td><td>枠5</td><td>枠13</td><td>枠8</td><td>枠6</td></tr>
+<tr><td>3卓</td><td>枠11</td><td>枠12</td><td>枠9</td><td>枠2</td></tr>
+<tr><td>4卓</td><td>枠14</td><td>枠1</td><td>枠15</td><td>枠4</td></tr>
+<tr><td>5卓</td><td>枠22</td><td>ゆうこママ</td><td>枠18</td><td>枠25</td></tr>
+<tr><td>6卓</td><td>枠20</td><td>枠28</td><td>枠23</td><td>枠21</td></tr>
+<tr><td>7卓</td><td>枠26</td><td>枠27</td><td>枠24</td><td>枠17</td></tr>
+<tr><td>8卓</td><td>枠29</td><td>枠16</td><td>枠30</td><td>枠19</td></tr>
 </table></div>
-<h3>選手別（卓・席）</h3>
+<h3>枠別（卓・席）</h3>
 <div class="tw"><table>
-<tr><th>選手</th><th>1半荘目</th><th>2半荘目</th><th>3半荘目</th><th>4半荘目</th></tr>
+<tr><th>枠</th><th>1半荘目</th><th>2半荘目</th><th>3半荘目</th><th>4半荘目</th></tr>
 <tr><td>本田プロ</td><td>1卓 北</td><td>1卓 西</td><td>1卓 東</td><td>1卓 南</td></tr>
-<tr><td>P1</td><td>2卓 東</td><td>3卓 北</td><td class=pro>1卓 西</td><td>4卓 南</td></tr>
-<tr><td>P2</td><td class=pro>1卓 南</td><td>3卓 西</td><td>2卓 東</td><td>3卓 北</td></tr>
-<tr><td>P3</td><td>3卓 北</td><td>3卓 南</td><td>4卓 東</td><td class=pro>1卓 西</td></tr>
-<tr><td>P4</td><td>4卓 西</td><td class=pro>1卓 東</td><td>4卓 南</td><td>4卓 北</td></tr>
-<tr><td>P5</td><td>2卓 西</td><td class=pro>1卓 南</td><td>2卓 北</td><td>2卓 東</td></tr>
-<tr><td>P6</td><td>3卓 東</td><td>2卓 西</td><td class=pro>1卓 南</td><td>2卓 北</td></tr>
-<tr><td>P7</td><td>2卓 北</td><td>4卓 南</td><td>3卓 西</td><td class=pro>1卓 東</td></tr>
-<tr><td>P8</td><td>4卓 北</td><td>3卓 東</td><td>3卓 南</td><td>2卓 西</td></tr>
-<tr><td>P9</td><td>3卓 南</td><td class=pro>1卓 北</td><td>3卓 東</td><td>3卓 西</td></tr>
-<tr><td>P10</td><td>4卓 南</td><td>2卓 東</td><td>2卓 西</td><td class=pro>1卓 北</td></tr>
-<tr><td>P11</td><td>2卓 南</td><td>2卓 北</td><td>4卓 西</td><td>3卓 東</td></tr>
-<tr><td>P12</td><td>4卓 東</td><td>4卓 西</td><td class=pro>1卓 北</td><td>3卓 南</td></tr>
-<tr><td>P13</td><td class=pro>1卓 西</td><td>4卓 東</td><td>4卓 北</td><td>2卓 南</td></tr>
-<tr><td>P14</td><td>3卓 西</td><td>4卓 北</td><td>2卓 南</td><td>4卓 東</td></tr>
-<tr><td>P15</td><td class=pro>1卓 東</td><td>2卓 南</td><td>3卓 北</td><td>4卓 西</td></tr>
+<tr><td>枠1</td><td>2卓 東</td><td>3卓 北</td><td class=pro>1卓 西</td><td>4卓 南</td></tr>
+<tr><td>枠2</td><td class=pro>1卓 南</td><td>3卓 西</td><td>2卓 東</td><td>3卓 北</td></tr>
+<tr><td>枠3</td><td>3卓 北</td><td>3卓 南</td><td>4卓 東</td><td class=pro>1卓 西</td></tr>
+<tr><td>枠4</td><td>4卓 西</td><td class=pro>1卓 東</td><td>4卓 南</td><td>4卓 北</td></tr>
+<tr><td>枠5</td><td>2卓 西</td><td class=pro>1卓 南</td><td>2卓 北</td><td>2卓 東</td></tr>
+<tr><td>枠6</td><td>3卓 東</td><td>2卓 西</td><td class=pro>1卓 南</td><td>2卓 北</td></tr>
+<tr><td>枠7</td><td>2卓 北</td><td>4卓 南</td><td>3卓 西</td><td class=pro>1卓 東</td></tr>
+<tr><td>枠8</td><td>4卓 北</td><td>3卓 東</td><td>3卓 南</td><td>2卓 西</td></tr>
+<tr><td>枠9</td><td>3卓 南</td><td class=pro>1卓 北</td><td>3卓 東</td><td>3卓 西</td></tr>
+<tr><td>枠10</td><td>4卓 南</td><td>2卓 東</td><td>2卓 西</td><td class=pro>1卓 北</td></tr>
+<tr><td>枠11</td><td>2卓 南</td><td>2卓 北</td><td>4卓 西</td><td>3卓 東</td></tr>
+<tr><td>枠12</td><td>4卓 東</td><td>4卓 西</td><td class=pro>1卓 北</td><td>3卓 南</td></tr>
+<tr><td>枠13</td><td class=pro>1卓 西</td><td>4卓 東</td><td>4卓 北</td><td>2卓 南</td></tr>
+<tr><td>枠14</td><td>3卓 西</td><td>4卓 北</td><td>2卓 南</td><td>4卓 東</td></tr>
+<tr><td>枠15</td><td class=pro>1卓 東</td><td>2卓 南</td><td>3卓 北</td><td>4卓 西</td></tr>
 <tr><td>ゆうこママ</td><td>5卓 北</td><td>5卓 西</td><td>5卓 東</td><td>5卓 南</td></tr>
-<tr><td>P16</td><td>6卓 東</td><td>7卓 北</td><td>5卓 西</td><td>8卓 南</td></tr>
-<tr><td>P17</td><td>5卓 南</td><td>7卓 西</td><td>6卓 東</td><td>7卓 北</td></tr>
-<tr><td>P18</td><td>7卓 北</td><td>7卓 南</td><td>8卓 東</td><td>5卓 西</td></tr>
-<tr><td>P19</td><td>8卓 西</td><td>5卓 東</td><td>8卓 南</td><td>8卓 北</td></tr>
-<tr><td>P20</td><td>6卓 西</td><td>5卓 南</td><td>6卓 北</td><td>6卓 東</td></tr>
-<tr><td>P21</td><td>7卓 東</td><td>6卓 西</td><td>5卓 南</td><td>6卓 北</td></tr>
-<tr><td>P22</td><td>6卓 北</td><td>8卓 南</td><td>7卓 西</td><td>5卓 東</td></tr>
-<tr><td>P23</td><td>8卓 北</td><td>7卓 東</td><td>7卓 南</td><td>6卓 西</td></tr>
-<tr><td>P24</td><td>7卓 南</td><td>5卓 北</td><td>7卓 東</td><td>7卓 西</td></tr>
-<tr><td>P25</td><td>8卓 南</td><td>6卓 東</td><td>6卓 西</td><td>5卓 北</td></tr>
-<tr><td>P26</td><td>6卓 南</td><td>6卓 北</td><td>8卓 西</td><td>7卓 東</td></tr>
-<tr><td>P27</td><td>8卓 東</td><td>8卓 西</td><td>5卓 北</td><td>7卓 南</td></tr>
-<tr><td>P28</td><td>5卓 西</td><td>8卓 東</td><td>8卓 北</td><td>6卓 南</td></tr>
-<tr><td>P29</td><td>7卓 西</td><td>8卓 北</td><td>6卓 南</td><td>8卓 東</td></tr>
-<tr><td>P30</td><td>5卓 東</td><td>6卓 南</td><td>7卓 北</td><td>8卓 西</td></tr>
+<tr><td>枠16</td><td>6卓 東</td><td>7卓 北</td><td>5卓 西</td><td>8卓 南</td></tr>
+<tr><td>枠17</td><td>5卓 南</td><td>7卓 西</td><td>6卓 東</td><td>7卓 北</td></tr>
+<tr><td>枠18</td><td>7卓 北</td><td>7卓 南</td><td>8卓 東</td><td>5卓 西</td></tr>
+<tr><td>枠19</td><td>8卓 西</td><td>5卓 東</td><td>8卓 南</td><td>8卓 北</td></tr>
+<tr><td>枠20</td><td>6卓 西</td><td>5卓 南</td><td>6卓 北</td><td>6卓 東</td></tr>
+<tr><td>枠21</td><td>7卓 東</td><td>6卓 西</td><td>5卓 南</td><td>6卓 北</td></tr>
+<tr><td>枠22</td><td>6卓 北</td><td>8卓 南</td><td>7卓 西</td><td>5卓 東</td></tr>
+<tr><td>枠23</td><td>8卓 北</td><td>7卓 東</td><td>7卓 南</td><td>6卓 西</td></tr>
+<tr><td>枠24</td><td>7卓 南</td><td>5卓 北</td><td>7卓 東</td><td>7卓 西</td></tr>
+<tr><td>枠25</td><td>8卓 南</td><td>6卓 東</td><td>6卓 西</td><td>5卓 北</td></tr>
+<tr><td>枠26</td><td>6卓 南</td><td>6卓 北</td><td>8卓 西</td><td>7卓 東</td></tr>
+<tr><td>枠27</td><td>8卓 東</td><td>8卓 西</td><td>5卓 北</td><td>7卓 南</td></tr>
+<tr><td>枠28</td><td>5卓 西</td><td>8卓 東</td><td>8卓 北</td><td>6卓 南</td></tr>
+<tr><td>枠29</td><td>7卓 西</td><td>8卓 北</td><td>6卓 南</td><td>8卓 東</td></tr>
+<tr><td>枠30</td><td>5卓 東</td><td>6卓 南</td><td>7卓 北</td><td>8卓 西</td></tr>
 </table></div>
 <h2 id="s10">10. スタッフ配置</h2>
 <div class="tw"><table>
@@ -562,13 +563,13 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td><label><input type="checkbox" data-k="14幹3早く終わった卓の待ち時間の使い方トビ終了はなしで確定20260917" data-legacy=""><span>幹-3</span></label></td><td>早く終わった卓の待ち時間の使い方（トビ終了は「なし」で確定 2026-09-17）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹4役満賞は自由対局も対象か複数出たときの分け方" data-legacy=""><span>幹-4</span></label></td><td>役満賞は自由対局も対象か。複数出たときの分け方</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹6欠員が出たときの埋め方32名ちょうどで1人欠けると卓が崩れる" data-legacy=""><span>幹-6</span></label></td><td>欠員が出たときの埋め方。32名ちょうどで1人欠けると卓が崩れる</td></tr>
-<tr><td><label><input type="checkbox" data-k="14幹7プレイヤーNoP1P30の正式な決め方いまは名簿の順で仮に割り振り済み8" data-legacy=""><span>幹-7</span></label></td><td>プレイヤーNo（P1〜P30）の正式な決め方。いまは名簿の順で仮に割り振り済み（<a class="xref" href="#s8">8章</a>の一覧）。ランダム抽選ではない（対戦表は製作中・未定。<a class="xref" href="#s9">9章</a>の表は旧案）。準決勝・決勝の席と起家は自動卓のサイコロで決めることで確定（2026-09-16）</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹7プレイヤーNoP1P30の正式な決め方名簿の順の仮Noのまま10月22日" data-legacy=""><span>幹-7</span></label></td><td><s>プレイヤーNo（P1〜P30）の正式な決め方</s> → 名簿の順の仮Noのまま、10月22日（木）の出席者一覧で確定。卓と席はくじで決める（<a class="xref" href="#s9">9章</a>・2026-10-10）。準決勝・決勝の席と起家は自動卓のサイコロで決めることで確定（2026-09-16）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹8トークショーを15分のままにするか30分にするか" data-legacy=""><span>幹-8</span></label></td><td>トークショーを15分のままにするか30分にするか</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹9申込方法窓口ゆうこママへLINEで確定申込締切と申込問い合わせは別途案内" data-legacy=""><span>幹-9</span></label></td><td><s>申込方法・窓口</s> → ゆうこママへLINEで確定。申込締切と申込・問い合わせは別途案内するため、参加者案内からは外した（2026-09-17）</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹10賞品の内容" data-legacy=""><span>幹-10</span></label></td><td>賞品の内容</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹11実況役を誰がやるか" data-legacy=""><span>幹-11</span></label></td><td>実況役を誰がやるか</td></tr>
 <tr><td><label><input type="checkbox" data-k="14幹13集計係入力サポート1名を誰がやるか" data-legacy=""><span>幹-13</span></label></td><td>集計係（入力サポート1名）を誰がやるか</td></tr>
-<tr><td><label><input type="checkbox" data-k="14幹22対戦表を確定するいまは製作中期限は幹部で決める" data-legacy=""><span>幹-22</span></label></td><td>対戦表を確定する（いまは製作中）。期限は幹部で決める</td></tr>
+<tr><td><label><input type="checkbox" data-k="14幹22対戦表を確定するくじで決める1022木出席者一覧を確定してLINEに貼" data-legacy=""><span>幹-22</span></label></td><td>対戦表を確定する。くじで決める（10/22 木 出席者一覧を確定してLINEに貼る → 10/23 金 日経平均の終値とナンバーズ4でくじ → 夜に発表。<a class="xref" href="#s9">9章</a>）</td></tr>
 </table></div>
 <h2 id="s15">15. 逆算スケジュール</h2>
 <div class="tw"><table>
@@ -664,6 +665,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-10</td><td>チョンボの変更。チョンボがあっても局は最後まで続け、チョンボした人はアガリ放棄。誰かが和了すれば罰（満貫払い）はない。流局したら満貫払い（ノーテン罰符なし・本場1本・リーチ棒は供託に残す）。流局後の親は、東場なら移る。南場は親のチョンボなら移り、子のチョンボなら親の連荘。4章・ルールページの早見表・2章・3章・13章・本田プロ用ページ4章・点数報告ページの説明を同時に更新</td><td>主催の指示</td></tr>
 <tr><td>2026-10-10</td><td>14章「連盟・本田プロ」に、本田プロの公開スケジュール（前後1週間）を追記。前日10/23は雷電の試合日、翌日10/25は都内でゲスト。10/24 のHalu杯は公開スケジュールに載っていない</td><td>主催の指示</td></tr>
 <tr><td>2026-10-10</td><td>撮影担当を岩田さんで確定（10章）。名字を公開の幹部用ページに載せるのは主催の判断</td><td>主催の決定</td></tr>
+<tr><td>2026-10-10</td><td>対戦表をくじで決めることにした。プレイヤーNoは10月22日（木）の出席者一覧で確定し、10月23日（金）の日経平均株価の終値とナンバーズ4の当せん番号を種にして、各Noがどの枠（型＝旧案の表のP番号を枠番号に読み替えたもの）に入るかを決める。くじページ（<code>kuji/</code>）で手順・検算・結果を公開。3章・9章・14章（幹-7 解消・幹-22）を更新</td><td>主催の決定</td></tr>
 </table></div></main>
   <a class="top" href="#" title="上へ">↑</a>
 </div>

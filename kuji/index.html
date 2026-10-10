@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a1a1a">
+<title>第20回 Halu杯 対戦表のくじ</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db;--pro:#e8f0fa;--pro-fg:#1f5c99;--mama:#fbeaf0;--mama-fg:#993556;--ok:#146c2e;--ng:#b00020}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 60px}
+header{border-bottom:3px solid var(--accent);margin:18px 0 14px;padding-bottom:10px}
+header h1{font-size:1.35rem;margin:0;line-height:1.4}
+header .sub{color:var(--muted);font-size:.9rem}
+.lead{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.98rem}
+h2{font-size:1.15rem;margin:34px 0 12px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
+h3{font-size:1.05rem;margin:22px 0 8px;border-left:5px solid var(--accent);padding-left:10px}
+p{margin:8px 0}
+ul,ol{padding-left:1.4em;margin:8px 0}
+li{margin:5px 0}
+.tw{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
+th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top;line-height:1.5;white-space:nowrap}
+td + td, th + th, th + td{border-left:1px solid var(--line)}
+th{background:#ececE8;font-weight:700}
+td.wrap{white-space:normal}
+tr.pro td{background:var(--pro)}
+tr.mama td{background:var(--mama)}
+td.pro{background:var(--pro);color:var(--pro-fg);font-weight:700}
+td.mama{background:var(--mama);color:var(--mama-fg);font-weight:700}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;word-break:break-all}
+.note{font-size:.92rem;color:var(--muted)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0}
+.big{font-size:1.05rem;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.88rem;color:var(--muted);margin:6px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:4px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+label{font-weight:700;font-size:.95rem}
+input[type=text]{width:100%;font:inherit;font-size:1.05rem;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-fg);width:100%;margin-top:10px;cursor:pointer}
+.msg{margin-top:8px;font-weight:700}
+.msg.ng{color:var(--ng)}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;border-radius:4px;padding:0 6px;margin-left:4px}
+.tag.try{background:#ececE8;color:var(--muted)}
+.tag.real{background:var(--ok);color:#fff}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
+@media (min-width:560px){.pnav a{flex:1 1 0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>第20回 Halu杯 対戦表のくじ</h1>
+    <div class="sub">予選の卓と席を、公開の数字で決めます。最終更新: 2026-10-10</div>
+  </header>
+  <p class="lead">予選の対戦表は、くじで決めます。くじの種は、<b>10月23日（金）に発表される2つの公開の数字</b>です。主催を含めて、発表まで誰にも分かりません。<br>発表の後は、誰でもこのページで同じ結果を計算できます。</p>
+
+<h2 id="s1">1. 結果</h2>
+<div id="result"></div>
+
+<h2 id="s2">2. 決まるまでの流れ</h2>
+<div class="tw"><table>
+<thead><tr><th>いつ</th><th>決まること</th></tr></thead>
+<tbody>
+<tr><td>10月22日（木）まで</td><td class="wrap">出席者一覧（P1〜P30）を確定し、LINEグループに貼る（6章）</td></tr>
+<tr><td>10月23日（金）15:30</td><td class="wrap">日経平均株価の終値が決まる</td></tr>
+<tr><td>10月23日（金）夕方</td><td class="wrap">ナンバーズ4の当せん番号が決まる（抽せん会はネットで生中継）</td></tr>
+<tr><td>10月23日（金）夜</td><td class="wrap">2つの数字をこのページに入れて、結果を発表する</td></tr>
+<tr><td>10月24日（土）</td><td class="wrap">対戦表のとおりに打つ</td></tr>
+</tbody></table></div>
+
+<h2 id="s3">3. 公平にするための決まり</h2>
+<ul>
+<li>くじの種は、主催を含めて、発表まで誰にも分からない数字です。</li>
+<li>計算の手順・対戦表の型・出席者一覧は、数字が出る前に公開して固定します。</li>
+<li>数字が出た後に、くじを引き直すことはできません。同じ数字からは、いつ誰が計算しても同じ結果です。</li>
+<li>本田プロ・ゆうこママと同じ組になるか、同卓になるかも、くじだけで決まります。</li>
+<li>このページの変更履歴は、誰でも見られます（<a href="https://github.com/syowstar-cyber/halu-cup/commits/main/kuji" target="_blank" rel="noopener">GitHub の変更履歴</a>）。</li>
+</ul>
+
+<h2 id="s4">4. 計算してみる（検算）</h2>
+<p>2つの数字を入れて「計算する」を押すと、くじの結果が出ます。発表の前は、好きな数字で仕組みを試せます。</p>
+<form id="calc" autocomplete="off">
+<div class="row">
+<div><label for="n225">日経平均株価の終値</label><input type="text" id="n225" inputmode="decimal" placeholder="例 72,353.96"></div>
+<div><label for="n4">ナンバーズ4の当せん番号</label><input type="text" id="n4" inputmode="numeric" placeholder="例 0482"></div>
+</div>
+<button type="submit">計算する</button>
+<div id="cmsg" class="msg" aria-live="polite"></div>
+</form>
+<p class="note">数字の確かめ先: <a href="https://indexes.nikkei.co.jp/nkave/" target="_blank" rel="noopener">日経平均プロフィル（日本経済新聞社）</a>／<a href="https://www.takarakuji-official.jp/check/" target="_blank" rel="noopener">宝くじ公式サイト 当せん番号のご案内</a></p>
+<div id="calcout"></div>
+
+<h2 id="s5">5. 対戦表の型（枠1〜枠30）</h2>
+<p>卓と席は、先にこの「型」で決めてあります。くじで決めるのは、<b>誰がどの枠に入るか</b>だけです。</p>
+<ul>
+<li>枠1〜15 は本田プロの組（1〜4卓）、枠16〜30 はゆうこママの組（5〜8卓）です。</li>
+<li>本田プロは1卓、ゆうこママは5卓に固定です（席は動かず、相手が来ます）。</li>
+<li>同じ相手とは2度当たりません。全員が東南西北を1回ずつ打ちます。</li>
+<li>本田プロと同卓になる枠は15のうち12です（ゆうこママも同じ）。</li>
+</ul>
+<div class="legend"><span><i style="background:var(--pro)"></i>本田プロの卓</span><span><i style="background:var(--mama)"></i>ゆうこママの卓</span></div>
+<div id="kata"></div>
+
+<h2 id="s6">6. 出席者一覧（P1〜P30）</h2>
+<p>くじは、このNo.で引きます。10月22日（木）にこの一覧で確定します。それより後に出席者が変わっても、くじは引き直しません。</p>
+<div id="roster" class="tw"></div>
+
+<h2 id="s7">7. 計算のしかた（くわしく）</h2>
+<ol>
+<li>種の文字列を作ります。<br><span class="mono">HALU20|2026-10-23|N225=日経平均の終値|N4=ナンバーズ4</span><br>終値はカンマを除いて小数2桁、ナンバーズ4は先頭の0も残して4桁で書きます。</li>
+<li>P1〜P30 それぞれ、種の後ろに「|P番号」を付けて SHA-256 で計算します（例 <span class="mono">…|N4=0482|P7</span>）。出てきた64桁の英数字が、その人のくじ値です。</li>
+<li>くじ値の小さい順に、枠1・枠2…枠30 を割り当てます（0〜9、a〜f の順で比べます）。</li>
+<li>5章の型のとおりに、卓と席が決まります。</li>
+</ol>
+<ul class="note">
+<li>SHA-256 は世界共通の計算方法です。Webの計算サイトやパソコンでも、同じくじ値になります。</li>
+<li>片方の数字が発表されなかったときは、その数字を「-」にして、もう片方だけで決めます。</li>
+</ul>
+
+<h2 id="s8">8. 関連ページ</h2>
+<nav class="pnav" aria-label="関連ページ"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
+</div>
+
+<script src="../score/config.js"></script>
+<script src="kata.js"></script>
+<script src="seed.js"></script>
+<script>
+const API = (window.HALU_API || '').trim();
+const KATA = window.HALU_KATA || {};
+const KUJI = window.HALU_KUJI || {};
+const DATE = '2026-10-23';            // 種の日付（tools/kuji.py の DATE と同じ）
+const WINDS = ['東', '南', '西', '北'];
+let ROSTER = {};
+const dn = p => ROSTER[p] ? p + ' ' + ROSTER[p] : p;
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+// SHA-256（標準の手順どおり。ブラウザの設定に左右されないよう自前で計算）
+const K = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+function sha256hex(str) {
+  const bytes = new TextEncoder().encode(str), len = bytes.length, nblk = (len + 72) >> 6;
+  const m = new Uint8Array(nblk * 64); m.set(bytes); m[len] = 0x80;
+  const dv = new DataView(m.buffer), bits = len * 8;
+  dv.setUint32(m.length - 8, Math.floor(bits / 4294967296)); dv.setUint32(m.length - 4, bits >>> 0);
+  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]), W = new Uint32Array(64);
+  const rot = (x, n) => (x >>> n) | (x << (32 - n));
+  for (let blk = 0; blk < nblk; blk++) {
+    for (let t = 0; t < 16; t++) W[t] = dv.getUint32(blk * 64 + t * 4);
+    for (let t = 16; t < 64; t++) {
+      const s0 = rot(W[t - 15], 7) ^ rot(W[t - 15], 18) ^ (W[t - 15] >>> 3), s1 = rot(W[t - 2], 17) ^ rot(W[t - 2], 19) ^ (W[t - 2] >>> 10);
+      W[t] = (W[t - 16] + s0 + W[t - 7] + s1) >>> 0;
+    }
+    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for (let t = 0; t < 64; t++) {
+      const t1 = (h + (rot(e, 6) ^ rot(e, 11) ^ rot(e, 25)) + ((e & f) ^ (~e & g)) + K[t] + W[t]) >>> 0;
+      const t2 = ((rot(a, 2) ^ rot(a, 13) ^ rot(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] += a; H[1] += b; H[2] += c; H[3] += d; H[4] += e; H[5] += f; H[6] += g; H[7] += h;
+  }
+  return [...H].map(x => x.toString(16).padStart(8, '0')).join('');
+}
+
+// 数字の書き方をそろえる（tools/kuji.py と同じ規則）。null は形の誤り
+const half = s => String(s).normalize('NFKC').replace(/[,\s円]/g, '');
+function normN225(s) {
+  s = half(s); if (s === '-' || s === 'なし') return '-';
+  const m = s.match(/^(\d+)(?:\.(\d{1,2}))?$/); if (!m) return null;
+  return String(parseInt(m[1], 10)) + '.' + (m[2] || '').padEnd(2, '0');
+}
+function normN4(s) { s = half(s); if (s === '-' || s === 'なし') return '-'; return /^\d{4}$/.test(s) ? s : null; }
+const seedOf = (a, b) => 'HALU20|' + DATE + '|N225=' + a + '|N4=' + b;
+
+// くじ: P1〜P30 のくじ値を小さい順に並べ、先頭から枠1〜枠30
+function draw(seed) {
+  const v = Array.from({ length: 30 }, (_, i) => ({ p: 'P' + (i + 1), n: i + 1, h: sha256hex(seed + '|P' + (i + 1)) }));
+  v.sort((x, y) => (x.h < y.h ? -1 : x.h > y.h ? 1 : x.n - y.n));
+  v.forEach((x, k) => { x.slot = k + 1; });
+  return v;
+}
+// 型の枠を P番号に置き換えた対戦表
+function scheduleOf(order) {
+  const slot = {}; order.forEach(x => { slot[x.slot] = x.p; });
+  const out = {};
+  Object.keys(KATA).forEach(r => { out[r] = KATA[r].map(row => ({ table: row.table, seats: row.seats.map(s => typeof s === 'number' ? slot[s] : s) })); });
+  return out;
+}
+// 枠ごとに、本田プロ・ゆうこママと同卓する回数
+const MEET = (() => { const m = {}; Object.values(KATA).forEach(rows => rows.forEach(row => ['本田プロ', 'ゆうこママ'].forEach(g => { if (row.seats.includes(g)) row.seats.forEach(s => { if (typeof s === 'number') m[s] = g; }); }))); return m; })();
+
+const label = s => typeof s === 'number' ? '枠' + s : s;
+function roundTables(sched, show) {
+  let h = '';
+  ['1', '2', '3', '4'].forEach(r => {
+    h += '<h3>予選' + r + '回戦</h3><div class="tw"><table><thead><tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr></thead><tbody>';
+    (sched[r] || []).forEach(row => {
+      const cls = row.seats.includes('本田プロ') ? ' class="pro"' : row.seats.includes('ゆうこママ') ? ' class="mama"' : '';
+      h += '<tr' + cls + '><td>' + row.table + '卓</td>' + row.seats.map(s => '<td>' + esc(show(s)) + '</td>').join('') + '</tr>';
+    });
+    h += '</tbody></table></div>';
+  });
+  return h;
+}
+function resultHtml(seed, tag) {
+  const order = draw(seed), sched = scheduleOf(order);
+  let h = '<div class="box"><div>種の文字列 ' + tag + '</div><div class="mono">' + esc(seed) + '</div></div>';
+  h += '<h3>くじ値と枠</h3><div class="tw"><table><thead><tr><th>枠</th><th>No.</th><th>組</th><th>くじ値（先頭12桁）</th></tr></thead><tbody>';
+  order.forEach(x => {
+    const g = x.slot <= 15 ? '本田プロの組' : 'ゆうこママの組', meet = MEET[x.slot] ? '（同卓あり）' : '';
+    h += '<tr' + (x.slot <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + x.slot + '</td><td>' + esc(dn(x.p)) + '</td><td>' + g + meet + '</td><td class="mono" title="' + x.h + '">' + x.h.slice(0, 12) + '</td></tr>';
+  });
+  h += '</tbody></table></div><p class="note">くじ値の全部の桁は、行に指を置くか、マウスを重ねると出ます。</p>';
+  h += roundTables(sched, s => s.startsWith('P') ? dn(s) : s);
+  // 選手別
+  const where = {};
+  ['1', '2', '3', '4'].forEach(r => (sched[r] || []).forEach(row => row.seats.forEach((s, i) => { (where[s] = where[s] || [])[+r - 1] = row.table + '卓 ' + WINDS[i]; })));
+  h += '<h3>選手別（卓・席）</h3><div class="tw"><table><thead><tr><th>No.</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th></tr></thead><tbody>';
+  Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).forEach(p => { h += '<tr><td>' + esc(dn(p)) + '</td>' + (where[p] || []).map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
+  return h + '</tbody></table></div>';
+}
+
+// 1章: 本番の結果（kuji/seed.js に数字が入ったら出す）
+function renderResult() {
+  const box = document.getElementById('result');
+  if (!(KUJI.n225 && KUJI.n4)) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; return; }
+  const seed = seedOf(normN225(KUJI.n225), normN4(KUJI.n4));
+  box.innerHTML = '<div class="box"><div class="big">本番の数字</div>日経平均株価の終値（10月23日）: <b>' + esc(KUJI.n225 === '-' ? '発表なし' : Number(KUJI.n225).toLocaleString('ja-JP', { minimumFractionDigits: 2 })) + '</b><br>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4 === '-' ? '発表なし' : KUJI.n4) + '</b></div>' + resultHtml(seed, '<span class="tag real">本番</span>');
+}
+// 5章: 型
+function renderKata() {
+  let h = roundTables(KATA, label);
+  h += '<h3>枠別（卓・席）</h3><div class="tw"><table><thead><tr><th>枠</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th><th>同卓</th></tr></thead><tbody>';
+  const where = {};
+  ['1', '2', '3', '4'].forEach(r => (KATA[r] || []).forEach(row => row.seats.forEach((s, i) => { (where[s] = where[s] || [])[+r - 1] = row.table + '卓 ' + WINDS[i]; })));
+  Array.from({ length: 30 }, (_, i) => i + 1).forEach(n => {
+    const g = MEET[n];
+    h += '<tr' + (n <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + n + '</td>' + (where[n] || []).map(c => '<td>' + c + '</td>').join('') + '<td>' + (g ? g + 'と1回' : 'なし') + '</td></tr>';
+  });
+  document.getElementById('kata').innerHTML = h + '</tbody></table></div>';
+}
+function renderRoster() {
+  let h = '<table><thead><tr><th>No.</th><th>名前</th></tr></thead><tbody>';
+  for (let i = 1; i <= 30; i++) h += '<tr><td>P' + i + '</td><td>' + esc(ROSTER['P' + i] || '') + '</td></tr>';
+  document.getElementById('roster').innerHTML = h + '</tbody></table>';
+}
+
+document.getElementById('calc').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const a = normN225(document.getElementById('n225').value), b = normN4(document.getElementById('n4').value), msg = document.getElementById('cmsg');
+  msg.textContent = ''; msg.className = 'msg';
+  if (a === null) { msg.textContent = '日経平均の終値の形が違います（例 72,353.96）'; msg.className = 'msg ng'; return; }
+  if (b === null) { msg.textContent = 'ナンバーズ4は4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
+  if (a === '-' && b === '-') { msg.textContent = '2つとも「-」では決められません'; msg.className = 'msg ng'; return; }
+  const real = KUJI.n225 && KUJI.n4 && a === normN225(KUJI.n225) && b === normN4(KUJI.n4);
+  document.getElementById('calcout').innerHTML = resultHtml(seedOf(a, b), real ? '<span class="tag real">本番と同じ数字</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>');
+});
+
+async function load() {
+  renderKata(); renderRoster(); renderResult();
+  if (KUJI.n225 && KUJI.n4) { document.getElementById('n225').value = KUJI.n225; document.getElementById('n4').value = KUJI.n4; }
+  if (!API) return;
+  try {
+    const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json();
+    if (j.ok) { ROSTER = j.data.roster || {}; renderRoster(); renderResult(); }
+  } catch (e) {}
+}
+load();
+</script>
+</body>
+</html>
