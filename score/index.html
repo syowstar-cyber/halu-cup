@@ -146,11 +146,6 @@ summary{cursor:pointer;font-weight:700}
     <summary>組み合わせ表（予選）</summary>
     <div id="sched"></div>
   </details>
-  <div class="tools">
-    <button class="ghost" type="button" id="dl">JSONをコピー</button>
-    <span class="small">点棒のJSON（P1〜P30・本田プロ・ゆうこママ）をそのままコピーします</span>
-    <div id="msg" class="msg" aria-live="polite"></div>
-  </div>
   <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/" aria-current="page">点数報告</a><a href="../fu/">点数計算</a></nav>
 </div>
 
@@ -475,10 +470,6 @@ async function load() {
   catch (e) { document.getElementById('updated').textContent = '読み込みに失敗しました（通信）'; }
 }
 document.getElementById('reload').addEventListener('click', load);
-document.getElementById('dl').addEventListener('click', async () => {
-  if (!DATA) return;
-  try { await navigator.clipboard.writeText(JSON.stringify(DATA, null, 1)); say('msg', 'JSONをコピーしました', true); } catch (e) { say('msg', 'コピーできませんでした', false); }
-});
 (function renderSched() {
   const box = document.getElementById('sched'); let h = '';
   if (SCHED_TBD) { box.innerHTML = '<p><b>予選の対戦表は製作中です（未定）。前に載っていた表は使いません。</b></p>'; return; }
