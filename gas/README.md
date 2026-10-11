@@ -36,7 +36,7 @@
 公開リポにも fp リポにも、名前のファイルは置かない（2026-09-17 主催の指示）。
 登録は幹部用ページの8章「出席者一覧を貼り付け」（1行1人「P1 名前」）か、同じ表の名前欄を直接直す。
 参加者ページの出席者一覧と打ち上げ希望の名前選択、幹部用ページの一覧は、開くたびにここから読む。
-大会後に名前を消すときは、次の2つを行う（名前は `ROSTER` のほか `PARTY`・`PARTY_LOG_*`・`VIEWS`、幹部の名前はチェックの `CHECKS`〜`CHECKS_4`・`ATTEND`、本田プロ確認事項を送った人の名前は `PRO_ANS`・`PRO_LOG` にも残る）。
+大会後に名前を消すときは、次の2つを行う（名前は `ROSTER` のほか `PARTY`・`PARTY_LOG_*`・`VIEWS`・`VIEW_LOG_*`（名簿にない名前だけ。`resetViews` で一緒に消える）、幹部の名前はチェックの `CHECKS`〜`CHECKS_4`・`ATTEND`、本田プロ確認事項を送った人の名前は `PRO_ANS`・`PRO_LOG` にも残る）。
 1. エディタで `resetRoster`・`resetParty`・`resetViews`・`resetChecks`・`resetPro`・`resetBirth` を実行する。
 2. 「プロジェクトの設定」→「スクリプト プロパティ」から `PARTY_LOG_1`… と `PARTY_LOG_N` を手で消す。
 

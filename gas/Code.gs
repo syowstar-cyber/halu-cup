@@ -10,6 +10,7 @@
 //   出席者一覧（幹部）… キーなし。{action:'roster', names:{P1:'名前', ...}}（'' で消す。渡したキーだけ更新）
 //     名前はここ（スクリプト プロパティ ROSTER）にだけ置く。公開リポにはファイルとして置かない（2026-09-17）
 //   閲覧ログ（参加者ページ）… キーなし。{action:'view', page:'sanka', who:'名前'|''}。日ごとの回数と直近 VIEW_MAX 件を VIEWS に持つ
+//     全件の控えは VIEW_LOG_1, _2, … に積む（2026-10-11）。GET では返さず、GET ?views=all のときだけ返す
 //   本田プロ確認事項（プロ用ページ）… キーなし。{action:'pro', who:'名前（立場）', items:{'1':{c:'選択', n:'補足'}, …}}（2026-10-10）
 //     中身は PRO_ANS に持ち、GET では返さない（到着時刻・前後の予定を公開しない）。返すのは項目ごとの最終送信時刻だけ。
 //     届いたら、このスクリプトの持ち主へメールで知らせる（1日 PRO_MAIL_MAX 通まで）
@@ -48,10 +49,8 @@ function load_() {
   checks = loadChecks_();
   try { party = JSON.parse(p.getProperty('PARTY') || '{}'); } catch (e) { party = {}; }
   try { roster = JSON.parse(p.getProperty('ROSTER') || '{}'); } catch (e) { roster = {}; }
-  try { views = JSON.parse(p.getProperty('VIEWS') || 'null'); } catch (e) { views = null; }
+  views = loadViews_();
   try { chombo = JSON.parse(p.getProperty('CHOMBO') || '{}'); } catch (e) { chombo = {}; }
-  if (!views || typeof views !== 'object') views = { daily: {}, recent: [] };
-  if (!views.daily) views.daily = {}; if (!views.recent) views.recent = [];
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
   let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) { partyLog = []; }
@@ -95,8 +94,51 @@ function proStatus_(ans) {
   return st;
 }
 
+function loadViews_() {
+  let views;
+  try { views = JSON.parse(props_().getProperty('VIEWS') || 'null'); } catch (e) { views = null; }
+  if (!views || typeof views !== 'object') views = { daily: {}, recent: [] };
+  if (!views.daily) views.daily = {}; if (!views.recent) views.recent = [];
+  return views;
+}
 function saveViews_(views) {
   props_().setProperty('VIEWS', JSON.stringify(views));
+}
+
+// 閲覧ログの全件の控え（2026-10-11）。VIEWS の直近 VIEW_MAX 件では月末まで追えないため、別に積む。
+// 1件 = 'MMDDHHmmss|P番号'（出席者一覧にない名前はそのまま・名前なしは空）。1件17バイトほど。
+// 1項目9KBの上限に収めるため VIEW_LOG_1, _2, … に分けて積み、今の番号を VIEW_LOG_N に持つ。
+// 見込みは 30人×1日10回×月末まで＝約6,300件。保存領域全体（500KB）を守るため VLOG_MAX_N 個（約1万件）で積むのを止める
+const VLOG_BYTES = 7000;
+const VLOG_MAX_N = 25;
+function viewEntry_(ts, who, byName) {
+  return ts.slice(5).replace(/[-: ]/g, '') + '|' + (byName[who] || who || '');
+}
+function appendViewLog_(items) {
+  const p = props_();
+  let n = parseInt(p.getProperty('VIEW_LOG_N') || '1', 10); if (!(n >= 1)) n = 1;
+  let arr;
+  try { arr = JSON.parse(p.getProperty('VIEW_LOG_' + n) || '[]'); } catch (e) { arr = []; }
+  for (let i = 0; i < items.length; i++) {
+    arr.push(items[i]);
+    if (arr.length > 1 && Utilities.newBlob(JSON.stringify(arr)).getBytes().length > VLOG_BYTES) {
+      arr.pop();
+      if (n >= VLOG_MAX_N) break;   // 上限に達したら控えは止める（日ごとの回数と直近分は VIEWS に続く）
+      p.setProperty('VIEW_LOG_' + n, JSON.stringify(arr));
+      n += 1; arr = [items[i]];
+    }
+  }
+  p.setProperty('VIEW_LOG_' + n, JSON.stringify(arr));
+  p.setProperty('VIEW_LOG_N', String(n));
+}
+function loadViewLog_() {
+  const p = props_();
+  const n = parseInt(p.getProperty('VIEW_LOG_N') || '0', 10) || 0;
+  let all = [];
+  for (let i = 1; i <= n; i++) {
+    try { all = all.concat(JSON.parse(p.getProperty('VIEW_LOG_' + i) || '[]')); } catch (e) {}
+  }
+  return { n: n, max: VLOG_MAX_N, entries: all };
 }
 
 function saveRoster_(roster) {
@@ -173,6 +215,7 @@ function now_() {
 
 // 読み取り: GET（誰でも）
 function doGet(e) {
+  if (e && e.parameter && e.parameter.views === 'all') return out_({ ok: true, viewLog: loadViewLog_() });   // 閲覧ログの全件の控え
   return out_({ ok: true, data: load_() });
 }
 
@@ -330,12 +373,20 @@ function doView_(body) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    const views = load_().views;
+    const p = props_();
+    const views = loadViews_();   // 全部は読まない（読み書きの回数を抑える）
     const ts = now_(), day = ts.slice(0, 10);
+    let roster; try { roster = JSON.parse(p.getProperty('ROSTER') || '{}') || {}; } catch (e) { roster = {}; }
+    const byName = {}; Object.keys(roster).forEach(function (k) { if (roster[k]) byName[roster[k]] = k; });
+    const items = [];
+    // 控えの初回は、VIEWS に残っている直近分から始める
+    if (p.getProperty('VIEW_LOG_N') === null) views.recent.forEach(function (v) { items.push(viewEntry_(String(v.ts || ''), v.who, byName)); });
+    items.push(viewEntry_(ts, who, byName));
     views.daily[day] = (views.daily[day] || 0) + 1;
     views.recent.push({ ts: ts, who: who });
     views.recent = views.recent.slice(-VIEW_MAX);
     saveViews_(views);
+    try { appendViewLog_(items); } catch (e) {}   // 控えに書けなくても、閲覧の記録は止めない
     return out_({ ok: true });
   } finally {
     lock.releaseLock();
@@ -433,9 +484,13 @@ function resetRoster() {
   props_().deleteProperty('ROSTER');
 }
 
-// 閲覧ログだけ全消去（エディタから手で実行する用）
+// 閲覧ログだけ全消去（エディタから手で実行する用）。全件の控え VIEW_LOG_* も消す
 function resetViews() {
-  props_().deleteProperty('VIEWS');
+  const p = props_();
+  const n = parseInt(p.getProperty('VIEW_LOG_N') || '0', 10) || 0;
+  for (let i = 1; i <= Math.max(n, VLOG_MAX_N); i++) p.deleteProperty('VIEW_LOG_' + i);
+  p.deleteProperty('VIEW_LOG_N');
+  p.deleteProperty('VIEWS');
 }
 
 // 生年月日だけ全消去（エディタから手で実行する用。大会後に消すときもこれ）
