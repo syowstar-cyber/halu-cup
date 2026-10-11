@@ -49,6 +49,8 @@ button:disabled{opacity:.6;cursor:default}
 .msg{margin-top:8px;font-weight:700}
 .msg.ok{color:var(--ok)}
 .msg.ng{color:var(--ng)}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+form.closed .ch,form.closed textarea,form.closed label[for=who],form.closed #who,form.closed #send{display:none}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
@@ -61,7 +63,7 @@ button:disabled{opacity:.6;cursor:default}
     <h1>第20回 Halu杯 本田朋広プロ ご確認用</h1>
     <div class="sub">2026年10月24日（土）麻雀First。最終更新: 2026-10-11</div>
   </header>
-  <p class="lead">本田朋広プロと、ご担当の皆さまにご確認いただくためのページです。当日の流れと本大会の決めごとをまとめました。<br>「6. ご確認のお願い」に4つの質問があります。このページから回答を送ることもできます。</p>
+  <p class="lead">本田朋広プロと、ご担当の皆さまにご確認いただくためのページです。当日の流れと本大会の決めごとをまとめました。<br>「6. ご確認のお願い」の回答は受け付けを終えました。ご回答ありがとうございました。</p>
 
 <h2 id="s1">1. 大会の概要</h2>
 <div class="tw"><table>
@@ -149,9 +151,9 @@ button:disabled{opacity:.6;cursor:default}
 </ul>
 
 <h2 id="s6">6. ご確認のお願い</h2>
-<p>答えられる質問だけで送れます。同じ質問を送り直すと、新しい回答に置き換わります。</p>
-<p class="note">送った内容はこのページに表示しません。主催者にだけ届きます。</p>
-<form id="pro" autocomplete="off">
+<p><b>回答の受け付けは終了しました。ご回答ありがとうございました。</b></p>
+<p class="note">送っていただいた内容は、このページには表示しません。</p>
+<form id="pro" class="closed" autocomplete="off"><fieldset disabled>
 <div class="q" data-k="1">
 <h3>1. 進行表のご了承</h3>
 <p>次の内容でお願いできますか。予選4半荘に打ち手としてご参加、準決勝S1卓に固定でご出場、勝ち上がった場合は決勝（時間制限なし）にもご出場。決勝に進めなかった場合は、横の卓でエキシビジョン戦にご出場。トークショー15分、サイン会50分。ご拘束は11:00〜19:00です（ご契約のとおり）。</p>
@@ -179,7 +181,7 @@ button:disabled{opacity:.6;cursor:default}
 <input type="text" id="who" maxlength="40" placeholder="例: 本田／マネージャー／連盟 担当">
 <button type="submit" id="send">回答を送る</button>
 <div id="msg" class="msg" aria-live="polite"></div>
-</form>
+</fieldset></form>
 
 <h2 id="s7">7. 関連ページ</h2>
 <nav class="pnav" aria-label="関連ページ"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../fu/">点数計算</a></nav>
@@ -193,6 +195,7 @@ const API = (window.HALU_API || '').trim();
 const SCHED = window.HALU_SCHEDULE || {};
 const WINDS = ['東', '南', '西', '北'];
 const ME = '本田プロ';
+const CLOSED = true;   // 回答の受け付けを終えた（2026-10-11 主催の指示）。入力欄は隠し、送信もしない
 let ROSTER = {};
 const dn = p => p.startsWith('P') && ROSTER[p] ? p + ' ' + ROSTER[p] : p;
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
@@ -229,6 +232,7 @@ async function load() {
 
 document.getElementById('pro').addEventListener('submit', async ev => {
   ev.preventDefault();
+  if (CLOSED) { say('回答の受け付けは終了しました', false); return; }
   const who = document.getElementById('who').value.trim();
   const items = {};
   document.querySelectorAll('.q').forEach(q => {
