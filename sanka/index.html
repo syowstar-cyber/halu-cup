@@ -199,11 +199,20 @@ async function fetchData() {
 }
 const onRoster = [];   // 一覧が届いたら呼ぶ
 // 閲覧ログ: ページを開いたら受け口に1件送る（同じタブでは1回だけ。名前は自分のNoを選んだ人だけ入る）
+// vid は端末ごとの意味のない番号（英小文字と数字6桁）。初めて開いたときに作って覚え、何台で見られたかを数える（2026-10-11）
 onRoster.push(() => {
   try { if (sessionStorage.getItem('halu:viewed')) return; } catch (e) {}
-  let who = '';
+  let who = '', vid = '';
   try { const pk = localStorage.getItem('halu:pick'), pn = localStorage.getItem('halu:pname'); who = ROSTER[pk] || ROSTER[pn] || ''; } catch (e) {}
-  fetch(API, { method: 'POST', body: JSON.stringify({ action: 'view', page: 'sanka', who }) })
+  try {
+    vid = localStorage.getItem('halu:vid') || '';
+    if (!/^[a-z0-9]{6}$/.test(vid)) {
+      const a = new Uint8Array(6); crypto.getRandomValues(a);
+      vid = Array.from(a, b => '0123456789abcdefghijklmnopqrstuvwxyz'[b % 36]).join('');
+      localStorage.setItem('halu:vid', vid);
+    }
+  } catch (e) { vid = ''; }
+  fetch(API, { method: 'POST', body: JSON.stringify({ action: 'view', page: 'sanka', who, vid }) })
     .then(r => r.json()).then(j => { if (j && j.ok) { try { sessionStorage.setItem('halu:viewed', '1'); } catch (e) {} } }).catch(() => {});
 });
 // 8章（対戦表）: プレイヤーNoを選ぶと、その人のいる行だけに絞る

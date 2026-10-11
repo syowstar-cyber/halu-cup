@@ -9,7 +9,7 @@
 //   打ち上げ希望（参加者）… キーなし。{action:'party', name, no, choice:'1'|'2'|'3'|'4'|'5'|''}（'' は取り消し）
 //   出席者一覧（幹部）… キーなし。{action:'roster', names:{P1:'名前', ...}}（'' で消す。渡したキーだけ更新）
 //     名前はここ（スクリプト プロパティ ROSTER）にだけ置く。公開リポにはファイルとして置かない（2026-09-17）
-//   閲覧ログ（参加者ページ）… キーなし。{action:'view', page:'sanka', who:'名前'|''}。日ごとの回数と直近 VIEW_MAX 件を VIEWS に持つ
+//   閲覧ログ（参加者ページ）… キーなし。{action:'view', page:'sanka', who:'名前'|'', vid:'端末番号6桁'|''}。日ごとの回数と直近 VIEW_MAX 件を VIEWS に持つ
 //     全件の控えは VIEW_LOG_1, _2, … に積む（2026-10-11）。GET では返さず、GET ?views=all のときだけ返す
 //   本田プロ確認事項（プロ用ページ）… キーなし。{action:'pro', who:'名前（立場）', items:{'1':{c:'選択', n:'補足'}, …}}（2026-10-10）
 //     中身は PRO_ANS に持ち、GET では返さない（到着時刻・前後の予定を公開しない）。返すのは項目ごとの最終送信時刻だけ。
@@ -106,13 +106,14 @@ function saveViews_(views) {
 }
 
 // 閲覧ログの全件の控え（2026-10-11）。VIEWS の直近 VIEW_MAX 件では月末まで追えないため、別に積む。
-// 1件 = 'MMDDHHmmss|P番号'（出席者一覧にない名前はそのまま・名前なしは空）。1件17バイトほど。
+// 1件 = 'MMDDHHmmss|P番号|端末番号'（出席者一覧にない名前はそのまま・名前なしは空。端末番号は 2026-10-11 の改修より前と、
+// 番号を送らない古いページでは空）。端末番号はページが端末ごとに作る意味のない6桁で、何台で見られたかを数える。1件22バイトほど。
 // 1項目9KBの上限に収めるため VIEW_LOG_1, _2, … に分けて積み、今の番号を VIEW_LOG_N に持つ。
-// 見込みは 30人×1日10回×月末まで＝約6,300件。保存領域全体（500KB）を守るため VLOG_MAX_N 個（約1万件）で積むのを止める
+// 見込みは 30人×1日10回×月末まで＝約6,300件。保存領域全体（500KB）を守るため VLOG_MAX_N 個（約1.1万件・約245KB）で積むのを止める
 const VLOG_BYTES = 7000;
-const VLOG_MAX_N = 25;
-function viewEntry_(ts, who, byName) {
-  return ts.slice(5).replace(/[-: ]/g, '') + '|' + (byName[who] || who || '');
+const VLOG_MAX_N = 35;
+function viewEntry_(ts, who, byName, vid) {
+  return ts.slice(5).replace(/[-: ]/g, '') + '|' + String(byName[who] || who || '').replace(/\|/g, '') + (vid ? '|' + vid : '');
 }
 function appendViewLog_(items) {
   const p = props_();
@@ -370,6 +371,7 @@ function doView_(body) {
   const page = String(body.page || '');
   if (page !== 'sanka') return out_({ ok: false, error: 'page' });
   const who = String(body.who || '').replace(/[<>"'\n\r\t]/g, '').trim().slice(0, 20);
+  const vid = /^[a-z0-9]{6}$/.test(String(body.vid || '')) ? String(body.vid) : '';   // 端末番号（形が違えば空）
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -381,7 +383,7 @@ function doView_(body) {
     const items = [];
     // 控えの初回は、VIEWS に残っている直近分から始める
     if (p.getProperty('VIEW_LOG_N') === null) views.recent.forEach(function (v) { items.push(viewEntry_(String(v.ts || ''), v.who, byName)); });
-    items.push(viewEntry_(ts, who, byName));
+    items.push(viewEntry_(ts, who, byName, vid));
     views.daily[day] = (views.daily[day] || 0) + 1;
     views.recent.push({ ts: ts, who: who });
     views.recent = views.recent.slice(-VIEW_MAX);
