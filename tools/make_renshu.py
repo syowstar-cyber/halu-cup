@@ -72,7 +72,10 @@ REPS = [
     ("<h1>🀄 Halu杯 点数報告</h1>", "<h1>🀄 Halu杯 点数入力の練習</h1>", 1),
     ('<div class="sub">半荘が終わったら、卓の代表が4人分の点棒を送ってください。ポイントは自動計算です。</div>',
      '<div class="sub">点数報告ページと同じ入力を、本番の前に試せるページです。</div>', 1),
-    ('<a href="../score/" aria-current="page">点数報告</a>', '<a href="../score/">点数報告（本番）</a>', 2),
+    ('<a href="../score/" aria-current="page">点数報告</a><a href="../renshu/">入力の練習</a>',
+     '<a href="../score/">点数報告（本番）</a><a href="../renshu/" aria-current="page">入力の練習</a>', 2),
+    # 「点数報告（本番）」が長いので、切り替えボタンを1段にする幅を広げる（640px だと 641〜649px で1つだけ2段目に落ちた）
+    ("@media (min-width:640px){.pnav a{flex:1 1 0}}", "@media (min-width:660px){.pnav a{flex:1 1 0}}", 1),
     ('  <div id="setup" class="hint" hidden>点数報告の受け口（API）がまだ設定されていません。</div>', BANNER, 1),
     ("<h2>点数の報告（卓ごと・予選／準決勝／決勝）</h2>", "<h2>点数の報告（練習・予選／準決勝／決勝）</h2>", 1),
     ('id="qsend">この卓の4人分を送信する</button>', 'id="qsend">この卓の4人分を送信する（練習）</button>', 1),

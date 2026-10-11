@@ -31,7 +31,8 @@ button{font-size:1.05rem;padding:14px;border:0;border-radius:8px;font-weight:700
 .pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
 .pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
-@media (min-width:560px){.pnav a{flex:1 1 0}}
+@media (min-width:560px){.pnav a{flex:1 1 30%}}
+@media (min-width:660px){.pnav a{flex:1 1 0}}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
 table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--card)}
 th,td{border-bottom:1px solid var(--line);padding:8px 8px;text-align:right;white-space:nowrap}
@@ -74,7 +75,7 @@ summary{cursor:pointer;font-weight:700}
     <h1>🀄 Halu杯 点数入力の練習</h1>
     <div class="sub">点数報告ページと同じ入力を、本番の前に試せるページです。</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告（本番）</a><a href="../fu/">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告（本番）</a><a href="../renshu/" aria-current="page">入力の練習</a><a href="../fu/">点数計算</a><a href="../kuji/">対戦表のくじ</a></nav>
 
   <div class="hint renshu"><b>練習用のページです。ここで送った点数は、本番の集計に入りません。</b>
     <ol>
@@ -174,7 +175,7 @@ summary{cursor:pointer;font-weight:700}
     <summary>組み合わせ表（練習用の仮の卓）</summary>
     <div id="sched"></div>
   </details>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告（本番）</a><a href="../fu/">点数計算</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告（本番）</a><a href="../renshu/" aria-current="page">入力の練習</a><a href="../fu/">点数計算</a><a href="../kuji/">対戦表のくじ</a></nav>
 </div>
 
 <script>
