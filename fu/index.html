@@ -23,7 +23,10 @@ header .sub{color:var(--muted);font-size:.9rem}
 @media (min-width:640px){.pnav a{flex:1 1 0}}
 button{font-family:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 8px;font-size:.92rem;color:var(--muted)}
+.top{margin:4px 0 8px;font-size:.92rem;color:var(--muted)}
+.totable{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:68px;margin:0 0 4px;border:0;border-radius:16px;padding:12px 16px;background:var(--accent);color:var(--accent-fg);font-size:1.3rem;font-weight:800;box-shadow:0 3px 0 #4f1010}
+.totable:active{transform:translateY(2px);box-shadow:0 1px 0 #4f1010}
+.totable .arrow{font-size:1.1rem}
 .link{background:none;border:0;color:var(--accent);text-decoration:underline;font-size:.92rem;padding:10px 4px;min-height:44px}
 
 /* 段（同じページの中で下に育つ） */
@@ -158,7 +161,8 @@ footer{font-size:.82rem;color:var(--muted);margin-top:24px;border-top:1px solid 
     <div class="sub">上から順に押すと、下に次の項目と点数が出ます。ページは切り替わりません。</div>
   </header>
   <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../renshu/">入力の練習</a><a href="../fu/" aria-current="page">点数計算</a><a href="../kuji/">対戦表のくじ</a></nav>
-  <div class="top"><span>ふつうの手は 2〜3 回押すだけで点数が出ます。</span><button class="link" data-act="totable">点数表だけ見る ↓</button></div>
+  <button class="totable" data-act="totable">点数表だけ見る<span class="arrow">↓</span></button>
+  <p class="top">計算するときは、下の 1 から順に押します。ふつうの手は 2〜3 回で点数が出ます。</p>
 
   <section class="sec" id="s1"></section>
   <section class="sec" id="s2"></section>
