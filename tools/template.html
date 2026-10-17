@@ -154,6 +154,8 @@ const PNOS = Array.from({ length: 30 }, (_, i) => 'P' + (i + 1));
 let PARTY = {}, ROSTER = {}, PLOG = null;
 // 打ち上げのメンバーは 2026-10-16 に決定（主催の指示）。true のあいだ8章は当日・翌週・不参加の表だけを出し、希望は直せない（戻すときは false）
 const PARTY_FIXED = true;
+// 打ち上げの表に出さないプレイヤーNo（打ち上げのスタッフ。2026-10-17 主催）。名前はこのリポに置かないのでNoで持つ
+const PARTY_SKIP = ['P5'];
 function partyOf(p){
   const n = ROSTER[p];
   if (n && PARTY[n]) return PARTY[n];
@@ -170,7 +172,7 @@ function renderParty(party, roster, plog){
   const PLABEL = { '1': '①当日希望（翌週も可）', '2': '②翌週希望（当日も可）', '3': '③当日だけ', '4': '④翌週だけ', '5': '⑤参加しない' };
   const byCh = { '1': [], '2': [], '3': [], '4': [], '5': [] };
   Object.entries(PARTY).sort((a, b) => String(a[1].ts).localeCompare(String(b[1].ts))).forEach(([n, v]) => { if (byCh[v.choice]) byCh[v.choice].push(n); });
-  const yet = PNOS.filter(p => ROSTER[p] && !partyOf(p)).map(p => ROSTER[p]);
+  const yet = PNOS.filter(p => ROSTER[p] && !partyOf(p) && !PARTY_SKIP.includes(p)).map(p => ROSTER[p]);
   let copy = null;   // 決定後の表を「文字で写す」ときの中身
   if (PARTY_FIXED) {
     // 決定後（2026-10-16〜）: 当日＝③・翌週＝④・不参加＝⑤ の表だけを出す。名前は名簿の順。希望を直す欄・回答一覧・人数の行は出さない
@@ -178,6 +180,7 @@ function renderParty(party, roster, plog){
     PNOS.forEach(p => {
       const v = partyOf(p); if (!ROSTER[p] || !v) return;
       used.add(PARTY[ROSTER[p]] === v ? ROSTER[p] : Object.keys(PARTY).find(k => PARTY[k] === v));
+      if (PARTY_SKIP.includes(p)) return;   // 回答があっても表に出さない（「一覧外」にもしない）
       if (rows[v.choice]) rows[v.choice].push(ROSTER[p]);
     });
     Object.entries(PARTY).filter(([n]) => !used.has(n)).forEach(([n, v]) => { if (rows[v.choice]) rows[v.choice].push(n + '（一覧外）'); });
