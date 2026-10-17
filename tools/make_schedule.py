@@ -4,7 +4,8 @@
 ・同じ相手とは2度当たらない（GF(4) のアフィン平面の平行類を4つ使う）
 ・4半荘で 東南西北 を1回ずつ
 ・卓はできるだけ違う卓を回る（全員が4卓とも違うのは数学的に不可能なので最善を取る）
-・ゲスト2名は卓を固定（本田プロ=1卓、ゆうこママ=5卓。席は動かず、相手が来る）
+・ゲスト2名は卓を固定（本田プロ=2卓、ゆうこママ=5卓。席は動かず、相手が来る）
+  本田プロの卓は店の並びに合わせて2卓（2026-10-17 に型の1卓と2卓を入れ替えた。組み合わせ・席は前と同じ）
 ・本田プロとゆうこママは予選で当たらない（1〜4卓と5〜8卓に分かれているので構造上当たらない。検証で保証）
 乱数は固定（seed=20261024）なので、何度作っても同じ表になる（旧案の P番号を枠番号に読み替えたものと同じ）。
 出力: kuji/kata.js（くじページと kuji.py 用。枠は数値、ゲストは名前）と .work/kata.md（MD貼り付け用）。
@@ -29,7 +30,9 @@ def line_of(m, x, y):          # 平行類 m で、点(x,y)が乗る直線の番
 players = [(x, y) for x in range(4) for y in range(4)]   # 16点
 order = players[:]
 random.shuffle(order)
-GUEST = order[0]                # 固定ゲストの点（本田プロ／ゆうこママ）。卓は常に0（=1卓／5卓）
+GUEST = order[0]                # 固定ゲストの点（本田プロ／ゆうこママ）。卓は常に0（TABLE_NO で 2卓／5卓）
+# 卓0〜3 → 卓番号。本田プロの組は卓0を2卓と呼ぶ（店の2卓に本田プロ。1卓と2卓の呼び名を入れ替えただけ）
+TABLE_NO = {0: [2, 1, 3, 4], 1: [5, 6, 7, 8]}
 
 # 卓割り当て: table[m][b] = 卓番号(0..3)。各選手が4半荘で4つの卓を1回ずつ
 perms = list(itertools.permutations(range(4)))
@@ -44,7 +47,7 @@ def find_tables():
         gl = [line_of(m, *GUEST) for m in range(4)]
         for tabs in cand:
             if any(tabs[m][gl[m]] != 0 for m in range(4)):
-                continue            # ゲストは毎半荘 卓0（=1卓／5卓）に固定
+                continue            # ゲストは毎半荘 卓0（=2卓／5卓）に固定
             counts = sorted(len({tabs[m][line_of(m, x, y)] for m in range(4)}) for (x, y) in players if (x, y) != GUEST)
             key = (counts[0], sum(counts))
             if best_key is None or key > best_key:
@@ -108,7 +111,7 @@ for r in range(4):
         for b in range(4):
             mem = [p for p in players if line_of(r, p[0], p[1]) == b]
             by_seat = sorted(mem, key=lambda p: seats[(r, p)])
-            rows.append({"table": tables[r][b] + 1 + group * 4, "seats": [nm[p] for p in by_seat]})
+            rows.append({"table": TABLE_NO[group][tables[r][b]], "seats": [nm[p] for p in by_seat]})
     rows.sort(key=lambda d: d["table"])
     schedule[str(r + 1)] = rows
 
@@ -128,8 +131,8 @@ for r, rows in schedule.items():
             seen_table.setdefault(nm, set()).add(row["table"])
 assert all(len(v) == 4 for v in seen_seat.values())
 assert frozenset(("本田プロ", "ゆうこママ")) not in pairs, "ゲスト同士が予選で当たっている"
-assert seen_table["本田プロ"] == {1} and seen_table["ゆうこママ"] == {5}, "ゲストの卓が固定されていない"
-print("ゲストの卓: 本田プロ=1卓固定 / ゆうこママ=5卓固定 / 予選での直接対戦なし")
+assert seen_table["本田プロ"] == {2} and seen_table["ゆうこママ"] == {5}, "ゲストの卓が固定されていない"
+print("ゲストの卓: 本田プロ=2卓固定 / ゆうこママ=5卓固定 / 予選での直接対戦なし")
 print("卓の種類数の分布（ゲスト除く）:", sorted(len(v) for k, v in seen_table.items() if k not in ("本田プロ", "ゆうこママ")))
 
 (repo / "kuji").mkdir(exist_ok=True)
