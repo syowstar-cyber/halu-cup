@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a1a1a">
+<title>Halu杯 下見チェック表</title>
+<style>
+/* 配色は幹部用ページと同じ（明るい地に濃い文字・強調色は臙脂1色） */
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--ok:#e3f2e6;--focus:#1a56db}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:underline}
+main li{overflow-wrap:anywhere}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 84px}
+header{border-bottom:3px solid var(--accent);margin-bottom:12px;padding-bottom:10px}
+header .badge{display:inline-block;background:var(--accent);color:var(--accent-fg);font-weight:bold;font-size:.85rem;padding:2px 12px;border-radius:999px;letter-spacing:.05em}
+header h1{font-size:1.35rem;margin:6px 0 0;line-height:1.4}
+header .sub{color:var(--muted);font-size:.9rem}
+.back{display:inline-block;font-weight:700;margin:2px 0 6px}
+.lead{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.98rem;margin:10px 0}
+.who{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:10px 12px;margin:12px 0}
+.who label{font-weight:700;display:block;margin-bottom:6px}
+.who input{width:100%;font-size:1.1rem;padding:10px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+.who .row{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:8px}
+.who .all{font-weight:700}
+.who .all b{color:var(--accent);font-size:1.25rem}
+.who button{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card2);color:var(--fg);font-size:.95rem}
+.st{font-size:.9rem;color:var(--muted);margin:6px 0 0}
+.st.ng{color:#b00020;font-weight:700}
+nav.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:14px 0}
+nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.95rem;color:var(--fg);background:var(--card2);border:1px solid var(--line);border-radius:999px;text-decoration:none}
+nav.toc a.full{background:var(--ok)}
+.cnt{font-size:.85rem;font-weight:400;margin-left:8px}
+h2{font-size:1.15rem;margin:30px 0 10px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px;position:sticky;top:0;z-index:2;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+section > p{margin:8px 0;font-weight:700;color:var(--accent)}
+ul.todo{list-style:none;padding:0;margin:8px 0}
+ul.todo li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+ul.todo li.done{background:var(--ok)}
+ul.todo label{display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+ul.todo input[type=checkbox]{margin-top:4px;flex:0 0 auto;width:24px;height:24px;accent-color:var(--accent)}
+ul.todo .no{font-weight:700;color:var(--accent);margin-right:6px;white-space:nowrap}
+ul.todo li.done .q{color:var(--muted);text-decoration:line-through}
+ul.todo small{display:block;color:var(--muted);font-size:.88rem;line-height:1.55;margin-top:2px}
+.tag{display:inline-block;font-style:normal;font-size:.78rem;font-weight:700;line-height:1.4;padding:1px 8px;border-radius:999px;margin-right:6px;vertical-align:1px;white-space:nowrap}
+.tag.must{background:var(--accent);color:var(--accent-fg)}
+.tag.look{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.meta{display:block;font-size:.8rem;color:var(--muted)}
+input.memo{display:block;width:100%;margin:8px 0 0;font-size:16px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--fg)}
+.out{background:var(--card);border:2px solid var(--accent);border-radius:10px;padding:12px;margin:26px 0 12px}
+.out button{padding:10px 14px;border:0;border-radius:8px;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:1rem}
+.out textarea{width:100%;min-height:12em;margin-top:8px;font-size:15px;line-height:1.6;padding:8px;border:1px solid var(--line);border-radius:8px;font-family:inherit;background:#fff;color:var(--fg)}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">幹部用</span>
+    <h1>麻雀First 下見チェック表</h1>
+    <div class="sub">第20回 Halu杯（10月24日・土）。会場の下見で、店に聞くことと見ること</div>
+  </header>
+  <a class="back" href="../#s14">← 幹部用ページ</a>
+  <p class="lead">チェックは幹部で共有します（付けた人と時刻が残ります）。<br>メモはこの端末だけに残り、どこにも送りません。<br>「最優先」から聞き、「見る・試す」はその場で確かめます。</p>
+  <div class="who">
+    <label for="who">名前（任意・1回入れれば記憶。チェックした人として残ります）</label>
+    <input id="who" maxlength="20" placeholder="空でもチェックできます">
+    <div class="row"><span class="all">済み <b id="done">0</b> / <span id="total">0</span></span><button type="button" id="resync">最新に更新</button></div>
+    <p class="st" id="st" aria-live="polite">受け口を読み込み中…</p>
+  </div>
+  <nav class="toc" id="toc" aria-label="節"></nav>
+  <main id="list"><noscript><p>このページは JavaScript を使います。</p></noscript></main>
+  <div class="out">
+    <button type="button" id="copy">結果を文字でコピー（メモつき）</button>
+    <p class="st" id="cst">チェックとメモを、LINEなどに貼れる文にします。</p>
+    <textarea id="ctext" hidden readonly aria-label="コピーする文"></textarea>
+  </div>
+  <a class="back" href="../#s14">← 幹部用ページに戻る</a>
+  <a class="top" href="#" title="上へ">↑</a>
+</div>
+<script src="../score/config.js"></script>
+<script>
+// 麻雀First の下見で使った幹部用チェック表（2026-10-17。どこからもリンクしない）。端末に残したメモをここで見てコピーできる
+// 店との取り決めは first/index.html（店が見る打ち合わせ確認のページ）だけに書く
+// チェックは幹部用ページと同じ受け口に共有する（{action:'check'}。名前と時刻つき）。閲覧ログは送らない
+// メモはこの端末だけ（localStorage 'halu:fmemo:番号'）で、どこにも送らない。金額はページに載せない
+// 項目: [番号, 印, 聞くこと, 補足]。印＝'must'（最優先）・'look'（見る・試す）・''
+// チェックのキーは番号から作る（'F_'＋番号から「-」を除いたもの）＝番号を付け替えない。足すときは節の末尾に次の番号で
+const SECTIONS = [
+  ['s1', '1. 時間', '', [
+    ['時-1', 'must', '貸切を10:00からにできるか', '今は11:00〜19:00で予約している。幹部は10:00に集合する'],
+    ['時-2', '', '当日は何時に店が開くか。最初に開ける人は誰か', ''],
+    ['時-3', 'must', '何時までに店を出ればよいか（片付けを含む）', '終わりは18:30の目安で、決勝は時間制限がない。19:00の後に営業や予約が入っているかも聞く'],
+    ['時-4', '', '19:00を過ぎるとき、延長できるか', '何分ごとか、いつまでに伝えるかも聞く'],
+    ['時-5', '', '10:30より前に着いた参加者を、店に入れてよいか', 'ビルの前やエレベーターの前で待たせてよいかも聞く'],
+    ['時-6', '', '前日（10月23日）に賞品・色紙・トロフィーを預けられるか', ''],
+  ]],
+  ['s2', '2. お金', '金額はこのページに載せない。答えは主催が控える。', [
+    ['金-1', 'must', '料金の決め方と総額', '貸切で一括か、1人あたりか、時間あたりか'],
+    ['金-2', '', '料金に含まれるもの', '卓・飲み物・マイクなどの備品'],
+    ['金-3', '', '何人分で数えるか', '本田プロ・ゆうこママと、打たない運営スタッフの扱い'],
+    ['金-4', '', '10:00からの前倒しと、延長の追加料金', ''],
+    ['金-5', 'must', '支払いの時期と方法', '前払い・当日・後日のどれか。現金・振込・カードのどれか。内金が要るかも聞く'],
+    ['金-6', '', '参加者が店へ個別に払うものがあるか', '飲み物など'],
+    ['金-7', '', 'キャンセル料と、人数が減ったときの料金', '当日の欠席も含む。人数を伝える期限も聞く'],
+    ['金-8', '', '飲み物・フードの料金と、持ち込み料', ''],
+    ['金-9', '', '卓や備品を壊したとき・汚したときの扱い', ''],
+    ['金-10', '', '領収書の宛名と但し書き', '分けて出してもらえるかも聞く'],
+  ]],
+  ['s3', '3. 人数と自動卓', '', [
+    ['卓-1', 'must', '32名と運営スタッフが入れるか', '運営を入れると最大40名ほどになる'],
+    ['卓-2', '', '自動卓は何卓使えるか', '大会は8卓。予備の卓があるかも聞く'],
+    ['卓-3', '', '自動卓の赤ドラと持ち点を、大会に合わせられるか', '赤ドラは5萬・5筒・5索が1枚ずつ。25,000点持ち'],
+    ['卓-4', '', '自動卓に点数の表示とサイコロがあるか', '準決勝・決勝は、席と起家をサイコロで決める'],
+    ['卓-5', '', '店の卓の番号を、大会の1〜8卓に合わせられるか', '各卓に卓番号札を置く'],
+    ['卓-6', '', '自動卓が止まったときの対応', '予備の卓へ移るか。店員の呼び方も聞く'],
+  ]],
+  ['s4', '4. 場所の使い方', '', [
+    ['場-1', 'look', '決勝の卓のまわりで、30名ほどが観戦できるか', '本田プロが決勝に進めないときは、横の卓でエキシビジョン戦をする'],
+    ['場-2', 'look', '受付を置く場所', '入口の近くに机を1つ'],
+    ['場-3', 'look', 'サイン会・写真会の場所', '机と椅子、30名の列、写真を撮る背景'],
+    ['場-4', '', '本田プロが休める場所', '控え室か、離れた席か。休憩は12:45〜13:00と14:50〜15:05など'],
+    ['場-5', '', '荷物・コート・傘を置く場所（32名分）', ''],
+    ['場-6', '', '賞品・トロフィー・色紙を置く場所', ''],
+  ]],
+  ['s5', '5. 設備と電波', '', [
+    ['設-1', 'must', 'マイクとスピーカーはあるか', 'ないときは持ち込む'],
+    ['設-2', 'look', '店内でスマホの電波が入るか', 'その場で点数報告ページを開いて試す'],
+    ['設-3', '', '客用Wi-Fiを使ってよいか', 'なくても点数報告はスマホの回線で送れる。パスワードはページに書かない'],
+    ['設-4', 'look', '集計表をテレビに映せるか', 'スマホの画面を映して試す'],
+    ['設-5', '', 'コンセントと延長コード', '集計係の端末・テレビ・充電に使う'],
+    ['設-6', 'look', '全部の卓から見える時計があるか', '予選は40分制。打ち切りの合図に使う'],
+    ['設-7', '', '店内のBGMを、マイクを使う間だけ止められるか', ''],
+    ['設-8', '', '32名が入ったときの空調', '暑くならないか、寒くないか'],
+    ['設-9', 'look', 'トイレの数', '休憩のときに混まないか'],
+  ]],
+  ['s6', '6. 飲食とたばこ', '', [
+    ['食-1', 'must', '卓で飲み物や軽食をとってよいか', ''],
+    ['食-2', '', '軽食休憩（12:45〜13:00）に食べる場所と、座れる人数', ''],
+    ['食-3', '', '軽食の持ち込みはよいか', '出前も、買ってきたものも'],
+    ['食-4', '', '店の飲み物・フードの内容と頼み方', 'お酒の扱いも聞く'],
+    ['食-5', '', '出前を受け取る場所', 'ビルの入口か、店の中か'],
+    ['食-6', '', 'ゴミの捨て方', '分別のしかた。店で捨ててよいか'],
+    ['食-7', '', 'たばこ', '店内は禁煙か。喫煙所の場所。加熱式の扱い'],
+  ]],
+  ['s7', '7. 当日の進行と店の協力', '', [
+    ['進-1', '', '当日の店の担当者と連絡先', '連絡先は幹部のLINEで共有し、ページには書かない'],
+    ['進-2', '', '当日の店員の人数と、いる時間', ''],
+    ['進-3', '', '貸切中に一般の客が来たときの対応', '入口に貼り紙をするか'],
+    ['進-4', '', '店内で写真や動画を撮ってよいか', '動画は運営だけが撮り、公開しない。写してはいけない所も聞く'],
+    ['進-5', '', '店がSNSや店頭で大会を告知するか', 'するなら、本田プロの紹介の文を前もって合わせる'],
+    ['進-6', '', '片付けはどこまでするか', '卓の上・椅子・ゴミ'],
+    ['進-7', '', '終わった後に荷物を置いていけるか', '忘れ物が出たときの連絡のしかたも聞く'],
+  ]],
+  ['s8', '8. 行き方と安全', '', [
+    ['行-1', 'look', 'ビルの入口とエレベーター', '店は5階。10:30ごろに32名が集まる'],
+    ['行-2', '', '近くの駐車場', 'いちばん近いコインパーキングと台数'],
+    ['行-3', '', 'タクシーをビルの前に停められるか', '本田プロは10:45ごろに着き、19:00ごろに空港へ向かう'],
+    ['行-4', 'look', '駅からの道順と目印', '参加者への案内に使う'],
+    ['行-5', 'look', '非常口・消火器・AEDの場所', ''],
+  ]],
+  ['s9', '9. 店に伝えること', '', [
+    ['伝-1', '', '大会の流れ', '32名・8卓。11:00開会、18:30終了の目安。決勝は時間制限がない'],
+    ['伝-2', '', 'マイクを使う主な時刻', '11:00 開会・13:00 トークショー・15:05 サイン会・18:05 表彰'],
+    ['伝-3', '', '日本プロ麻雀連盟の本田朋広プロが来ること', '動画は運営だけが撮り、公開しない。写真はよい'],
+    ['伝-4', '', '当日、店が声をかける幹部は誰か', ''],
+  ]],
+  ['s10', '10. 帰る前に', '', [
+    ['帰-1', '', '店内の写真を撮る', '卓の並び・入口・受付とサイン会の場所'],
+    ['帰-2', '', '店と次に連絡する日と方法を決める', ''],
+  ]],
+];
+const TAG = { must: '最優先', look: '見る・試す' };
+const API = (window.HALU_API || '').trim();
+let CHECKS = null;   // サーバの状態 k -> {by, ts}
+let SHARED = false;  // 受け口につながっているか
+let WSEQ = 0;        // 送信の始まりと終わりで1ずつ増える。GET の間に変わったら、その GET の CHECKS は古いので使わない
+const list = document.getElementById('list'), toc = document.getElementById('toc');
+function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
+function keyOf(no){ return 'F_' + no.replace('-', ''); }
+function fmtTs(ts){ return ts ? ts.slice(5, 16).replace('-', '/') : ''; }
+function setStatus(msg, ng){ const el = document.getElementById('st'); el.textContent = msg; el.className = 'st' + (ng ? ' ng' : ''); }
+function render(){
+  let total = 0;
+  list.innerHTML = SECTIONS.map(([id, title, note, items]) => {
+    total += items.length;
+    return '<section id="' + id + '"><h2>' + esc(title) + '<span class="cnt"></span></h2>' + (note ? '<p>' + esc(note) + '</p>' : '') +
+      '<ul class="todo">' + items.map(([no, tag, q, sub]) =>
+        '<li><label><input type="checkbox" data-k="' + keyOf(no) + '"><span><b class="no">' + esc(no) + '</b>' +
+        (tag ? '<i class="tag ' + tag + '">' + TAG[tag] + '</i>' : '') + '<span class="q">' + esc(q) + '</span>' +
+        (sub ? '<small>' + esc(sub) + '</small>' : '') + '<span class="meta"></span></span></label>' +
+        '<input class="memo" data-m="' + esc(no) + '" maxlength="200" aria-label="' + esc(no) + ' のメモ" placeholder="メモ（この端末だけ）"></li>').join('') +
+      '</ul></section>';
+  }).join('');
+  toc.innerHTML = SECTIONS.map(([id, title]) => '<a href="#' + id + '">' + esc(title) + '<span class="cnt"></span></a>').join('');
+  document.getElementById('total').textContent = total;
+}
+function counts(){
+  let done = 0;
+  list.querySelectorAll('section').forEach(sec => {
+    const bs = Array.from(sec.querySelectorAll('input[type=checkbox]'));
+    const n = bs.filter(b => b.checked).length;
+    done += n;
+    sec.querySelector('h2 .cnt').textContent = n + '/' + bs.length;
+    const a = toc.querySelector('a[href="#' + sec.id + '"]');
+    a.querySelector('.cnt').textContent = n + '/' + bs.length;
+    a.classList.toggle('full', n === bs.length);
+  });
+  document.getElementById('done').textContent = done;
+}
+function applyChecks(){
+  list.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    const k = cb.dataset.k;
+    let on = false, meta = '';
+    if (SHARED && CHECKS) { const v = CHECKS[k]; on = !!v; meta = v ? '✓ ' + (v.by ? v.by + ' ' : '') + fmtTs(v.ts) : ''; }
+    else { try { on = localStorage.getItem('halu:' + k) === '1'; } catch(e){} }
+    cb.checked = on;
+    cb.closest('li').classList.toggle('done', on);
+    cb.parentElement.querySelector('.meta').textContent = meta;
+  });
+  counts();
+}
+async function syncChecks(){
+  if (!API) { SHARED = false; setStatus('受け口（API）が未設定のため、チェックはこの端末だけに保存されます', true); applyChecks(); return; }
+  try {
+    const w0 = WSEQ;
+    const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' });
+    const j = await r.json();
+    if (!j.ok) throw new Error('bad');
+    if (WSEQ === w0) CHECKS = j.data.checks || {};   // 送信と重なった GET は、送信の返事より古いことがある
+    SHARED = true;
+    setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
+  } catch (e) {
+    SHARED = false; setStatus('受け口につながらないため、チェックはこの端末だけに保存されます', true);
+  }
+  applyChecks();
+}
+async function copyText(){
+  const d = new Date();
+  const lines = ['麻雀First 現地確認（' + (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.toTimeString().slice(0, 5) + ' 時点）'];
+  list.querySelectorAll('section').forEach(sec => {
+    lines.push('', '■' + sec.querySelector('h2').firstChild.textContent);
+    sec.querySelectorAll('li').forEach(li => {
+      const memo = li.querySelector('input.memo').value.trim();
+      lines.push((li.querySelector('input[type=checkbox]').checked ? '☑' : '☐') + li.querySelector('.no').textContent + ' ' + li.querySelector('.q').textContent + (memo ? ' → ' + memo : ''));
+    });
+  });
+  const s = lines.join('\n'), ta = document.getElementById('ctext'), st = document.getElementById('cst');
+  ta.value = s; ta.hidden = false;
+  try { await navigator.clipboard.writeText(s); st.textContent = 'コピーしました（下の枠と同じ文です）'; }
+  catch (e) { ta.focus(); ta.select(); st.textContent = '自動でコピーできませんでした。下の枠を長押ししてコピーしてください'; }
+}
+(() => {
+  render();
+  const name = document.getElementById('who');
+  try { name.value = localStorage.getItem('halu:who') || ''; } catch(e){}
+  name.addEventListener('change', () => { try { localStorage.setItem('halu:who', name.value.trim()); } catch(e){} });
+  document.getElementById('resync').addEventListener('click', syncChecks);
+  list.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', async () => {
+      const k = cb.dataset.k, v = cb.checked;
+      try { localStorage.setItem('halu:' + k, v ? '1' : '0'); } catch(e){}
+      if (!SHARED) { applyChecks(); return; }
+      cb.disabled = true; WSEQ++;
+      try {
+        const r = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'check', k, v, by: name.value.trim() }) });
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || 'ng');
+        CHECKS = j.checks || {};
+        setStatus('幹部で共有中（最終同期 ' + new Date().toTimeString().slice(0, 5) + '）');
+      } catch (e) {
+        setStatus(e.message === 'size' ? 'チェックの保存領域がいっぱいです。主催に連絡してください（gas/README.md の2b）' : '送れませんでした。通信を確認して「最新に更新」', true);
+      } finally { cb.disabled = false; WSEQ++; }
+      applyChecks();
+    });
+  });
+  // メモ（この端末だけ。送らない）
+  let canSave = true;
+  try { localStorage.setItem('halu:fmemo:_', '1'); localStorage.removeItem('halu:fmemo:_'); } catch(e){ canSave = false; }
+  list.querySelectorAll('input.memo').forEach(m => {
+    const key = 'halu:fmemo:' + m.dataset.m;
+    if (!canSave) m.placeholder = 'メモ（この端末では残せません）';
+    try { m.value = localStorage.getItem(key) || ''; } catch(e){}
+    m.addEventListener('input', () => { try { if (m.value) localStorage.setItem(key, m.value); else localStorage.removeItem(key); } catch(e){} });
+  });
+  document.getElementById('copy').addEventListener('click', copyText);
+  syncChecks();
+  setInterval(() => { if (!document.hidden) syncChecks(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) syncChecks(); });
+})();
+</script>
+</body>
+</html>
