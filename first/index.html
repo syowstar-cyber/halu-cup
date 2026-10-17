@@ -8,10 +8,11 @@
 <title>Halu杯 打ち合わせ確認（麻雀First様）</title>
 <!-- 麻雀First様が見る打ち合わせ確認のページ（2026-10-17・手書き・JSなし）。店との取り決めはこのページだけに書く（幹部用MD 14章は案内だけ）。
      店が見るページなので、金額・連絡先・幹部向けの判断は書かない。店の方は「ママス様・パパス様」と書き、「スタッフ」とは書かない（主催の指示。実名は載せない）。
-     タイムテーブルは幹部用MD 2章と同じ時刻にそろえる。
+     自動卓の設定は「大会のルールどおり」と書く（ルールの出典の名前は公開物に出さない。出典はまとめMD 3章だけ）。
+     タイムテーブルは幹部用MD 2章と同じ時刻にそろえる。卓の配置図は ../haichi.svg（参加者案内8章と同じファイル）。
      幹部の下見で使ったチェック表は check.html（どこからもリンクしない） -->
 <style>
-:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db;--honda:#7a1a1a;--honda-bg:#f6e3e3;--mama:#1b6670;--mama-bg:#dcf0f1}
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
@@ -42,13 +43,8 @@ tr.brk td{background:var(--card2)}
 .tag.mic{background:#fff;color:var(--accent);border:1px solid var(--accent)}
 .tag.shop{background:var(--accent);color:var(--accent-fg)}
 .note{font-size:.9rem;color:var(--muted)}
-.map{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 6px;margin:10px 0}
-.map svg{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-size:.9rem;margin:6px 0 2px}
-.legend span{display:inline-flex;align-items:center;gap:6px}
-.sw{display:inline-block;width:1.1em;height:1.1em;border-radius:3px;border:2px solid}
-.sw.h{background:var(--honda-bg);border-color:var(--honda)}
-.sw.m{background:var(--mama-bg);border-color:var(--mama)}
+.haichi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 6px;margin:10px 0}
+.haichi img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
 .two{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0}
 @media (min-width:640px){.two{grid-template-columns:1fr 1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
@@ -81,60 +77,46 @@ tr.brk td{background:var(--card2)}
 </table></div>
 
 <h2 id="s2">2. 打ち合わせで決まったこと</h2>
+<h3>時間</h3>
 <ul>
-<li>当日は10:00にファースト様が店を開けます。</li>
+<li>当日は10:00にファースト様が店を開けます。10:30より前に着いた参加者も、店に入ってかまいません。</li>
 <li>貸切は10:00〜18:30です。19:00を過ぎて店を使うときは、延長料金で対応します。</li>
+</ul>
+<h3>立ち会いとお手伝い</h3>
+<ul>
 <li>当日は、ママス様とパパス様に立ち会っていただきます。</li>
 <li>お手伝いは柔軟に対応していただけます（写真撮影の補助・トイレのときの代走・点数計算など）。</li>
-<li>2卓に本田プロ、5卓にゆうこママが座ります。</li>
-<li>1〜4卓は本田プロの組、5〜8卓はゆうこママの組です。</li>
+<li>当日の連絡は、LINEで取り合います。</li>
+</ul>
+<h3>卓と設備</h3>
+<ul>
+<li>2卓に本田プロ、5卓にゆうこママが座ります。1〜4卓は本田プロの組、5〜8卓はゆうこママの組です。</li>
+<li>準決勝・決勝は、2卓と5卓を使います。</li>
+<li>自動卓は、大会のルールどおりに準備していただきます（赤ドラは5萬・5筒・5索が1枚ずつ、25,000点持ち）。</li>
+<li>マイクを使えます。</li>
+<li>集計表は主催のシステム（点数報告ページ）で出すため、店での準備は要りません。</li>
+</ul>
+<h3>場所</h3>
+<ul>
+<li>主催用と本田プロ用の控室を使わせていただきます。本田プロの休憩と、賞品・トロフィーの置き場にします。</li>
+<li>荷物は、それぞれの席にかけられます。</li>
+<li>喫煙所は、受付の反対側の外にあります。</li>
 <li>トイレは1つです。</li>
+</ul>
+<h3>飲食とサイン</h3>
+<ul>
 <li>軽食は、片手で食べられるものかお菓子を中心にします。</li>
 <li>サイン用の品は、当日ファースト様で購入できます。サインがほしい方には、それを購入していただきます（主催から色紙は配りません）。</li>
 </ul>
 
 <h2 id="s3">3. 卓の配置</h2>
-<div class="map">
-<svg viewBox="0 0 340 590" role="img" aria-labelledby="mapt mapd" font-family="-apple-system,'Hiragino Sans','Noto Sans JP','Yu Gothic UI',sans-serif">
-<title id="mapt">店内の卓の配置図</title>
-<desc id="mapd">入口側から店の奥（窓）に向かって、左の列に1・2・3・8卓、右の列に受付・4・5・6・7卓。卓は斜めに置く。2卓に本田プロ、5卓にゆうこママ。1〜4卓は本田プロの組、5〜8卓はゆうこママの組。</desc>
-<text x="170" y="44" text-anchor="middle" font-size="13" font-weight="700" fill="#4f4f4f">店の奥（窓）</text>
-<rect x="20" y="60" width="300" height="500" rx="10" fill="#fbfbf9" stroke="#9a9a96" stroke-width="2"/>
-<rect x="110" y="54" width="120" height="12" rx="3" fill="#d6e8f5" stroke="#7fa9cc"/>
-<rect x="21" y="70" width="6" height="480" fill="#c9c9c4"/>
-<rect x="313" y="70" width="6" height="480" fill="#5cc6c9"/>
-<text x="32" y="86" font-size="11" fill="#6b6b66">左の壁（灰色）</text>
-<text x="308" y="86" text-anchor="end" font-size="11" fill="#2f7f84">右の壁（水色）</text>
-<text x="170" y="310" text-anchor="middle" font-size="11" fill="#9a9a95">通路</text>
-<g>
-<g transform="translate(100 145) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#dcf0f1" stroke="#1b6670" stroke-width="1.5"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(100 250) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#f6e3e3" stroke="#7a1a1a" stroke-width="1.5"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(100 355) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#f6e3e3" stroke="#7a1a1a" stroke-width="3"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(100 460) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#f6e3e3" stroke="#7a1a1a" stroke-width="1.5"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(240 145) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#dcf0f1" stroke="#1b6670" stroke-width="1.5"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(240 250) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#dcf0f1" stroke="#1b6670" stroke-width="1.5"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(240 355) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#dcf0f1" stroke="#1b6670" stroke-width="3"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-<g transform="translate(240 460) rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#f6e3e3" stroke="#7a1a1a" stroke-width="1.5"/><g fill="#fff" stroke="#9a9a96"><rect x="-13" y="-48" width="26" height="9" rx="3"/><rect x="-13" y="39" width="26" height="9" rx="3"/><rect x="-48" y="-13" width="9" height="26" rx="3"/><rect x="39" y="-13" width="9" height="26" rx="3"/></g></g>
-</g>
-<g font-weight="700" text-anchor="middle">
-<text x="100" y="154" font-size="26" fill="#124a52">8</text>
-<text x="100" y="259" font-size="26" fill="#5c1414">3</text>
-<text x="100" y="357" font-size="24" fill="#5c1414">2</text><text x="100" y="373" font-size="11" fill="#5c1414">本田プロ</text>
-<text x="100" y="469" font-size="26" fill="#5c1414">1</text>
-<text x="240" y="154" font-size="26" fill="#124a52">7</text>
-<text x="240" y="259" font-size="26" fill="#124a52">6</text>
-<text x="240" y="357" font-size="24" fill="#124a52">5</text><text x="240" y="373" font-size="11" fill="#124a52">ゆうこママ</text>
-<text x="240" y="469" font-size="26" fill="#5c1414">4</text>
-</g>
-<rect x="205" y="520" width="70" height="28" rx="4" fill="#ececE8" stroke="#9a9a96"/>
-<text x="240" y="539" text-anchor="middle" font-size="13" font-weight="700" fill="#1c1c1c">受付</text>
-<text x="170" y="580" text-anchor="middle" font-size="13" font-weight="700" fill="#4f4f4f">入口側</text>
-</svg>
-<div class="legend"><span><i class="sw h"></i>本田プロの組（1〜4卓）</span><span><i class="sw m"></i>ゆうこママの組（5〜8卓）</span></div>
-</div>
+<div class="haichi"><img src="../haichi.svg" width="340" height="790" alt="店内の卓の配置図。入口側から奥に向かって、左の列に1・2・3・8卓、右の列に受付・4・5・6・7卓。2卓に本田プロ、5卓にゆうこママ。予選の席は入口側の左が東、右が南、奥の右が西、奥の左が北。2卓・5卓は本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わる。"></div>
 <ul>
 <li>入口側から店の奥（窓）に向かって、左の列が1・2・3・8卓、右の列が4・5・6・7卓です。</li>
 <li>本田プロは2卓、ゆうこママは5卓に座ります。本田プロの組でその回に本田プロと当たらない方は、1・3・4卓に座ります。</li>
+<li>予選の席は、入口側の左が東、右が南、奥の右が西、奥の左が北です（2卓・5卓を除く）。</li>
+<li>2卓・5卓は、本田プロ・ゆうこママが入口側の左の席のまま打ちます。東南西北は回ごとに変わります（図の下）。</li>
+<li>準決勝・決勝は2卓と5卓を使います。席と起家はサイコロで決めます。</li>
 <li>予選で誰がどの卓・どの席に座るかは、10月23日（金）の夜にくじで決まります。</li>
 <li>図は目安です。卓は店内の番号札で確かめてください。</li>
 </ul>
@@ -155,7 +137,7 @@ tr.brk td{background:var(--card2)}
 <tr><td>14:05</td><td>予選4回戦（14:45打ち切り）</td></tr>
 <tr class="brk"><td>14:50</td><td>集計・準決勝に進む人の発表（15分）</td></tr>
 <tr><td>15:05</td><td>サイン会・写真会（50分）<span class="tag mic">マイク</span><span class="tag shop">撮影の補助</span></td></tr>
-<tr><td>15:55</td><td>準決勝（60分制・16:55打ち切り）。ほかの24名も6卓で打ちます</td></tr>
+<tr><td>15:55</td><td>準決勝（2卓・5卓。60分制・16:55打ち切り）。ほかの24名も、ほかの6卓で打ちます</td></tr>
 <tr class="brk"><td>16:55</td><td>集計・決勝に進む人の発表（10分）</td></tr>
 <tr><td>17:05</td><td>決勝（時間制限なし・18:00が目安）。全員で観戦します</td></tr>
 <tr class="brk"><td>18:00</td><td>集計（5分）。決勝が終わってから</td></tr>
@@ -173,6 +155,8 @@ tr.brk td{background:var(--card2)}
 <li>10:00の開店</li>
 <li>ママス様・パパス様の立ち会い</li>
 <li>お手伝い（写真撮影の補助・トイレのときの代走・点数計算など）</li>
+<li>自動卓の準備（大会のルールどおり）</li>
+<li>マイクと控室（主催用・本田プロ用）の使用</li>
 <li>サイン用の品の販売</li>
 <li>19:00を過ぎたときの延長の対応</li>
 </ul>
@@ -201,22 +185,12 @@ tr.brk td{background:var(--card2)}
 <h2 id="s7">7. これから確認すること</h2>
 <h3>ファースト様に教えていただきたいこと</h3>
 <ol>
-<li>自動卓の設定（赤ドラは5萬・5筒・5索が1枚ずつ、25,000点持ち）</li>
-<li>マイクを使えるか（店のスピーカーにつなげるか）</li>
-<li>集計表を映せるテレビがあるか（スマホの画面を映します）</li>
-<li>10:30より前に着いた参加者が、店で待ってよいか</li>
-<li>荷物・コートを置く場所（32名分）</li>
 <li>軽食の持ち込みと、ゴミの捨て方</li>
-<li>たばこ（喫煙所の場所）</li>
 </ol>
 <h3>いっしょに決めること</h3>
 <ol>
-<li>準決勝・決勝で使う卓（観戦しやすい卓）</li>
 <li>受付の机と、サイン会・写真会の場所（30名の列）</li>
-<li>本田プロが休む場所</li>
-<li>賞品・トロフィーを置く場所</li>
 <li>片付けの範囲</li>
-<li>当日の連絡の窓口</li>
 </ol>
 
 <h2 id="s8">8. 関連ページ</h2>

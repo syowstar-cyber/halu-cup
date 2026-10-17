@@ -113,6 +113,8 @@ while i < len(src):
         out.append('<div id="party" class="party"></div>'); continue
     if line.strip() == "<!--roster-->":         # 出席者一覧（受け口の一覧をページの JS が埋める）
         out.append('<div id="roster" class="roster"></div>'); continue
+    if line.strip() == "<!--haichi-->":         # 店内の卓の配置図（haichi.svg＝ファースト確認ページと同じファイル）
+        out.append('<div class="haichi"><img src="../haichi.svg" width="340" height="790" alt="店内の卓の配置図。入口側から奥に向かって、左の列に1・2・3・8卓、右の列に受付・4・5・6・7卓。予選の席は入口側の左が東、右が南、奥の右が西、奥の左が北。2卓・5卓は本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わる。"></div>'); continue
     out.append(f"<p>{inline(line)}</p>")
 flush_table(); flush_list()
 

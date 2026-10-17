@@ -400,7 +400,8 @@ function renderBorder() {
 document.getElementById('bdplayer').addEventListener('change', () => { try { localStorage.setItem('halu-renshu:bdplayer', document.getElementById('bdplayer').value); } catch (e) {} renderBorder(); });
 
 // ---- 準決勝・決勝の時間の卓 ----
-// 準決勝の時間は全員が打つ: S1卓＝1卓・S2卓＝2卓、予選7位〜30位は4人ずつ3卓〜8卓（点数を送り、最終順位に使う。幹部用3章・5章と同じ規則）。
+// 準決勝の時間は全員が打つ: S1卓＝2卓・S2卓＝5卓、予選7位〜30位は4人ずつ1・3・4・6・7・8卓（点数を送り、最終順位に使う。幹部用3章・5章と同じ規則）。
+// 卓の番号は店との打ち合わせ（2026-10-17。準決勝・決勝は2卓と5卓）に合わせる
 // 決勝はみんなで観戦。本田プロが決勝に進めなかったら、準決勝で敗退した4名で横の卓のエキシビジョン戦
 function stageTable(title, rows) {
   const wrap = document.createElement('div');
@@ -423,10 +424,11 @@ function renderStage() {
   const rk = prelimRanking(), semi = semiTables(), cnt = rk.filter(x => x.n === 4).length;
   const lab = m => m ? m.label : '（未確定）';
   if (cnt < 30) { const p = document.createElement('p'); p.className = 'small'; p.textContent = '予選を終えたのは ' + cnt + '/30名です（メンバーは暫定）。'; box.appendChild(p); }
-  const rows = [['1卓（準決勝S1）', semi.S1.map(lab)], ['2卓（準決勝S2）', semi.S2.map(lab)]];
+  const rows = [['2卓（準決勝S1）', semi.S1.map(lab)], ['5卓（準決勝S2）', semi.S2.map(lab)]];
+  const BAND_TABLES = [1, 3, 4, 6, 7, 8];   // 準決勝に進めなかった24名の卓（予選7〜10位から順に）
   for (let t = 0; t < 6; t++) {
     const mem = [0, 1, 2, 3].map(j => { const i = 6 + t * 4 + j; return rk[i] ? plabel(rk[i]) : '（未確定）'; });
-    rows.push([(t + 3) + '卓（予選' + (7 + t * 4) + '〜' + (10 + t * 4) + '位）', mem]);
+    rows.push([BAND_TABLES[t] + '卓（予選' + (7 + t * 4) + '〜' + (10 + t * 4) + '位）', mem]);
   }
   box.appendChild(stageTable('準決勝の時間（全員が打つ）', rows));
   const fin = finalTable(), note = document.createElement('p'); note.className = 'small';
