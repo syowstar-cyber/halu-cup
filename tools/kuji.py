@@ -58,7 +58,7 @@ def md_of(schedule, order, seed):
         md += [f"| {row['table']}卓 | " + " | ".join(row["seats"]) + " |" for row in schedule[str(r)]]
         md.append("")
     md += ["### 選手別（卓・席）", "", "| 選手 | 1半荘目 | 2半荘目 | 3半荘目 | 4半荘目 |", "|---|---|---|---|---|"]
-    honda = lambda p: next(row["table"] for row in schedule["1"] if p in row["seats"]) <= 4   # 本田プロの組（1〜4卓）
+    honda = lambda p: next(row["table"] for row in schedule["1"] if p in row["seats"]) in (2, 4, 7, 8)   # 本田プロの組（2・4・7・8卓）
     ps = sorted([p for p, _ in order], key=lambda p: int(p[1:]))
     for nm in ["本田プロ"] + [p for p in ps if honda(p)] + ["ゆうこママ"] + [p for p in ps if not honda(p)]:
         cells = []
