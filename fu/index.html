@@ -12,7 +12,7 @@
 html{background:var(--bg);scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.7;-webkit-text-size-adjust:100%}
 a{color:var(--accent)}
-.wrap{max-width:760px;margin:0 auto;padding:12px 16px 110px}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 140px}
 header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
 header h1{font-size:1.3rem;margin:0}
 header .sub{color:var(--muted);font-size:.9rem}
@@ -152,6 +152,7 @@ footer{font-size:.82rem;color:var(--muted);margin-top:24px;border-top:1px solid 
   .pt th,.pt td{font-size:.84rem;padding:6px 1px}
   .res .pts{font-size:2rem}
 }
+.totop{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:6;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
 </head>
 <body>
@@ -522,5 +523,6 @@ new IntersectionObserver(es => { $('#bar').classList.toggle('off', es[0].isInter
 render();
 })();
 </script>
+<a class="totop" href="#" title="上へ">↑</a>
 </body>
 </html>

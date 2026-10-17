@@ -12,7 +12,7 @@
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
 a{color:var(--accent);text-decoration:underline}
-.wrap{max-width:760px;margin:0 auto;padding:0 16px 60px}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 84px}
 header{border-bottom:3px solid var(--accent);margin:18px 0 14px;padding-bottom:10px}
 header h1{font-size:1.35rem;margin:0;line-height:1.4}
 header .sub{color:var(--muted);font-size:.9rem}
@@ -47,6 +47,7 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 .tag.try{background:#ececE8;color:var(--muted)}
 .tag.real{background:var(--ok);color:#fff}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
 </head>
 <body>
@@ -250,5 +251,6 @@ async function load() {
 }
 load();
 </script>
+<a class="top" href="#" title="上へ">↑</a>
 </body>
 </html>

@@ -67,6 +67,7 @@ details{background:var(--card);border:1px solid var(--line);border-radius:8px;pa
 summary{cursor:pointer;font-weight:700}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media (max-width:420px){.seat{grid-template-columns:2em 1fr 7.6em 4.4em;gap:6px}.seat .sign{width:1.9em}.seat input{padding:8px 6px;font-size:1rem}.seat .pt{font-size:.95rem}}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
 </head>
 <body>
@@ -806,5 +807,6 @@ document.getElementById('reset').addEventListener('click', () => {
 fillTables();
 load();
 </script>
+<a class="top" href="#" title="上へ">↑</a>
 </body>
 </html>
