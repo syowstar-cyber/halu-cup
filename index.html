@@ -98,7 +98,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
     <h1>第20回 Halu杯 幹部用ページ</h1>
     <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: 2026-10-23</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="sanka/">参加者用ページ</a><a href="score/">点数報告・集計</a><a href="renshu/">点数入力の練習</a><a href="rule/">ルール</a><a href="fu/">点数計算</a><a href="kuji/">対戦表のくじ</a><a href="pro/">本田プロ確認用</a><a href="first/">ファースト確認</a><a href="daihon/">進行台本</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="sanka/">参加者用ページ</a><a href="score/">点数報告・集計</a><a href="renshu/">点数入力の練習</a><a href="rule/">ルール</a><a href="fu/">点数計算</a><a href="kuji/">対戦表</a><a href="pro/">本田プロ確認用</a><a href="first/">ファースト確認</a><a href="daihon/">進行台本</a></nav>
   <nav class="toc" id="toc"></nav>
   <main id="content"><p class="lead">主催: ゆうこママ。変更の経緯は末尾の「16. 変更履歴」にまとめています。</p>
 <h2 id="s1">1. 大会概要</h2>
@@ -201,8 +201,8 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <p>会場と行き方は<a class="xref" href="sanka/#s7">参加者案内7章</a>。Haluの電話は092-292-9982。</p>
 <div id="party" class="party"></div>
 <h2 id="s9">9. 対戦表（くじで決める）</h2>
-<p>くじは10月23日（金）のナンバーズ4（第7099回）の当せん番号 4385 で引いた。型・手順・検算・結果はくじページ（<code>kuji/</code>）、参加者への説明は<a class="xref" href="sanka/#s8">参加者案内8章</a>。</p>
-<p>結果はくじページと点数報告ページの「組み合わせ表」に出る。抽せん後に <code>python tools/kuji.py &lt;当せん番号&gt; --write</code> で <code>kuji/seed.js</code> と <code>score/schedule.js</code> を作る。</p>
+<p>くじは10月23日（金）のナンバーズ4（第7099回）の当せん番号 4385 で引いた。型・手順・検算・結果は対戦表ページ（<code>kuji/</code>）、参加者への説明は<a class="xref" href="sanka/#s8">参加者案内8章</a>。</p>
+<p>結果は対戦表ページと点数報告ページの「組み合わせ表」に出る。抽せん後に <code>python tools/kuji.py &lt;当せん番号&gt; --write</code> で <code>kuji/seed.js</code> と <code>score/schedule.js</code> を作る。</p>
 <h2 id="s10">10. スタッフ配置</h2>
 <div class="tw"><table>
 <tr><th>役割</th><th>人数</th><th>担当時間</th></tr>
@@ -296,7 +296,7 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>10月24日（土）</td><td>本番</td></tr>
 </table></div>
 <h2 id="s16">16. 変更履歴</h2>
-<details><summary>変更の一覧（145件・タップで開く）</summary><p>変更点はここに集約する。本文には決定日を書かない。</p>
+<details><summary>変更の一覧（146件・タップで開く）</summary><p>変更点はここに集約する。本文には決定日を書かない。</p>
 <div class="tw"><table>
 <tr><th>日付</th><th>変更</th><th>理由</th></tr>
 <tr><td>2026-09-14</td><td>本田朋広プロの出演契約が完了</td><td></td></tr>
@@ -444,8 +444,9 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 <tr><td>2026-10-17</td><td>18:30〜19:00は終了と片付けで、延長は19:00から。本田プロは18:30に会場を出て、タクシーで空港へ向かう（2章・本田プロ用ページの当日の移動・<a class="xref" href="first/">ファースト確認ページ</a>の当日の流れ）。<a class="xref" href="first/">ファースト確認ページ</a>の控室と喫煙所は「利用させていただきます」にした</td><td>主催の指示</td></tr>
 <tr><td>2026-10-23</td><td>当日の進行台本ページ（<code>daihon/</code>・草案）を作った。開会に前回優勝者のトロフィー返還を入れた。幹部用ページの切り替えボタンからだけリンクする</td><td>主催の指示</td></tr>
 <tr><td>2026-10-23</td><td>対戦表をくじで確定した（ナンバーズ4 第7099回の当せん番号 4385）。結果はくじページと点数報告ページの「組み合わせ表」。14章の幹-22 を解消</td><td>抽せんの結果</td></tr>
+<tr><td>2026-10-23</td><td>くじページの名前を「対戦表」に変えた（URLは <code>kuji/</code> のまま。題名・各ページの切り替えボタン）。全ページの対戦表の記述を、決まった形に直した（対戦表ページ・参加者ページのお知らせ・<a class="xref" href="sanka/#s3">参加者案内3章</a>と8章・<a class="xref" href="first/">ファースト確認ページ</a>3章）</td><td>主催の指示</td></tr>
 </table></div></details></main>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="sanka/">参加者用ページ</a><a href="score/">点数報告・集計</a><a href="renshu/">点数入力の練習</a><a href="rule/">ルール</a><a href="fu/">点数計算</a><a href="kuji/">対戦表のくじ</a><a href="pro/">本田プロ確認用</a><a href="first/">ファースト確認</a><a href="daihon/">進行台本</a></nav>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="sanka/">参加者用ページ</a><a href="score/">点数報告・集計</a><a href="renshu/">点数入力の練習</a><a href="rule/">ルール</a><a href="fu/">点数計算</a><a href="kuji/">対戦表</a><a href="pro/">本田プロ確認用</a><a href="first/">ファースト確認</a><a href="daihon/">進行台本</a></nav>
   <a class="top" href="#" title="上へ">↑</a>
 </div>
 <script src="score/config.js"></script>
