@@ -16,6 +16,8 @@ repo = Path(__file__).resolve().parents[1]
 DATE = "2026-10-23"          # 種の日付（ページの DATE と同じ）
 WINDS = ["東", "南", "西", "北"]
 SEED_HEAD = "// くじの本番の番号（tools/kuji.py --write が書く。抽せんの後だけ入れる。空＝まだ）\n"
+# くじの後の入れ替え（主催の判断・2026-10-23）。本番の番号のときだけ当てる。kuji/index.html の SWAPS と同じ
+SWAPS = {"4385": [("P6", "P14")]}
 
 
 def norm_n4(s):
@@ -35,6 +37,16 @@ def draw(seed):
     return sorted(vals, key=lambda x: (x[1], int(x[0][1:])))
 
 
+def apply_swaps(order, n4):
+    """くじの順 [(P番号, くじ値)] で、SWAPS の2人の枠を取り替えた順を返す（くじ値はそのまま）"""
+    out = list(order)
+    for a, b in SWAPS.get(n4, []):
+        i = next(k for k, (p, _) in enumerate(out) if p == a)
+        j = next(k for k, (p, _) in enumerate(out) if p == b)
+        out[i], out[j] = (b, out[i][1]), (a, out[j][1])
+    return out
+
+
 def load_js(path, var):
     txt = path.read_text(encoding="utf-8")
     m = re.search(r"window\." + var + r"\s*=\s*(\{.*\})\s*;", txt, re.S)
@@ -49,10 +61,12 @@ def schedule_of(kata, order):
             for r, rows in kata.items()}
 
 
-def md_of(schedule, order, seed):
+def md_of(schedule, order, seed, swaps=()):
     md = [f"種: `{seed}`", "", "| 枠 | No. | くじ値（先頭12桁） |", "|---|---|---|"]
     md += [f"| 枠{k} | {p} | {h[:12]} |" for k, (p, h) in enumerate(order, 1)]
     md.append("")
+    if swaps:
+        md += ["くじの後の入れ替え（主催の判断）: " + "、".join(f"{a}と{b}" for a, b in swaps) + "。下の表は入れ替えた後", ""]
     for r in range(1, 5):
         md += [f"### 予選{r}半荘目", "", "| 卓 | 東（起家） | 南 | 西 | 北 |", "|---|---|---|---|---|"]
         md += [f"| {row['table']}卓 | " + " | ".join(row["seats"]) + " |" for row in schedule[str(r)]]
@@ -77,7 +91,8 @@ def main():
         if not k.get("n4"):
             raise SystemExit("kuji/seed.js に本番の番号がまだ無い")
         now = load_js(repo / "score" / "schedule.js", "HALU_SCHEDULE")
-        print("一致" if now == schedule_of(kata, draw(seed_n4(k["n4"]))) else "不一致（score/schedule.js を kuji.py --write で作り直す）")
+        n4 = norm_n4(k["n4"])
+        print("一致" if now == schedule_of(kata, apply_swaps(draw(seed_n4(n4)), n4)) else "不一致（score/schedule.js を kuji.py --write で作り直す）")
         return
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
@@ -85,17 +100,20 @@ def main():
     n4 = norm_n4(args[0])
     seed = seed_n4(n4)
     order = draw(seed)
-    sched = schedule_of(kata, order)
+    swaps = SWAPS.get(n4, [])
+    sched = schedule_of(kata, apply_swaps(order, n4))
     print("種:", seed)
     for k, (p, h) in enumerate(order, 1):
         print(f"枠{k:>2} {p:>3} {h[:16]}")
+    if swaps:
+        print("くじの後の入れ替え:", "、".join(f"{a}と{b}" for a, b in swaps))
     if "--write" in sys.argv:
         (repo / "kuji" / "seed.js").write_text(SEED_HEAD + "window.HALU_KUJI = " + json.dumps({"n4": n4}) + ";\n", encoding="utf-8")
         (repo / "score" / "schedule.js").write_text(
             "// 予選の組み合わせ表（tools/kuji.py がくじの結果から生成。手で直さない）\n"
             "window.HALU_SCHEDULE = " + json.dumps(sched, ensure_ascii=False) + ";\n", encoding="utf-8")
         work = repo / ".work"; work.mkdir(exist_ok=True)
-        (work / "schedule.md").write_text(md_of(sched, order, seed), encoding="utf-8")
+        (work / "schedule.md").write_text(md_of(sched, order, seed, swaps), encoding="utf-8")
         print("OK kuji/seed.js / score/schedule.js / .work/schedule.md")
 
 

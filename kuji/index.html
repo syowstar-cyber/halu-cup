@@ -46,6 +46,7 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 .tag{display:inline-block;font-size:.8rem;font-weight:700;border-radius:4px;padding:0 6px;margin-left:4px}
 .tag.try{background:#ececE8;color:var(--muted)}
 .tag.real{background:var(--ok);color:#fff}
+.tag.swap{background:#ececE8;color:var(--muted);font-weight:400}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
@@ -76,7 +77,7 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 <li>くじの種は、主催を含めて、抽せんまで誰にも分からない番号です。</li>
 <li>計算の手順・対戦表の型・出席者一覧は、抽せんの前に公開して固定しました。</li>
 <li>抽せんの後に、くじを引き直すことはできません。同じ番号からは、いつ誰が計算しても同じ結果です。</li>
-<li>本田プロ・ゆうこママと同じ組になるか、同卓になるかも、くじだけで決まります。</li>
+<li>本田プロ・ゆうこママと同じ組になるか、同卓になるかも、くじで決まります。</li>
 </ul>
 
 <h2 id="s4">4. 計算してみる（検算）</h2>
@@ -158,6 +159,8 @@ function sha256hex(str) {
 function normN4(s) { s = String(s).normalize('NFKC').replace(/\s/g, ''); return /^\d{4}$/.test(s) ? s : null; }
 // 種: ナンバーズ4の当せん番号
 const seedN4 = n4 => 'HALU20|' + DATE + '|N4=' + n4;
+// くじの後の入れ替え（主催の判断・2026-10-23）。本番の番号のときだけ当てる。tools/kuji.py の SWAPS と同じ
+const SWAPS = { '4385': [['P6', 'P14']] };
 
 // くじ: P1〜P30 のくじ値を小さい順に並べ、先頭から枠1〜枠30
 function draw(seed) {
@@ -165,6 +168,12 @@ function draw(seed) {
   v.sort((x, y) => (x.h < y.h ? -1 : x.h > y.h ? 1 : x.n - y.n));
   v.forEach((x, k) => { x.slot = k + 1; });
   return v;
+}
+// くじの順で、入れ替える2人の枠を取り替えた順（くじ値はそのまま）
+function applySwaps(order, pairs) {
+  const out = order.map(x => ({ ...x }));
+  pairs.forEach(([a, b]) => { const x = out.find(o => o.p === a), y = out.find(o => o.p === b); x.p = b; y.p = a; });
+  return out;
 }
 // 型の枠を P番号に置き換えた対戦表
 function scheduleOf(order) {
@@ -189,15 +198,17 @@ function roundTables(sched, show) {
   });
   return h;
 }
-function resultHtml(seed, tag) {
-  const order = draw(seed), sched = scheduleOf(order);
+function resultHtml(seed, tag, pairs = []) {
+  const order = draw(seed), sched = scheduleOf(applySwaps(order, pairs));
+  const moved = {}; pairs.forEach(([a, b]) => { moved[a] = b; moved[b] = a; });
   let h = '<div class="box"><div>種の文字列 ' + tag + '</div><div class="mono">' + esc(seed) + '</div></div>';
   h += '<h3>くじ値と枠</h3><div class="tw"><table><thead><tr><th>枠</th><th>No.</th><th>組</th><th>くじ値（先頭12桁）</th></tr></thead><tbody>';
   order.forEach(x => {
     const g = x.slot <= 15 ? '本田プロの組' : 'ゆうこママの組', meet = MEET[x.slot] ? '（同卓あり）' : '';
-    h += '<tr' + (x.slot <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + x.slot + '</td><td>' + esc(dn(x.p)) + '</td><td>' + g + meet + '</td><td class="mono" title="' + x.h + '">' + x.h.slice(0, 12) + '</td></tr>';
+    h += '<tr' + (x.slot <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + x.slot + '</td><td>' + esc(dn(x.p)) + (moved[x.p] ? '<span class="tag swap">' + esc(moved[x.p]) + 'と入れ替え</span>' : '') + '</td><td>' + g + meet + '</td><td class="mono" title="' + x.h + '">' + x.h.slice(0, 12) + '</td></tr>';
   });
   h += '</tbody></table></div><p class="note">くじ値の全部の桁は、行に指を置くか、マウスを重ねると出ます。</p>';
+  if (pairs.length) h += '<p class="note">くじの後、主催の判断で2人の枠を入れ替えました（' + pairs.map(([a, b]) => esc(a) + '・' + esc(b)).join('、') + '）。下の表は入れ替えた後です。</p>';
   h += roundTables(sched, s => s.startsWith('P') ? dn(s) : s);
   // 選手別
   const where = {};
@@ -211,7 +222,7 @@ function resultHtml(seed, tag) {
 function renderResult() {
   const box = document.getElementById('result');
   if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; return; }
-  box.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + resultHtml(seedN4(normN4(KUJI.n4)), '<span class="tag real">本番</span>');
+  box.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + resultHtml(seedN4(normN4(KUJI.n4)), '<span class="tag real">本番</span>', SWAPS[normN4(KUJI.n4)] || []);
 }
 // 5章: 型
 function renderKata() {
@@ -237,7 +248,7 @@ document.getElementById('calc').addEventListener('submit', ev => {
   msg.textContent = ''; msg.className = 'msg';
   if (!b) { msg.textContent = 'ナンバーズ4の当せん番号を4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
   const real = KUJI.n4 && b === normN4(KUJI.n4);
-  document.getElementById('calcout').innerHTML = resultHtml(seedN4(b), real ? '<span class="tag real">本番と同じ番号</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>');
+  document.getElementById('calcout').innerHTML = resultHtml(seedN4(b), real ? '<span class="tag real">本番と同じ番号</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>', real ? SWAPS[b] || [] : []);
 });
 
 async function load() {
