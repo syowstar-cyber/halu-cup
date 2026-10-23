@@ -130,6 +130,7 @@ const DATE = '2026-10-23';            // 種の日付（tools/kuji.py の DATE �
 const WINDS = ['東', '南', '西', '北'];
 let ROSTER = {};
 const dn = p => ROSTER[p] ? p + ' ' + ROSTER[p] : p;
+const nm = p => ROSTER[p] || p;   // 対戦表は名前だけ（一覧が届かないときは P番号）
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 // SHA-256（標準の手順どおり。ブラウザの設定に左右されないよう自前で計算）
@@ -218,12 +219,12 @@ function lotteryHtml(seed, tag, pairs = []) {
 // 対戦表（予選の回戦ごと・選手別）
 function tablesHtml(seed, pairs = []) {
   const sched = scheduleOf(applySwaps(draw(seed), pairs));
-  let h = roundTables(sched, s => s.startsWith('P') ? dn(s) : s);
+  let h = roundTables(sched, s => s.startsWith('P') ? nm(s) : s);
   // 選手別
   const where = {};
   ['1', '2', '3', '4'].forEach(r => (sched[r] || []).forEach(row => row.seats.forEach((s, i) => { (where[s] = where[s] || [])[+r - 1] = row.table + '卓 ' + WINDS[i]; })));
-  h += '<h3>選手別（卓・席）</h3><div class="tw"><table><thead><tr><th>No.</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th></tr></thead><tbody>';
-  Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).forEach(p => { h += '<tr><td>' + esc(dn(p)) + '</td>' + (where[p] || []).map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
+  h += '<h3>選手別（卓・席）</h3><div class="tw"><table><thead><tr><th>名前</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th></tr></thead><tbody>';
+  Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).forEach(p => { h += '<tr><td>' + esc(nm(p)) + '</td>' + (where[p] || []).map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
   return h + '</tbody></table></div>';
 }
 // 検算の出力: くじ値と枠 → 対戦表
