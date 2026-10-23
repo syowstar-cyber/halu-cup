@@ -232,5 +232,9 @@ body = lead + "\n".join(out)
 body = re.sub(r'<h3>(参加者向け|運営・幹部向け)</h3>\n<pre class="box">(.*?)</pre>',
               r'<details><summary>\1（タップで開く／長押しでコピー）</summary><pre class="box">\2</pre></details>',
               body, flags=re.S)
+# 変更履歴の章は長いので、見出しだけ残して中身を折りたたみに（章番号が変わっても見出しで判定する）
+body = re.sub(r'(<h2 id="s\d*">\d+\. 変更履歴</h2>\n)(.*?)(?=\n<h2 |\Z)',
+              lambda m: f'{m.group(1)}<details><summary>変更の一覧（{m.group(2).count("<tr><td>")}件・タップで開く）</summary>{m.group(2)}</details>',
+              body, flags=re.S)
 (here / "body.html").write_text(body, encoding="utf-8")
 print("OK", len(body))
