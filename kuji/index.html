@@ -81,7 +81,7 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 </ul>
 
 <h2 id="s4">4. 計算してみる（検算）</h2>
-<p>ナンバーズ4の当せん番号（4385）を入れて「計算する」を押すと、上の結果と同じになることを確かめられます。</p>
+<p>ナンバーズ4の当せん番号（4385）を入れて「計算する」を押すと、1章の対戦表と8章のくじ値と同じになることを確かめられます。</p>
 <form id="calc" autocomplete="off">
 <label for="n4">ナンバーズ4の当せん番号（4桁）</label><input type="text" id="n4" inputmode="numeric" maxlength="4" placeholder="例 0482">
 <button type="submit">計算する</button>
@@ -114,6 +114,9 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 </ol>
 <ul class="note">
 <li>SHA-256 は世界共通の計算方法です。Webの計算サイトやパソコンでも、同じくじ値になります。</li></ul>
+
+<h2 id="s8">8. くじ値と枠</h2>
+<div id="lottery"></div>
 </div>
 
 <script src="../score/config.js"></script>
@@ -198,8 +201,9 @@ function roundTables(sched, show) {
   });
   return h;
 }
-function resultHtml(seed, tag, pairs = []) {
-  const order = draw(seed), sched = scheduleOf(applySwaps(order, pairs));
+// くじ値と枠（種の文字列・くじ値の表・くじの後の入れ替え）
+function lotteryHtml(seed, tag, pairs = []) {
+  const order = draw(seed);
   const moved = {}; pairs.forEach(([a, b]) => { moved[a] = b; moved[b] = a; });
   let h = '<div class="box"><div>種の文字列 ' + tag + '</div><div class="mono">' + esc(seed) + '</div></div>';
   h += '<h3>くじ値と枠</h3><div class="tw"><table><thead><tr><th>枠</th><th>No.</th><th>組</th><th>くじ値（先頭12桁）</th></tr></thead><tbody>';
@@ -208,8 +212,13 @@ function resultHtml(seed, tag, pairs = []) {
     h += '<tr' + (x.slot <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + x.slot + '</td><td>' + esc(dn(x.p)) + (moved[x.p] ? '<span class="tag swap">' + esc(moved[x.p]) + 'と入れ替え</span>' : '') + '</td><td>' + g + meet + '</td><td class="mono" title="' + x.h + '">' + x.h.slice(0, 12) + '</td></tr>';
   });
   h += '</tbody></table></div><p class="note">くじ値の全部の桁は、行に指を置くか、マウスを重ねると出ます。</p>';
-  if (pairs.length) h += '<p class="note">くじの後、主催の判断で2人の枠を入れ替えました（' + pairs.map(([a, b]) => esc(a) + '・' + esc(b)).join('、') + '）。下の表は入れ替えた後です。</p>';
-  h += roundTables(sched, s => s.startsWith('P') ? dn(s) : s);
+  if (pairs.length) h += '<p class="note">くじの後、主催の判断で2人の枠を入れ替えました（' + pairs.map(([a, b]) => esc(a) + '・' + esc(b)).join('、') + '）。対戦表（回戦ごと・選手別）は入れ替えた後です。</p>';
+  return h;
+}
+// 対戦表（予選の回戦ごと・選手別）
+function tablesHtml(seed, pairs = []) {
+  const sched = scheduleOf(applySwaps(draw(seed), pairs));
+  let h = roundTables(sched, s => s.startsWith('P') ? dn(s) : s);
   // 選手別
   const where = {};
   ['1', '2', '3', '4'].forEach(r => (sched[r] || []).forEach(row => row.seats.forEach((s, i) => { (where[s] = where[s] || [])[+r - 1] = row.table + '卓 ' + WINDS[i]; })));
@@ -217,12 +226,16 @@ function resultHtml(seed, tag, pairs = []) {
   Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).forEach(p => { h += '<tr><td>' + esc(dn(p)) + '</td>' + (where[p] || []).map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
   return h + '</tbody></table></div>';
 }
+// 検算の出力: くじ値と枠 → 対戦表
+const resultHtml = (seed, tag, pairs = []) => lotteryHtml(seed, tag, pairs) + tablesHtml(seed, pairs);
 
-// 1章: 本番の結果（kuji/seed.js に数字が入ったら出す）
+// 1章（対戦表）と8章（くじ値と枠）: 本番の結果（kuji/seed.js に数字が入ったら出す）
 function renderResult() {
-  const box = document.getElementById('result');
-  if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; return; }
-  box.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + resultHtml(seedN4(normN4(KUJI.n4)), '<span class="tag real">本番</span>', SWAPS[normN4(KUJI.n4)] || []);
+  const box = document.getElementById('result'), lot = document.getElementById('lottery');
+  if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; lot.innerHTML = ''; return; }
+  const n4 = normN4(KUJI.n4), pairs = SWAPS[n4] || [];
+  box.innerHTML = tablesHtml(seedN4(n4), pairs);
+  lot.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + lotteryHtml(seedN4(n4), '<span class="tag real">本番</span>', pairs);
 }
 // 5章: 型
 function renderKata() {
