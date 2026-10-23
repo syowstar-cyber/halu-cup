@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#7a1a1a">
+<title>第20回 Halu杯 進行台本</title>
+<style>
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--warn:#7a4b00;--warnbg:#fff4d6;--warnline:#e9c46a;--focus:#1a56db}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:underline}
+.wrap{max-width:760px;margin:0 auto;padding:14px 16px 84px}
+header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:10px}
+header h1{font-size:1.35rem;margin:0;line-height:1.4}
+header .sub{color:var(--muted);font-size:.9rem}
+.draft{display:inline-block;margin-left:8px;padding:0 8px;border-radius:6px;background:var(--warnbg);color:var(--warn);border:1px solid var(--warnline);font-size:.85rem;vertical-align:middle}
+.back{display:block;text-align:center;margin:12px 0;padding:12px;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;background:var(--card)}
+.lead{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin:12px 0}
+.lead p{margin:6px 0}
+.ctl{display:flex;gap:8px;margin:12px 0}
+.ctl button{flex:1;padding:10px 6px;border:2px solid var(--accent);border-radius:999px;background:var(--card);color:var(--accent);font:inherit;font-weight:700;font-size:.95rem;cursor:pointer}
+details.sc{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:8px 0;padding:0 14px}
+details.sc>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:10px;padding:12px 0;font-weight:700;line-height:1.5}
+details.sc>summary::-webkit-details-marker{display:none}
+details.sc>summary::after{content:"＋";margin-left:auto;color:var(--accent);font-weight:700}
+details.sc[open]>summary::after{content:"−"}
+details.sc[open]>summary{border-bottom:1px solid var(--line)}
+.tm{color:var(--accent);min-width:3.1em;font-variant-numeric:tabular-nums}
+.du{color:var(--muted);font-weight:400;font-size:.85rem;white-space:nowrap}
+.in{padding:4px 0 12px}
+h2{font-size:1.15rem;margin:24px 0 10px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
+h3{font-size:1.02rem;margin:16px 0 6px;border-left:5px solid var(--accent);padding-left:10px}
+p{margin:6px 0}
+.say{padding:8px 12px;background:var(--soft);border-radius:8px}
+.who{display:inline-block;min-width:4.6em;margin-right:6px;padding:0 6px;border-radius:6px;background:var(--accent);color:var(--accent-fg);font-size:.8rem;font-weight:700;text-align:center;vertical-align:1px}
+.act{color:var(--muted);font-size:.95rem}
+.tag{display:inline-block;margin-right:6px;padding:0 6px;border:1px solid var(--line);border-radius:6px;background:var(--card2);color:var(--muted);font-size:.78rem;vertical-align:1px}
+.tbd{display:inline-block;margin-right:6px;padding:0 6px;border-radius:6px;background:var(--warnbg);color:var(--warn);border:1px solid var(--warnline);font-size:.78rem;font-weight:700;vertical-align:1px}
+.in ul{margin:6px 0;padding-left:1.3em}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>第20回 Halu杯 進行台本<span class="draft">草案</span></h1>
+    <div class="sub">2026年10月24日（土）・幹部とMC向け。最終更新: 2026-10-23</div>
+  </header>
+  <a class="back" href="../">幹部用ページへ戻る</a>
+
+  <div class="lead">
+    <p>MCが読む言葉と、その場の動きを時刻順に並べた草案です。時刻は幹部用ページ2章のタイムテーブルと同じです。</p>
+    <p>場面をタップすると開きます。</p>
+    <p><span class="who">MC</span>読み上げる言葉　<span class="tag">動き</span>その場の動き　<span class="tbd">要確認</span>まだ決まっていないこと</p>
+  </div>
+  <div class="ctl"><button type="button" id="openall">すべて開く</button><button type="button" id="closeall">すべて閉じる</button></div>
+
+  <h2>当日の流れ</h2>
+
+  <details class="sc" id="t1000"><summary><span class="tm">10:00</span>幹部集合・設営<span class="du">30分</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>設営は、幹部用ページ11章のチェックで進めます。</p>
+    <p class="act"><span class="tag">動き</span>マイクとスピーカーを試します。点数報告ページの「最新に更新」が通るかも確かめます。</p>
+    <p class="act"><span class="tag">動き</span>本田プロの会場着は10:45ごろです（ANA243便）。遅れの連絡がないか確かめます。</p>
+  </div></details>
+
+  <details class="sc" id="t1030"><summary><span class="tm">10:30</span>集合・受付<span class="du">30分</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>受付係（2名）が、幹部用ページ11章で出席にチェックを入れ、名札を渡します。</p>
+    <p class="say"><span class="who">受付</span>「おはようございます。お名前をお願いします」</p>
+    <p class="say"><span class="who">受付</span>「卓と席は、点数報告ページの組み合わせ表で確かめてください」</p>
+    <p class="act"><span class="tag">動き</span>10:55ごろ、MCが声をかけます。</p>
+    <p class="say"><span class="who">MC</span>「まもなく開会です。予選1半荘目の席について、お待ちください」</p>
+  </div></details>
+
+  <details class="sc" id="t1100"><summary><span class="tm">11:00</span>開会・ルール説明・ゲスト紹介<span class="du">15分</span></summary><div class="in">
+    <h3>開会</h3>
+    <p class="say"><span class="who">MC</span>「お待たせしました。ただいまから、第20回 Halu杯を始めます」</p>
+    <p class="say"><span class="who">MC</span>「本日は32名・8卓で打ちます。どうぞよろしくお願いします」</p>
+    <p class="say"><span class="who">MC</span>「はじめに、主催のゆうこママからごあいさつです」</p>
+    <p class="say"><span class="who">ゆうこママ</span>「（ごあいさつ）」</p>
+    <p class="say"><span class="who">MC</span>「会場をお借りしている麻雀Firstの皆さま、本日はよろしくお願いいたします」</p>
+
+    <h3>ゲスト紹介</h3>
+    <p class="act"><span class="tag">動き</span>本田プロの到着が遅れたら、ゲスト紹介は11:15の対局の直前へずらします（「困ったとき」）。</p>
+    <p class="say"><span class="who">MC</span>「本日の特別ゲストをご紹介します」</p>
+    <p class="say"><span class="who">MC</span>「日本プロ麻雀連盟、『ヤンチャな貴公子』こと本田朋広プロです」</p>
+    <p class="say"><span class="who">MC</span>「麻雀グランプリMAX 2連覇、第32期麻雀マスターズ優勝です」</p>
+    <p class="say"><span class="who">MC</span>「本田プロには、予選から一緒に打っていただきます。ひとことお願いします」</p>
+    <p class="say"><span class="who">本田プロ</span>「（ひとこと）」</p>
+
+    <h3>予選のルール（2回くり返す）</h3>
+    <p class="act"><span class="tag">動き</span>予選だけの決まりを、同じ内容で2回読みます（幹部用ページ4章）。</p>
+    <p class="say"><span class="who">MC</span>「予選だけの決まりをお伝えします。大事なので、2回くり返します」</p>
+    <p class="say"><span class="who">MC</span>「1. 連荘は、南場の親のアガリだけです。東場は、親がアガっても親が移ります」</p>
+    <p class="say"><span class="who">MC</span>「2. 流局したら、親は移ります。聴牌していても続けられません」</p>
+    <p class="say"><span class="who">MC</span>「3. 南場の親は、アガったら続けるか流すか選べます。南4局の親は、アガリやめができます」</p>
+    <p class="say"><span class="who">MC</span>「4. 場決めはありません。席は組み合わせ表のとおりです」</p>
+    <p class="say"><span class="who">MC</span>「5. 1半荘は40分です。40分が来た局で終わり、その局は最後まで打ちます」</p>
+    <p class="say"><span class="who">MC</span>「6. トビ終了も途中流局もありません。マイナスでも最後まで打ちます」</p>
+    <p class="say"><span class="who">MC</span>「7. チョンボしても局は続けます。チョンボした人はアガリ放棄です。流局したら満貫払いです」</p>
+    <p class="say"><span class="who">MC</span>「細かいところで迷ったら、手を挙げてください。運営が決めます」</p>
+    <p class="act"><span class="tag">動き</span>1〜7をもう一度読みます。南1〜南3局で子がチョンボして流局した局は親の連荘です（ルールページ2章）。</p>
+
+    <h3>点数の送り方</h3>
+    <p class="say"><span class="who">MC</span>「半荘が終わったら、卓の代表が点数報告ページから4人分を送ります」</p>
+    <p class="say"><span class="who">MC</span>「百点の単位で入れて、00は打ちません。25,300点なら253です」</p>
+    <p class="say"><span class="who">MC</span>「マイナスは『−』ボタンです。チョンボの満貫払いは、払った後の点棒を入れます」</p>
+    <p class="say"><span class="who">MC</span>「わからないときは、集計係に声をかけてください。代わりに入れます」</p>
+    <p class="say"><span class="who">MC</span>「送り間違えたときは、送り直せば上書きされます」</p>
+
+    <h3>お願い</h3>
+    <p class="say"><span class="who">MC</span>「動画は撮らないでください。本田プロ側のご希望です。写真はかまいません」</p>
+    <p class="say"><span class="who">MC</span>「動画は運営だけが撮り、公開はしません」</p>
+    <p class="say"><span class="who">MC</span>「トイレは1つです。対局中のトイレは、お店の方が代わりに打ってくださいます」</p>
+    <p class="say"><span class="who">MC</span>「軽食は、片手で食べられるものかお菓子が中心です」</p>
+
+    <h3>対局へ</h3>
+    <p class="say"><span class="who">MC</span>「組み合わせ表で、1半荘目の卓と席を確かめてください」</p>
+    <p class="say"><span class="who">MC</span>「席は、入口側の左が東、右が南、奥の右が西、奥の左が北です」</p>
+    <p class="say"><span class="who">MC</span>「2卓と5卓は、本田プロとゆうこママの席が動きません。配置図の下の図を見てください」</p>
+  </div></details>
+
+  <details class="sc" id="t1115"><summary><span class="tm">11:15</span>予選1半荘目<span class="du">40分・11:55打ち切り</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「11時15分です。予選1半荘目を始めてください。終わりは11時55分です」</p>
+    <p class="act"><span class="tag">動き</span>11:45ごろ、残り時間を伝えます（案）。</p>
+    <p class="say"><span class="who">MC</span>「残り10分です」</p>
+    <p class="act"><span class="tag">動き</span>11:55ちょうどに伝えます。</p>
+    <p class="say"><span class="who">MC</span>「11時55分です。いま打っている局で終わりです。その局は最後まで打ってください」</p>
+    <p class="say"><span class="who">MC</span>「終わった卓から、点数報告ページで点数を送ってください」</p>
+    <p class="act"><span class="tag">動き</span>集計係は「入力済み n/8卓」を見て、まだの卓に声をかけます。</p>
+    <p class="say"><span class="who">MC</span>「2半荘目は12時ちょうどに始めます。組み合わせ表で卓と席を確かめてください」</p>
+  </div></details>
+
+  <details class="sc" id="t1200"><summary><span class="tm">12:00</span>予選2半荘目<span class="du">40分・12:40打ち切り</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「12時です。予選2半荘目を始めてください。終わりは12時40分です」</p>
+    <p class="act"><span class="tag">動き</span>12:30ごろ、残り時間を伝えます（案）。</p>
+    <p class="say"><span class="who">MC</span>「残り10分です」</p>
+    <p class="say"><span class="who">MC</span>「12時40分です。いま打っている局で終わりです。その局は最後まで打ってください」</p>
+    <p class="say"><span class="who">MC</span>「点数を送ったら、12時45分から15分の軽食休憩です」</p>
+  </div></details>
+
+  <details class="sc" id="t1245"><summary><span class="tm">12:45</span>軽食休憩<span class="du">15分</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「15分の軽食休憩です。13時から、本田プロのトークショーです」</p>
+    <p class="act"><span class="tag">動き</span>MCは、トークショーの席とマイクを用意します。</p>
+  </div></details>
+
+  <details class="sc" id="t1300"><summary><span class="tm">13:00</span>本田プロ トークショー<span class="du">15分</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>質問は事前に募りません。MCが聞き役です（幹部用ページ7章）。</p>
+    <p class="say"><span class="who">MC</span>「お待たせしました。本田朋広プロのトークショーです。本田プロ、よろしくお願いします」</p>
+    <p class="act"><span class="tbd">要確認</span>聞くことは案です。本田プロ側と事前に合わせるかは、主催が決めます。</p>
+    <p class="say"><span class="who">MC</span>「麻雀を始めたきっかけを教えてください」</p>
+    <p class="say"><span class="who">MC</span>「タイトル戦で、心に残っている一局はありますか」</p>
+    <p class="say"><span class="who">MC</span>「強くなるために、ふだん続けていることはありますか」</p>
+    <p class="say"><span class="who">MC</span>「予選の後半に向けて、皆さんにひとことお願いします」</p>
+    <p class="act"><span class="tag">動き</span>13:13ごろにまとめます。</p>
+    <p class="say"><span class="who">MC</span>「本田プロ、ありがとうございました。皆さま、拍手をお願いします」</p>
+    <p class="say"><span class="who">MC</span>「5分休憩して、13時20分から予選3半荘目です」</p>
+  </div></details>
+
+  <details class="sc" id="t1315"><summary><span class="tm">13:15</span>休憩・移動<span class="du">5分</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「組み合わせ表で、3半荘目の卓と席を確かめてください」</p>
+  </div></details>
+
+  <details class="sc" id="t1320"><summary><span class="tm">13:20</span>予選3半荘目<span class="du">40分・14:00打ち切り</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「13時20分です。予選3半荘目を始めてください。終わりは14時です」</p>
+    <p class="act"><span class="tag">動き</span>13:50ごろ、残り時間を伝えます（案）。</p>
+    <p class="say"><span class="who">MC</span>「残り10分です」</p>
+    <p class="say"><span class="who">MC</span>「14時です。いま打っている局で終わりです。その局は最後まで打ってください」</p>
+    <p class="say"><span class="who">MC</span>「4半荘目は14時5分に始めます。組み合わせ表で卓と席を確かめてください」</p>
+  </div></details>
+
+  <details class="sc" id="t1405"><summary><span class="tm">14:05</span>予選4半荘目<span class="du">40分・14:45打ち切り</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「14時5分です。予選の最後、4半荘目を始めてください。終わりは14時45分です」</p>
+    <p class="act"><span class="tag">動き</span>14:35ごろ、残り時間を伝えます（案）。</p>
+    <p class="say"><span class="who">MC</span>「残り10分です」</p>
+    <p class="say"><span class="who">MC</span>「14時45分です。いま打っている局で終わりです。その局は最後まで打ってください」</p>
+    <p class="say"><span class="who">MC</span>「全卓の点数がそろったら、準決勝に進む方を発表します」</p>
+  </div></details>
+
+  <details class="sc" id="t1450"><summary><span class="tm">14:50</span>集計・準決勝進出者の発表<span class="du">15分</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>本田プロは控室で休憩です（14:50〜15:05）。</p>
+    <p class="act"><span class="tag">動き</span>集計係は、8卓すべての点数がそろったか確かめます。</p>
+    <p class="act"><span class="tag">動き</span>準決勝の境目（2/3位・3/4位・5/6位・6/7位）が同点なら、その人たちの生年月日を幹部用ページ11章に入れます。</p>
+    <p class="say"><span class="who">MC</span>「予選の結果を発表します。準決勝に進むのは、参加者の上位6名です」</p>
+    <p class="say"><span class="who">MC</span>「S1卓は、本田プロ、ゆうこママ、予選3位の〇〇さん、6位の〇〇さんです」</p>
+    <p class="say"><span class="who">MC</span>「S2卓は、予選1位の〇〇さん、2位の〇〇さん、4位の〇〇さん、5位の〇〇さんです」</p>
+    <p class="act"><span class="tag">動き</span>名前は、点数報告ページに出る準決勝の卓から読みます。</p>
+    <p class="say"><span class="who">MC</span>「準決勝は15時55分からです。S1卓は2卓、S2卓は5卓で打ちます」</p>
+    <p class="say"><span class="who">MC</span>「ほかの方も、準決勝の時間に4人ずつ打ちます。卓は点数報告ページに出ます」</p>
+    <p class="say"><span class="who">MC</span>「このあと15時5分から、サイン会・写真会です」</p>
+  </div></details>
+
+  <details class="sc" id="t1505"><summary><span class="tm">15:05</span>サイン会・写真会<span class="du">50分</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>30名を50分で回ります（1人約100秒）。ゆうこママが列を整えます。</p>
+    <p class="act"><span class="tag">動き</span>撮影は撮影担当が1台でまとめて行います。この時間は対局をしません（自由対局は可）。</p>
+    <p class="say"><span class="who">MC</span>「サイン会・写真会を始めます。プレイヤーNo順にお呼びします」</p>
+    <p class="say"><span class="who">MC</span>「サインがほしい方は、お店でサイン用の品をお求めください。宛名は入りません」</p>
+    <p class="say"><span class="who">MC</span>「写真は運営がまとめて撮り、後日データでお渡しします」</p>
+    <p class="say"><span class="who">MC</span>「では、P1の方からどうぞ」</p>
+    <p class="act"><span class="tag">動き</span>15:50ごろ、呼び漏れがないか確かめます。</p>
+    <p class="say"><span class="who">MC</span>「15時55分から準決勝です。準決勝の方は、2卓と5卓へお願いします」</p>
+  </div></details>
+
+  <details class="sc" id="t1555"><summary><span class="tm">15:55</span>準決勝<span class="du">60分・16:55打ち切り</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>始める前に、ルールが変わることを伝えます（幹部用ページ4章）。</p>
+    <p class="say"><span class="who">MC</span>「準決勝と決勝は、普通のルールで打ちます」</p>
+    <p class="say"><span class="who">MC</span>「東場も南場も、親のアガリか聴牌で連荘です。アガリやめはありません」</p>
+    <p class="say"><span class="who">MC</span>「席と起家は、自動卓のサイコロで決めます。準決勝は60分です」</p>
+    <p class="say"><span class="who">MC</span>「ほかの方は、点数報告ページの『準決勝・決勝の時間の卓』で卓を確かめてください」</p>
+    <p class="say"><span class="who">MC</span>「点数を送ってください。この結果で、最終順位が決まります」</p>
+    <p class="say"><span class="who">MC</span>「15時55分です。準決勝を始めてください。終わりは16時55分です」</p>
+    <p class="act"><span class="tag">動き</span>16:45ごろ、残り時間を伝えます（案）。</p>
+    <p class="say"><span class="who">MC</span>「残り10分です」</p>
+    <p class="say"><span class="who">MC</span>「16時55分です。いま打っている局で終わりです。その局は最後まで打ってください」</p>
+  </div></details>
+
+  <details class="sc" id="t1655"><summary><span class="tm">16:55</span>集計・決勝進出者の発表<span class="du">10分</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>同じ卓の中の同点は、起家に近い方が上位です。ページでは決めないので、集計係が確かめます。</p>
+    <p class="say"><span class="who">MC</span>「決勝に進む4名を発表します。各卓の上位2名です」</p>
+    <p class="say"><span class="who">MC</span>「S1卓1位の〇〇さん、S2卓1位の〇〇さん、S1卓2位の〇〇さん、S2卓2位の〇〇さんです」</p>
+    <p class="act"><span class="tag">動き</span>名前は、点数報告ページの決勝卓から読みます。</p>
+    <p class="act"><span class="tag">動き</span>本田プロが決勝に進めなかったときは、続けて伝えます。</p>
+    <p class="say"><span class="who">MC</span>「準決勝で敗れた4名は、横の卓でエキシビジョン戦を打ちます」</p>
+  </div></details>
+
+  <details class="sc" id="t1705"><summary><span class="tm">17:05</span>決勝<span class="du">時間制限なし・目安18:00</span></summary><div class="in">
+    <p class="say"><span class="who">MC</span>「決勝を始めます。時間制限はありません。最後まで打ちます」</p>
+    <p class="say"><span class="who">MC</span>「皆さんで観戦しましょう。対局中は、お静かにお願いします」</p>
+    <p class="act"><span class="tbd">要確認</span>実況役を誰がするか（幹-11）。本田プロとゆうこママが決勝に進むと、解説がいなくなります。</p>
+    <p class="act"><span class="tag">動き</span>18:20を過ぎそうなら、閉会の順番を入れ替えるか決めます（「困ったとき」）。</p>
+  </div></details>
+
+  <details class="sc" id="t1800"><summary><span class="tm">18:00</span>集計<span class="du">5分・決勝のあと</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>集計係は、点数報告ページの「最終順位」を確かめます。表彰は最終順位の1〜3位です。</p>
+    <p class="act"><span class="tag">動き</span>本田プロとゆうこママは、予選の合計が32名中8位以内なら、最終順位と表彰の対象です。</p>
+  </div></details>
+
+  <details class="sc" id="t1805"><summary><span class="tm">18:05</span>表彰・閉会<span class="du">25分</span></summary><div class="in">
+    <h3>表彰</h3>
+    <p class="say"><span class="who">MC</span>「お待たせしました。表彰に移ります」</p>
+    <p class="say"><span class="who">MC</span>「第3位、〇〇さんです」</p>
+    <p class="say"><span class="who">MC</span>「準優勝、〇〇さんです」</p>
+    <p class="say"><span class="who">MC</span>「優勝、〇〇さんです。おめでとうございます」</p>
+    <p class="act"><span class="tag">動き</span>賞品とトロフィーを渡し、撮影担当が撮ります。</p>
+    <p class="act"><span class="tbd">要確認</span>賞品の内容（幹-10）。</p>
+    <p class="say"><span class="who">MC</span>「優勝の〇〇さん、ひとことお願いします」</p>
+
+    <h3>閉会</h3>
+    <p class="say"><span class="who">MC</span>「本田プロ、ひとことお願いします」</p>
+    <p class="say"><span class="who">本田プロ</span>「（ひとこと）」</p>
+    <p class="say"><span class="who">MC</span>「最後に、主催のゆうこママからごあいさつです」</p>
+    <p class="say"><span class="who">ゆうこママ</span>「（ごあいさつ）」</p>
+    <p class="say"><span class="who">MC</span>「写真は、後日データでお渡しします。動画はお配りしません」</p>
+    <p class="say"><span class="who">MC</span>「当日の打ち上げの方は、終わったらHaluへ移動してください」</p>
+    <p class="say"><span class="who">MC</span>「麻雀Firstの皆さま、本日は本当にありがとうございました」</p>
+    <p class="say"><span class="who">MC</span>「本田プロは、このあと空港へ向かわれます。拍手でお見送りしましょう」</p>
+    <p class="say"><span class="who">MC</span>「これで、第20回 Halu杯を終わります。お忘れ物のないよう、お気をつけてお帰りください」</p>
+  </div></details>
+
+  <details class="sc" id="t1830"><summary><span class="tm">18:30</span>終了・片付け<span class="du">19:00まで</span></summary><div class="in">
+    <p class="act"><span class="tag">動き</span>本田プロは18:30に会場を出て、タクシーで福岡空港へ向かいます。</p>
+    <p class="act"><span class="tag">動き</span>片付けは19:00までに終えます（19:00からは延長です）。</p>
+    <p class="act"><span class="tag">動き</span>当日の打ち上げのメンバーは、Haluへ移動します（地下鉄で約20分・タクシーで約10〜15分）。</p>
+    <p class="act"><span class="tbd">要確認</span>打ち上げの開始時刻（マ-3）。</p>
+  </div></details>
+
+  <h2>困ったとき</h2>
+
+  <details class="sc" id="komatta"><summary>困ったときの動き<span class="du">6件</span></summary><div class="in">
+    <h3>本田プロの到着が遅れた</h3>
+    <p class="act"><span class="tag">動き</span>ANA243便が20分遅れると、11:00のゲスト紹介に間に合いません。</p>
+    <p class="act"><span class="tag">動き</span>開会・ルール説明・点数の送り方を先に行い、ゲスト紹介は11:15の対局の直前へずらします。</p>
+    <p class="say"><span class="who">MC</span>「本田プロは、まもなく到着されます。ご紹介は、対局の前にいたします」</p>
+
+    <h3>決勝が長引き、表彰が18:30を過ぎそう</h3>
+    <p class="act"><span class="tag">動き</span>本田プロは18:30に会場を出ます。</p>
+    <p class="act"><span class="tbd">要確認</span>本田プロのひとことと見送りを、表彰より先にするか。</p>
+
+    <h3>時間が押した</h3>
+    <p class="act"><span class="tag">動き</span>予選と準決勝には、予備の時間がありません。打ち切りの声かけは、時刻どおりに行います。</p>
+
+    <h3>点数を送り間違えた</h3>
+    <p class="act"><span class="tag">動き</span>送り直せば上書きされます。取り消すときは「この卓の点数を取り消す」です。</p>
+
+    <h3>合計が同点になった</h3>
+    <p class="act"><span class="tag">動き</span>予選の合計と、準決勝の別の卓どうしの同点は、年齢が上の方が上位です。</p>
+    <p class="act"><span class="tag">動き</span>集計係が、その人たち全員の生年月日を幹部用ページ11章に入れます。生年月日は読み上げません。</p>
+
+    <h3>ルールで迷った</h3>
+    <p class="act"><span class="tag">動き</span>運営が判断します。全文はルールページにあります。</p>
+  </div></details>
+
+  <details class="sc" id="mitei"><summary>まだ決まっていないこと<span class="du">9件</span></summary><div class="in">
+    <ul>
+      <li>早く終わった卓の待ち時間の使い方（幹-3）</li>
+      <li>欠員が出たときの埋め方（幹-6）</li>
+      <li>賞品の内容（幹-10）</li>
+      <li>実況役を誰がするか（幹-11）</li>
+      <li>打ち上げの開始時刻（マ-3）</li>
+      <li>写真のSNS掲載について伝えるか（最-6）</li>
+      <li>トークショーで聞くこと（この台本は案）</li>
+      <li>「残り10分」の声かけをするか（この台本は案）</li>
+      <li>表彰が18:30を過ぎるときの順番</li>
+    </ul>
+  </div></details>
+
+  <a class="back" href="../">幹部用ページへ戻る</a>
+  <a class="top" href="#" title="上へ">↑</a>
+</div>
+<script>
+// 場面をまとめて開く・閉じる
+document.getElementById('openall').addEventListener('click', () => document.querySelectorAll('details.sc').forEach(d => { d.open = true; }));
+document.getElementById('closeall').addEventListener('click', () => document.querySelectorAll('details.sc').forEach(d => { d.open = false; }));
+// #t1100 のように場面を付けて開いたら、その場面を開く
+const hit = location.hash && document.getElementById(location.hash.slice(1));
+if (hit && hit.tagName === 'DETAILS') hit.open = true;
+</script>
+</body>
+</html>
