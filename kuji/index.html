@@ -47,6 +47,14 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 .tag.try{background:#ececE8;color:var(--muted)}
 .tag.real{background:var(--ok);color:#fff}
 .tag.swap{background:#ececE8;color:var(--muted);font-weight:400}
+select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid var(--accent);border-radius:8px;background:#fff;color:var(--fg)}
+.rbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+@media (min-width:560px){.rbtn{grid-template-columns:repeat(4,1fr)}}
+.rbtn button{margin:0;padding:8px 4px;line-height:1.4;background:var(--card);color:var(--accent)}
+.rbtn button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg)}
+.rbtn button small{display:block;font-size:.88rem;font-weight:400}
+.smap{max-width:420px;margin:0 auto}
+.smap svg{display:block;width:100%;height:auto}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
@@ -55,11 +63,20 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 <div class="wrap">
   <header>
     <h1>第20回 Halu杯 対戦表</h1>
-    <div class="sub">予選の卓と席を、ナンバーズ4の当せん番号で決めます。最終更新: 2026-10-23</div>
+    <div class="sub">予選の卓と席を、ナンバーズ4の当せん番号で決めます。最終更新: 2026-10-24</div>
   </header>
   <p class="lead">予選の対戦表は、くじで決まりました。くじの種は、<b>10月23日（金）のナンバーズ4（第7099回）の当せん番号「4385」</b>です。抽せん会はネットで生中継され、主催を含めて誰にも操作できません。<br>誰でもこのページで同じ結果を計算できます。</p>
 
 <h2 id="s1">1. 結果</h2>
+<div id="seat" class="box" hidden>
+<h3 style="margin-top:4px">今日の自分の席（座席表）</h3>
+<label for="me">名前を選ぶと、予選1〜4回戦の卓と席が図に出ます</label>
+<select id="me"><option value="">名前を選んでください</option></select>
+<div id="rbtn" class="rbtn"></div>
+<div class="smap"><svg viewBox="0 30 340 605" role="img" aria-label="麻雀Firstの卓の配置図。選んだ回戦の自分の卓と席に印が付きます"><image href="../haichi.svg" xlink:href="../haichi.svg" x="0" y="0" width="340" height="790"/><g id="hl"></g></svg></div>
+<p id="seattext" class="big"></p>
+<p class="note">図の下が入口側です。席は、入口側の左が東・右が南・奥の右が西・奥の左が北です。2卓・5卓は、本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わります（図は選んだ回戦の並び）。</p>
+</div>
 <div id="result"></div>
 
 <h2 id="s2">2. 決まるまでの流れ</h2>
@@ -235,9 +252,54 @@ function renderResult() {
   const box = document.getElementById('result'), lot = document.getElementById('lottery');
   if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; lot.innerHTML = ''; return; }
   const n4 = normN4(KUJI.n4), pairs = SWAPS[n4] || [];
+  REAL = scheduleOf(applySwaps(draw(seedN4(n4)), pairs));
   box.innerHTML = tablesHtml(seedN4(n4), pairs);
   lot.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + lotteryHtml(seedN4(n4), '<span class="tag real">本番</span>', pairs);
+  renderSeat();
 }
+// 1章の座席表（2026-10-24）: 名前を選ぶと、予選1〜4回戦の卓と席を配置図（../haichi.svg）の上に印で出す。選んだ名前は端末に覚える（halu:seat）
+// 卓の中心と席の場所は haichi.svg と同じ座標。卓の場所や席の並びを変えたら、haichi.svg と一緒にここも直す
+const TABLE_XY = { 1: [100, 460], 2: [100, 355], 3: [100, 250], 8: [100, 145], 4: [240, 460], 5: [240, 355], 6: [240, 250], 7: [240, 145] };
+const SPOT = [[-31.8, 31.8], [31.8, 31.8], [31.8, -31.8], [-31.8, -31.8]];   // 席の場所（上から見て反時計回り）
+const SPOT_NAME = ['入口側の左', '入口側の右', '奥の右', '奥の左'];
+const GUESTS = ['本田プロ', 'ゆうこママ'];
+// 席の場所の番号（SPOT の添字）。ふつうの卓は東が入口側の左。2卓・5卓はゲストが入口側の左のままで、ほかの3人はそこから反時計回り
+const spotOf = (row, i) => (i - Math.max(row.seats.findIndex(s => GUESTS.includes(s)), 0) + 4) % 4;
+let REAL = null, ROUND = '1';
+function renderSeat() {
+  const box = document.getElementById('seat'), sel = document.getElementById('me');
+  box.hidden = !REAL; if (!REAL) return;
+  let keep = sel.value; if (!keep) { try { keep = localStorage.getItem('halu:seat') || ''; } catch (e) {} }
+  sel.innerHTML = '<option value="">名前を選んでください</option>' + Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).map(p => '<option value="' + p + '">' + esc(nm(p)) + '</option>').join('');
+  if (/^P\d+$/.test(keep)) sel.value = keep;
+  drawSeat();
+}
+function drawSeat() {
+  const me = document.getElementById('me').value, mine = {};
+  ['1', '2', '3', '4'].forEach(r => (REAL[r] || []).forEach(row => row.seats.forEach((s, i) => { if (s === me) mine[r] = { row, i }; })));
+  const btn = document.getElementById('rbtn');
+  btn.innerHTML = ['1', '2', '3', '4'].map(r => '<button type="button" data-r="' + r + '" aria-pressed="' + (r === ROUND) + '">' + r + '回戦' + (mine[r] ? '<small>' + mine[r].row.table + '卓・' + WINDS[mine[r].i] + '</small>' : '') + '</button>').join('');
+  btn.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ROUND = b.dataset.r; drawSeat(); }));
+  // 2卓・5卓の東南西北は回ごとに変わる＝選んだ回戦の並びを図に書き足す（東は塗りの丸）
+  let h = '';
+  (REAL[ROUND] || []).filter(row => row.seats.some(s => GUESTS.includes(s))).forEach(row => {
+    const [x, y] = TABLE_XY[row.table], pro = row.seats.includes('本田プロ'), fill = pro ? '#7a1a1a' : '#1b6670', ink = pro ? '#5c1414' : '#124a52';
+    row.seats.forEach((s, i) => {
+      const [dx, dy] = SPOT[spotOf(row, i)], cx = x + dx, cy = y + dy;
+      if (i === 0) h += '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + fill + '"/>';
+      h += '<text x="' + cx + '" y="' + (cy + 4) + '" font-size="11" font-weight="700" text-anchor="middle" fill="' + (i === 0 ? '#fff' : ink) + '">' + WINDS[i] + '</text>';
+    });
+  });
+  const txt = document.getElementById('seattext'), m = mine[ROUND];
+  if (m) {
+    const [x, y] = TABLE_XY[m.row.table], k = spotOf(m.row, m.i), [dx, dy] = SPOT[k];
+    h += '<g transform="translate(' + x + ' ' + y + ') rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#ff7a00" fill-opacity=".28" stroke="#ff7a00" stroke-width="4"/></g>'
+      + '<circle cx="' + (x + dx) + '" cy="' + (y + dy) + '" r="14" fill="#ff7a00" fill-opacity=".3" stroke="#ff7a00" stroke-width="4"><animate attributeName="r" values="13;18;13" dur="1.6s" repeatCount="indefinite"/></circle>';
+    txt.textContent = ROUND + '回戦は ' + m.row.table + '卓の' + WINDS[m.i] + (m.i === 0 ? '（起家）' : '') + '・' + SPOT_NAME[k] + 'の席です。同卓: ' + m.row.seats.filter(s => s !== me).map(nm).join('・');
+  } else txt.textContent = me ? '' : '名前を選ぶと、図に印が付きます。';
+  document.getElementById('hl').innerHTML = h;
+}
+document.getElementById('me').addEventListener('change', e => { try { localStorage.setItem('halu:seat', e.target.value); } catch (er) {} drawSeat(); });
 // 5章: 型
 function renderKata() {
   let h = roundTables(KATA, label);

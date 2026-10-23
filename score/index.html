@@ -88,11 +88,11 @@ summary{cursor:pointer;font-weight:700}
           <option value="2">予選 2半荘目</option>
           <option value="3">予選 3半荘目</option>
           <option value="4">予選 4半荘目</option>
-          <option value="S1">準決勝 S1卓</option>
-          <option value="S2">準決勝 S2卓</option>
-          <option value="B3">準決勝の時間 3卓（予選7〜10位）</option>
-          <option value="B4">準決勝の時間 4卓（予選11〜14位）</option>
-          <option value="B5">準決勝の時間 5卓（予選15〜18位）</option>
+          <option value="S1">準決勝 S1卓（2卓）</option>
+          <option value="S2">準決勝 S2卓（5卓）</option>
+          <option value="B3">準決勝の時間 1卓（予選7〜10位）</option>
+          <option value="B4">準決勝の時間 3卓（予選11〜14位）</option>
+          <option value="B5">準決勝の時間 4卓（予選15〜18位）</option>
           <option value="B6">準決勝の時間 6卓（予選19〜22位）</option>
           <option value="B7">準決勝の時間 7卓（予選23〜26位）</option>
           <option value="B8">準決勝の時間 8卓（予選27〜30位）</option>
@@ -178,6 +178,9 @@ const SCHED = window.HALU_SCHEDULE || {};
 const SCHED_TBD = !['1', '2', '3', '4'].some(r => (SCHED[r] || []).length);
 const TBD_TEXT = '予選の対戦表は製作中です（未定）。前に載っていた表は使いません。決まったら、ここで卓を選んで点棒を入れられます。';
 const WINDS = ['東', '南', '西', '北'];
+// 準決勝の時間の6卓（予選7〜10位から順に）の卓番号。内部の呼び名 B3〜B8 はこの順（B3＝1卓 … B8＝8卓）。S1卓＝2卓・S2卓＝5卓（店との打ち合わせ・2026-10-17）
+const BAND_TABLES = [1, 3, 4, 6, 7, 8];
+const bandNo = key => BAND_TABLES[Number(String(key).slice(1)) - 3];
 // 順位点（ウマ30-10にオカ20を含めた値）を 0.1ポイント単位の整数で持つ。1位 +50.0／2位 +10.0／3位 −10.0／4位 −30.0
 const BONUS = [500, 100, -100, -300], RETURN = 30000;
 const PLAYERS = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));
@@ -405,7 +408,6 @@ function renderStage() {
   const lab = m => m ? m.label : '（未確定）';
   if (cnt < 30) { const p = document.createElement('p'); p.className = 'small'; p.textContent = '予選を終えたのは ' + cnt + '/30名です（メンバーは暫定）。'; box.appendChild(p); }
   const rows = [['2卓（準決勝S1）', semi.S1.map(lab)], ['5卓（準決勝S2）', semi.S2.map(lab)]];
-  const BAND_TABLES = [1, 3, 4, 6, 7, 8];   // 準決勝に進めなかった24名の卓（予選7〜10位から順に）
   for (let t = 0; t < 6; t++) {
     const mem = [0, 1, 2, 3].map(j => { const i = 6 + t * 4 + j; return rk[i] ? plabel(rk[i]) : '（未確定）'; });
     rows.push([BAND_TABLES[t] + '卓（予選' + (7 + t * 4) + '〜' + (10 + t * 4) + '位）', mem]);
@@ -486,7 +488,7 @@ function renderFinal() {
     semi.S1.concat(semi.S2).filter(keep).forEach(m => rows.push({ p: m ? m.p : null, grp: 'top', tg: 0, done: false, tie: false, byAge: false, how: '準決勝・決勝の後に決まる', raw: null, rank: null, award: '' }));
   }
   const band = bandTables();
-  for (let t = 3; t <= 8; t++) group('band', band['B' + t], 'S', t + '卓');
+  for (let t = 3; t <= 8; t++) group('band', band['B' + t], 'S', bandNo('B' + t) + '卓');
   const notes = [];
   // 準決勝の同じ卓で、決勝に進む2位と3位が同点（起家に近い方が上＝ページでは決められない）。その人たちは「同点」にして注意を出す
   const edges = semiEdgeTies();
@@ -533,7 +535,7 @@ function renderFinal() {
 const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
 const STAGE = { S1: { api: 'S', name: '準決勝 S1卓' }, S2: { api: 'S', name: '準決勝 S2卓' }, F: { api: 'F', name: '決勝' } };
 // 準決勝の時間の6卓（予選7〜30位を4人ずつ）。点数は各人の準決勝の枠（S）に入れ、最終順位に使う
-for (let t = 3; t <= 8; t++) STAGE['B' + t] = { api: 'S', name: '準決勝の時間 ' + t + '卓' };
+for (let t = 3; t <= 8; t++) STAGE['B' + t] = { api: 'S', name: '準決勝の時間 ' + bandNo('B' + t) + '卓' };
 function isPrelim() { return !STAGE[qround.value]; }
 function apiRound() { return isPrelim() ? qround.value : STAGE[qround.value].api; }
 // 予選順位（参加者だけ・合計ポイント順。同点は生年月日が入っていれば年上から）。並びは集計表と同じ
@@ -595,7 +597,7 @@ function fillTables() {
     if (!qtable.options.length) { const o = document.createElement('option'); o.value = ''; o.textContent = '未定'; qtable.appendChild(o); }
     try { const last = localStorage.getItem('halu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
   } else {
-    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value.replace('B', '') + '卓'; qtable.appendChild(o);
+    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value.startsWith('B') ? bandNo(qround.value) + '卓' : { S1: '2卓（S1）', S2: '5卓（S2）' }[qround.value]; qtable.appendChild(o);
   }
   qtable.disabled = !isPrelim() || !(SCHED[qround.value] || []).length;
   fillSeats();
