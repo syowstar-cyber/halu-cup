@@ -17,8 +17,6 @@
 //   生年月日（幹部用ページ）… キーなし。{action:'birth', player:'P12'|'本田プロ'|'ゆうこママ', date:'YYYY-MM-DD'|''}（'' で消す。2026-10-11）
 //     同点（年齢が上の方が上位）のときだけ入れる。BIRTH に持ち、生年月日そのものは GET でも返事でも返さない。
 //     返すのは入れた人どうしの年上からの順 agerank（1 が最年長・同じ日は同じ数）だけ
-//   確定（主催の指示で）… キーなし。{action:'lock', rounds:['1','2']}（その一覧に置き換える。[] で全部外す。2026-10-24）
-//     LOCKED_ROUNDS に持ち、確定した枠への点数の送信と取り消しは断る（error 'locked'）。GET の locked で返す
 
 const ROUNDS = ['1', '2', '3', '4', 'S', 'F'];   // 予選1〜4・準決勝・決勝
 const PLAYERS = (function () {
@@ -70,12 +68,7 @@ function load_() {
   if (!players) players = emptyPlayers_();
   PLAYERS.forEach(function (q) { if (!players[q]) players[q] = emptyPlayers_()[q]; });
   let partyLog = []; try { partyLog = loadPartyLog_(); } catch (e) { partyLog = []; }
-  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog, pro: proStatus_(loadPro_()), agerank: ageRankOut_(), locked: lockedRounds_() };
-}
-
-// 確定した枠（'1'〜'4'・'S'・'F'）。点数の送信と取り消しを断る（2026-10-24）
-function lockedRounds_() {
-  try { const a = JSON.parse(props_().getProperty('LOCKED_ROUNDS') || '[]'); return Array.isArray(a) ? a.map(String) : []; } catch (e) { return []; }
+  return { updated: p.getProperty('UPDATED') || null, players: players, log: log, checks: checks || {}, party: party || {}, roster: roster || {}, views: views, chombo: chombo || {}, partyLog: partyLog, pro: proStatus_(loadPro_()), agerank: ageRankOut_() };
 }
 
 // 生年月日。birth[プレイヤー] = 'YYYY-MM-DD'（公開しない。返すのは ageRank_ の順だけ）
@@ -263,7 +256,6 @@ function doPost(e) {
   if (body.action === 'view') return doView_(body);
   if (body.action === 'pro') return doPro_(body);
   if (body.action === 'birth') return doBirth_(body);
-  if (body.action === 'lock') return doLock_(body);
 
   const player = String(body.player || '');
   const round = String(body.round || '');
@@ -285,7 +277,6 @@ function doPost(e) {
   lock.waitLock(30000);   // 半荘の終わりに8卓の送信が重なっても待てるように（2026-10-24。前は10秒）
   try {
     snap_();   // ロックを取った後に写しを作る（props_ の説明）
-    if (lockedRounds_().indexOf(round) >= 0) return out_({ ok: false, error: 'locked' });   // 確定した枠は送信も取り消しも断る
     const d = load_();
     d.players[player][round] = score;
     const c = d.chombo[player] || {};
@@ -470,21 +461,6 @@ function doBirth_(body) {
     if (date) birth[player] = date; else delete birth[player];
     props_().setProperty('BIRTH', JSON.stringify(birth));
     return out_({ ok: true, agerank: ageRank_(birth) });
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-// 確定する枠の一覧を置き換える（主催の指示で使う。[] で全部外す）。点数そのものは変えない
-function doLock_(body) {
-  const rounds = body.rounds;
-  if (!Array.isArray(rounds) || rounds.some(function (r) { return ROUNDS.indexOf(String(r)) < 0; })) return out_({ ok: false, error: 'round' });
-  const lock = LockService.getScriptLock();
-  lock.waitLock(30000);
-  try {
-    const list = ROUNDS.filter(function (r) { return rounds.map(String).indexOf(r) >= 0; });
-    props_().setProperty('LOCKED_ROUNDS', JSON.stringify(list));
-    return out_({ ok: true, locked: list });
   } finally {
     lock.releaseLock();
   }

@@ -49,7 +49,10 @@ button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2
 .tag.swap{background:#ececE8;color:var(--muted);font-weight:400}
 select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid var(--accent);border-radius:8px;background:#fff;color:var(--fg)}
 .rbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-@media (min-width:560px){.rbtn{grid-template-columns:repeat(4,1fr)}}
+.rbtn button[data-r=S]{grid-column:1/-1}
+@media (min-width:560px){.rbtn{grid-template-columns:repeat(5,1fr)}.rbtn button[data-r=S]{grid-column:auto}}
+tr.adv td{background:var(--soft);font-weight:700}
+button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertical-align:2px}
 .rbtn button{margin:0;padding:8px 4px;line-height:1.4;background:var(--card);color:var(--accent)}
 .rbtn button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg)}
 .rbtn button small{display:block;font-size:.88rem;font-weight:400}
@@ -82,7 +85,14 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
 <div class="smap"><svg viewBox="0 30 340 605" role="img" aria-label="麻雀Firstの卓の配置図。選んだ回戦の自分の卓と席に印が付きます"><image href="../haichi.svg" xlink:href="../haichi.svg" x="0" y="0" width="340" height="790"/><g id="hl"></g></svg></div>
 <p id="seattext" class="big"></p>
 <p class="note">図の下が入口側です。席は、入口側の左が東・右が南・奥の右が西・奥の左が北です。2卓・5卓は、本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わります（図は選んだ回戦の並び）。</p>
-<p class="note">準決勝の時間の卓は、予選の結果で決まります。点数報告ページの「準決勝・決勝の時間の卓」に名前つきで出ます（席と起家は自動卓のサイコロで決めます）。</p>
+<p class="note">「準決勝」を押すと、準決勝の時間に打つ卓に印が付きます（席と起家は自動卓のサイコロで決めます）。</p>
+</div>
+<div id="semiwrap" hidden>
+<h3>準決勝の時間の卓<button type="button" id="semire" class="mini">最新にする</button></h3>
+<p class="note">予選の結果で決まりました。準決勝の時間は全員が打ちます。席と起家は自動卓のサイコロで決めます。点数が入ると、素点の順に並びます（同じ卓の同点は起家に近い方が上位＝集計係が確かめます）。</p>
+<div id="semi"></div>
+<h3>予選の結果</h3>
+<div id="prelim"></div>
 </div>
 <div id="result"></div>
 
@@ -147,6 +157,7 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
 <script src="../score/config.js"></script>
 <script src="kata.js"></script>
 <script src="seed.js"></script>
+<script src="semi.js"></script>
 <script>
 const API = (window.HALU_API || '').trim();
 const KATA = window.HALU_KATA || {};
@@ -275,7 +286,43 @@ const GUESTS = ['本田プロ', 'ゆうこママ'];
 const spotOf = (row, i) => (i - Math.max(row.seats.findIndex(s => GUESTS.includes(s)), 0) + 4) % 4;
 // 最初に選ぶ回戦は3回戦（2026-10-24 主催）。受け口の点数が読めたら、まだ全卓がそろっていない最初の回戦にする（人が押したら動かさない）
 let REAL = null, ROUND = '3', ROUND_TOUCHED = false;
-const currentRound = players => ['1', '2', '3', '4'].find(r => (REAL && REAL[r] || []).some(row => row.seats.some(p => !players[p] || players[p][r] === null || players[p][r] === undefined))) || '4';
+const currentRound = players => ['1', '2', '3', '4'].find(r => (REAL && REAL[r] || []).some(row => row.seats.some(p => !players[p] || players[p][r] === null || players[p][r] === undefined))) || (SEMI ? 'S' : '4');
+// 準決勝の時間の卓（2026-10-24）。顔ぶれは予選の結果で決まったもの（semi.js）。点数（素点）は受け口から読み、入ったら順に並べる
+const SEMI = window.HALU_SEMI || null;
+let PD = {};   // 受け口の点数（players）
+const semiOf = p => SEMI && SEMI.tables.find(t => t.members.includes(p));
+const fpt = n => (n > 0 ? '+' : n < 0 ? '−' : '') + (Math.abs(n) / 10).toFixed(1);
+const sOf = p => (PD[p] && PD[p].S !== null && PD[p].S !== undefined) ? PD[p].S : null;
+const sorted = t => t.members.slice().sort((a, b) => sOf(b) - sOf(a));   // 同点は並び順のまま（点数報告ページと同じ）
+function renderSemi() {
+  if (!SEMI) return;
+  document.getElementById('semiwrap').hidden = false;
+  const rk = p => { const i = SEMI.rank.findIndex(x => x[0] === p); return i >= 0 ? '予選' + (i + 1) + '位' : ''; };
+  let h = '<div class="tw"><table><thead><tr><th>卓</th><th>メンバー</th><th>素点</th></tr></thead><tbody>';
+  SEMI.tables.forEach(t => {
+    const done = t.members.every(p => sOf(p) !== null), order = done ? sorted(t) : t.members;
+    const who = order.map((p, i) => (done ? (i + 1) + '位' + (order.some(q => q !== p && sOf(q) === sOf(p)) ? '（同点）' : '') + ' ' : '') + esc(nm(p)) + (rk(p) ? '<small>（' + rk(p) + '）</small>' : ''));
+    h += '<tr><td>' + t.table + '卓<br><small>' + esc(t.name) + '</small></td><td class="wrap">' + who.join('<br>') + '</td><td>' + order.map(p => sOf(p) === null ? '—' : sOf(p).toLocaleString('ja-JP')).join('<br>') + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  const s1 = SEMI.tables[0], s2 = SEMI.tables[1];
+  if ([s1, s2].every(t => t.members.every(p => sOf(p) !== null))) {
+    const a = sorted(s1), b = sorted(s2), fin = [a[0], b[0], a[1], b[1]];
+    const edge = [a, b].some(o => sOf(o[1]) === sOf(o[2]));   // 2位と3位が同点＝起家に近い方が決勝へ（ページでは決められない）
+    h += '<p class="box"><b>決勝に進む4名</b>: ' + fin.map(p => esc(nm(p))).join('・') + (edge ? '<br>【注意】2位と3位が同点の卓があります。決勝に進むのは起家に近い方なので、集計係が確かめます（ここは仮）。' : '')
+      + (fin.includes('本田プロ') ? '' : '<br>本田プロは決勝に進めなかったため、準決勝で敗退した4名で横の卓のエキシビジョン戦をします。') + '</p>';
+  }
+  document.getElementById('semi').innerHTML = h;
+  let g = '<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>合計</th><th>準決勝の時間</th></tr></thead><tbody>';
+  SEMI.rank.forEach(([p, tot], i) => { const t = semiOf(p); g += '<tr' + (i < 6 ? ' class="adv"' : '') + '><td>' + (i + 1) + '位</td><td>' + esc(nm(p)) + '</td><td>' + fpt(tot) + '</td><td>' + (t ? t.table + '卓' : '') + '</td></tr>'; });
+  g += '</tbody></table></div><p class="note">色つきの6名が準決勝に進みます（S1卓＝2卓・S2卓＝5卓）。'
+    + SEMI.guests.map(([n, tot, r]) => n + 'は ' + fpt(tot) + '（32名中' + r + '位' + (r <= 8 ? '＝最終順位と表彰の対象' : '＝最終順位と表彰の対象外') + '）').join('、') + '。</p>';
+  document.getElementById('prelim').innerHTML = g;
+}
+async function refreshSemi() {
+  if (!API || !SEMI) return;
+  try { const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json(); if (j.ok) { ROSTER = j.data.roster || ROSTER; PD = j.data.players || {}; renderSemi(); } } catch (e) {}
+}
 function renderSeat() {
   const box = document.getElementById('seat'), sel = document.getElementById('me');
   box.hidden = !REAL; if (!REAL) return;
@@ -288,7 +335,9 @@ function drawSeat() {
   const me = document.getElementById('me').value, mine = {};
   ['1', '2', '3', '4'].forEach(r => (REAL[r] || []).forEach(row => row.seats.forEach((s, i) => { if (s === me) mine[r] = { row, i }; })));
   const btn = document.getElementById('rbtn');
-  btn.innerHTML = ['1', '2', '3', '4'].map(r => '<button type="button" data-r="' + r + '" aria-pressed="' + (r === ROUND) + '">' + r + '回戦' + (mine[r] ? '<small>' + mine[r].row.table + '卓・' + WINDS[mine[r].i] + '</small>' : '') + '</button>').join('');
+  const sem = SEMI ? semiOf(me) : null;
+  btn.innerHTML = ['1', '2', '3', '4'].map(r => '<button type="button" data-r="' + r + '" aria-pressed="' + (r === ROUND) + '">' + r + '回戦' + (mine[r] ? '<small>' + mine[r].row.table + '卓・' + WINDS[mine[r].i] + '</small>' : '') + '</button>').join('')
+    + (SEMI ? '<button type="button" data-r="S" aria-pressed="' + (ROUND === 'S') + '">準決勝' + (sem ? '<small>' + sem.table + '卓（' + esc(sem.name) + '）</small>' : '') + '</button>' : '');
   btn.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ROUND = b.dataset.r; ROUND_TOUCHED = true; drawSeat(); }));
   // 2卓・5卓の東南西北は回ごとに変わる＝選んだ回戦の並びを図に書き足す（東は塗りの丸）
   let h = '';
@@ -301,7 +350,12 @@ function drawSeat() {
     });
   });
   const txt = document.getElementById('seattext'), m = mine[ROUND];
-  if (m) {
+  if (ROUND === 'S' && sem) {
+    // 準決勝の時間は卓だけ（席と起家はサイコロ）
+    const [x, y] = TABLE_XY[sem.table];
+    h += '<g transform="translate(' + x + ' ' + y + ') rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#ff7a00" fill-opacity=".28" stroke="#ff7a00" stroke-width="4"><animate attributeName="stroke-width" values="3;8;3" dur="1.6s" repeatCount="indefinite"/></rect></g>';
+    txt.textContent = '準決勝の時間は ' + sem.table + '卓（' + sem.name + '）です。席と起家はサイコロで決めます。同卓: ' + sem.members.filter(s => s !== me).map(nm).join('・');
+  } else if (m) {
     const [x, y] = TABLE_XY[m.row.table], k = spotOf(m.row, m.i), [dx, dy] = SPOT[k];
     h += '<g transform="translate(' + x + ' ' + y + ') rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#ff7a00" fill-opacity=".28" stroke="#ff7a00" stroke-width="4"/></g>'
       + '<circle cx="' + (x + dx) + '" cy="' + (y + dy) + '" r="14" fill="#ff7a00" fill-opacity=".3" stroke="#ff7a00" stroke-width="4"><animate attributeName="r" values="13;18;13" dur="1.6s" repeatCount="indefinite"/></circle>';
@@ -343,10 +397,15 @@ async function load() {
   if (!API) return;
   try {
     const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json();
-    if (j.ok) { ROSTER = j.data.roster || {}; if (!ROUND_TOUCHED && j.data.players) ROUND = currentRound(j.data.players); renderRoster(); renderResult(); }
+    if (j.ok) { ROSTER = j.data.roster || {}; PD = j.data.players || {}; if (!ROUND_TOUCHED && j.data.players) ROUND = currentRound(j.data.players); renderRoster(); renderResult(); renderSemi(); }
   } catch (e) {}
 }
 load();
+renderSemi();
+// 準決勝の時間の点数: 画面に出ているときだけ2分ごとに読み直す（受け口の読み取りの上限のため）。「最新にする」で今すぐ
+let SEMI_AT = Date.now();
+document.getElementById('semire').addEventListener('click', () => { SEMI_AT = Date.now(); refreshSemi(); });
+setInterval(() => { if (SEMI && !document.hidden && Date.now() - SEMI_AT >= 120000) { SEMI_AT = Date.now(); refreshSemi(); } }, 15000);
 </script>
 <a class="top" href="#" title="上へ">↑</a>
 </body>
