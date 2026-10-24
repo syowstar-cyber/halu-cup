@@ -93,7 +93,6 @@ nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.
 </head>
 <body>
 <div class="wrap" id="page">
-  <div class="hero"><img src="poster.jpg" alt="第20回 Halu杯 ポスター"><span class="badge">幹部用</span></div>
   <header>
     <h1>第20回 Halu杯 幹部用ページ</h1>
     <div class="sub">2026年10月24日（土）開催・幹部と運営スタッフ向け。最終更新: __UPDATED__</div>
@@ -373,7 +372,7 @@ function renderAttend(force){
 function esc(s){ return String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
 function setupChecks(c){
   const first = c.querySelector('ul.todo, table.todo');
-  if (!first) return;
+  if (!first) { syncChecks(c); return; }   // チェックの章を出さないとき（打ち上げの章だけ）も、打ち上げの表は受け口から読む
   // 名前欄（最初のチェック節の h2 の直後に1つ）
   let h = first; while (h && h.tagName !== 'H2') h = h.previousElementSibling;
   const who = document.createElement('div'); who.className = 'who';
@@ -414,6 +413,7 @@ function setupChecks(c){
   const c = document.getElementById('content');
   const toc = document.getElementById('toc');
   c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+  toc.hidden = c.querySelectorAll('h2').length < 2;   // 章が1つ（打ち上げだけ）のときは目次を出さない
   setupChecks(c);
 })();
 </script>

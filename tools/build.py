@@ -42,6 +42,10 @@ lst = None        # ("ul"|"ol", items)
 TODO_LIST_SECTIONS = ("11", "12", "13")    # 設営・手配物・出発前チェック（箇条書きにチェック）
 TODO_TABLE_SECTIONS = ("14",)              # 確認事項一覧（見出しが「#」の表の行にチェック）
 
+# ページに出す章（見出しに含む語）。空なら全部。2026-10-24 主催「幹部用も参加者用と同じに」＝打ち上げの章だけ（幹部用MDは全章のまま）
+ONLY = ["打ち上げ"]
+keep = True
+
 
 # 対戦表: 本田プロがいる行（予選N半荘目）と、選手別の表でその卓に当たる席に印を付ける
 PRO = "本田プロ"
@@ -145,14 +149,14 @@ while i < len(src):
     if in_code:
         if line.startswith("```"):
             in_code = False
-            out.append("</pre>")
-        else:
+            if keep: out.append("</pre>")
+        elif keep:
             out.append(html.escape(line, quote=False))
         continue
     if line.startswith("```"):
         flush_table(); flush_list()
         in_code = True
-        out.append('<pre class="box">')
+        if keep: out.append('<pre class="box">')
         continue
     m = re.match(r"^(#{2,3})\s+(.*)", line)
     if m:
@@ -163,15 +167,18 @@ while i < len(src):
             section = re.match(r"(\d+)", title).group(1) if re.match(r"\d", title) else ""
             in_history = "変更履歴" in title
             skip_owner = False
+            keep = not ONLY or any(w in title for w in ONLY)
+        if not keep:
+            continue
         if level == 3 and title.startswith("主催マター"):
             skip_owner = True
             continue
         if skip_owner:
             continue
-        out.append(f"<h{level} id=\"s{section}\">{inline(title)}</h{level}>" if level == 2
+        out.append(f"<h{level} id=\"s{section}\">{inline(re.sub(r'^[0-9]+[.]\s*', '', title) if ONLY else title)}</h{level}>" if level == 2
                    else f"<h{level}>{inline(title)}</h{level}>")
         continue
-    if skip_owner:
+    if not keep or skip_owner:
         continue
     if line.startswith("出典:"):
         while i < len(src) and src[i].strip() and not src[i].startswith("---"):
@@ -226,7 +233,7 @@ while i < len(src):
     out.append(f"<p>{inline(line)}</p>")
 
 flush_table(); flush_list()
-lead = "<p class=\"lead\">主催: ゆうこママ。変更の経緯は末尾の「16. 変更履歴」にまとめています。</p>\n"
+lead = "" if ONLY else "<p class=\"lead\">主催: ゆうこママ。変更の経緯は末尾の「16. 変更履歴」にまとめています。</p>\n"
 body = lead + "\n".join(out)
 # 15章のLINE用テキストは折りたたみに
 body = re.sub(r'<h3>(参加者向け|運営・幹部向け)</h3>\n<pre class="box">(.*?)</pre>',
