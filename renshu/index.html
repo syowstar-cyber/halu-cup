@@ -108,6 +108,7 @@ summary{cursor:pointer;font-weight:700}
           <option value="B7">準決勝の時間 7卓（予選23〜26位）</option>
           <option value="B8">準決勝の時間 8卓（予選27〜30位）</option>
           <option value="F">決勝</option>
+          <option value="X">エキシビジョン戦（横の卓）</option>
         </select>
       </div>
       <div>
@@ -306,11 +307,13 @@ function render(d) {
   document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
   const pts = calcAll(d);
   computeTotals(d);
+  // 決勝の列は決勝の4名だけ（エキシビジョン戦の点数も同じ枠 F に入るため）
+  const finPs = finalTable().filter(Boolean).map(m => m.p);
   const rows = PLAYERS.map(p => {
     const q = ['1', '2', '3', '4'].map(k => pts[p][k]);
     const done = q.filter(v => v !== null);
     const s = d.players[p] || {};
-    return { p, q, total: done.length ? done.reduce((a, b) => a + b, 0) : null, n: done.length, S: s.S ?? null, F: s.F ?? null, guest: !p.startsWith('P') };
+    return { p, q, total: done.length ? done.reduce((a, b) => a + b, 0) : null, n: done.length, S: s.S ?? null, F: finPs.includes(p) ? (s.F ?? null) : null, guest: !p.startsWith('P') };
   });
   // 4半荘の合計が同点＝年齢が上の方が上位。生年月日が入っていれば年上から並べ（「年齢」）、なければ同じ順位の数字で並び順に仮置きし「同点」を付ける
   const players = sharedRank(orderByAge(rows.filter(r => !r.guest).sort((a, b) => (b.total ?? -Infinity) - (a.total ?? -Infinity)), r => r.total), r => r.total);
@@ -329,7 +332,7 @@ function render(d) {
   const rb = document.querySelector('#raw tbody'); rb.innerHTML = '';
   PLAYERS.forEach(p => {
     const s = d.players[p] || {}; const tr = document.createElement('tr');
-    [dn(p), s['1'], s['2'], s['3'], s['4'], s.S, s.F].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
+    [dn(p), s['1'], s['2'], s['3'], s['4'], s.S, finPs.includes(p) ? s.F : null].forEach((c, i) => { const td = document.createElement('td'); td.textContent = i ? fmt(c ?? null) : c; if (typeof c === 'number' && c < 0) td.className = 'neg'; tr.appendChild(td); });
     rb.appendChild(tr);
   });
   // 卓の入力状況
@@ -455,7 +458,7 @@ function renderStage() {
     note.textContent = '本田プロは決勝に進みました。決勝はみんなで観戦します（エキシビジョン戦はありません）。';
   } else {
     const ps = fin.map(m => m.p);
-    box.appendChild(stageTable('決勝の時間: エキシビジョン戦（横の卓）', [['エキシビジョン', semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)).map(m => m.label)]]));
+    box.appendChild(stageTable('決勝の時間: エキシビジョン戦（横の卓）', [['エキシビジョン', semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)).map(m => m.label + (DATA && DATA.players[m.p] && DATA.players[m.p].F !== null && DATA.players[m.p].F !== undefined ? '　' + fmt(DATA.players[m.p].F) + '点' : ''))]]));
     note.textContent = '本田プロが決勝に進めなかったため、準決勝で敗退した4名で、横の卓のエキシビジョン戦をします。ほかの方は決勝を観戦します。';
   }
   const edges = semiEdgeTies();
@@ -479,7 +482,9 @@ function renderFinal() {
     .map(p => ({ p, total: TOTALS[p].total })), T), T);
   const prelimDone = all.length === PLAYERS.length;
   // 順位から抜くゲストは、同点を並べる前に外す（抜いた後に残る人どうしで、同点と年齢を決める）
-  const excluded = new Set(prelimDone ? ['本田プロ', 'ゆうこママ'].filter(g => all.findIndex(x => x.p === g) >= 8) : []);
+  // 本田プロが決勝に進めずエキシビジョン戦をしたときは、1〜4位＝決勝、5〜8位＝エキシビジョン戦、9位から＝準決勝の時間の卓ごと。ゲストも抜かない（2026-10-24 主催）
+  const exMode = finalTable().every(Boolean) && !finalTable().some(m => m.p === '本田プロ');
+  const excluded = new Set(prelimDone && !exMode ? ['本田プロ', 'ゆうこママ'].filter(g => all.findIndex(x => x.p === g) >= 8) : []);
   const keep = m => !m || !excluded.has(m.p);
   let rows = [], tg = 0;   // {p, grp, tg, done, tie, byAge, how, raw, rank, award}。tg＝同じ順位の数字を分け合えるかたまりの番号
   // tableOf（プレイヤー→卓）を渡すと（準決勝で敗退した人）、別の卓どうしの同点を生年月日で並べる（同じ卓の中は起家＝ページでは決めない）。
@@ -515,7 +520,10 @@ function renderFinal() {
     rows.push(...out);
   };
   const semi = semiTables(), fin = finalTable();
-  if (fin.every(Boolean)) {
+  if (exMode) {
+    group('fin', fin, 'F', '決勝');
+    group('ex', exhibitionTable(), 'F', 'エキシビジョン');
+  } else if (fin.every(Boolean)) {
     const ps = fin.map(m => m.p);
     group('top', fin.filter(keep), 'F', '決勝');
     group('top', semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p) && keep(m)), 'S', '準決勝', p => semi.S1.some(m => m && m.p === p) ? 'S1' : 'S2');
@@ -533,8 +541,9 @@ function renderFinal() {
   const und = prelimDone && undecided(all[7], all[8], T);
   const [lo, hi] = und ? tieRun(all, 7, 8, T) : [7, 8];
   const edgeNames = und ? all.slice(lo, hi + 1).map(x => dn(x.p)).join('・') : '';
+  if (exMode) notes.push('本田プロが決勝に進めなかったため、1〜4位は決勝、5〜8位はエキシビジョン戦、9位からは準決勝の時間の卓ごとの素点で決めます（本田プロ・ゆうこママも順位に入ります）。');
   ['本田プロ', 'ゆうこママ'].forEach(g => {
-    if (!prelimDone) return;
+    if (!prelimDone || exMode) return;
     const i = all.findIndex(x => x.p === g), x = all[i], edge = und && i >= lo && i <= hi;
     notes.push(g + 'は予選の合計が32名中' + x.rank + '位' + (x.tie ? '（同点）' : '')
       + (edge ? 'で、8位と9位の境目の同点のため、いまは並び順で仮に順位に' + (excluded.has(g) ? '入れていません。' : '入れています。')
@@ -545,7 +554,7 @@ function renderFinal() {
   if (!prelimDone) notes.push('本田プロ・ゆうこママを順位に入れるかは、予選の後に決まります（予選の合計が32名中8位以内なら入れる）。');
   // 順位の数字。まだ決まらない同点（同じかたまりで同じ素点の「同点」）は同じ数にする
   rows.forEach((r, i) => { const q = rows[i - 1]; r.rank = !r.done ? null : (q && q.done && q.tg === r.tg && q.tie && r.tie && q.raw === r.raw ? q.rank : i + 1); });
-  if (fin.every(Boolean) && rows.filter(r => r.grp === 'top').every(r => r.done)) {
+  if (fin.every(Boolean) && rows.filter(r => r.grp === 'top' || r.grp === 'fin').every(r => r.done)) {
     rows.filter(r => r.p).slice(0, 3).forEach((r, i) => { r.award = ['優勝', '準優勝', '第3位'][i] + (r.tie ? '（仮）' : ''); });
   }
   const tw = document.createElement('div'); tw.className = 'tw';
@@ -568,7 +577,14 @@ function renderFinal() {
 
 // ---- 卓入力（予選・準決勝・決勝 共通）----
 const qround = document.getElementById('qround'), qtable = document.getElementById('qtable');
-const STAGE = { S1: { api: 'S', name: '準決勝 S1卓' }, S2: { api: 'S', name: '準決勝 S2卓' }, F: { api: 'F', name: '決勝' } };
+const STAGE = { S1: { api: 'S', name: '準決勝 S1卓' }, S2: { api: 'S', name: '準決勝 S2卓' }, F: { api: 'F', name: '決勝' }, X: { api: 'F', name: 'エキシビジョン戦' } };
+// エキシビジョン戦（本田プロが決勝に進めなかったときの、準決勝で敗退した4名。2026-10-24）。
+// 点数は各人の決勝の枠（F）に入れる＝決勝に出ない人だけなので決勝の点数とは重ならない。最終順位には使わない（受け口は変えない）
+function exhibitionTable() {
+  const fin = finalTable(); if (!fin.every(Boolean) || fin.some(m => m.p === '本田プロ')) return [null, null, null, null];
+  const semi = semiTables(), ps = fin.map(m => m.p);
+  return semi.S1.concat(semi.S2).filter(m => m && !ps.includes(m.p)).map(m => ({ p: m.p, label: m.label }));
+}
 // 準決勝の時間の6卓（予選7〜30位を4人ずつ）。点数は各人の準決勝の枠（S）に入れ、最終順位に使う
 for (let t = 3; t <= 8; t++) STAGE['B' + t] = { api: 'S', name: '準決勝の時間 ' + bandNo('B' + t) + '卓' };
 function isPrelim() { return !STAGE[qround.value]; }
@@ -622,7 +638,7 @@ function currentTable() {
     const t = (SCHED[qround.value] || []).find(t => String(t.table) === qtable.value);
     return t ? { name: qround.value + '半荘目 ' + t.table + '卓', seats: t.seats, labels: t.seats.map(dn), missing: 0 } : null;
   }
-  const mem = qround.value === 'F' ? finalTable() : (semiTables()[qround.value] || bandTables()[qround.value]);
+  const mem = qround.value === 'F' ? finalTable() : qround.value === 'X' ? exhibitionTable() : (semiTables()[qround.value] || bandTables()[qround.value]);
   return { name: STAGE[qround.value].name, seats: mem.map(m => m ? m.p : null), labels: mem.map(m => m ? m.label : '（未確定）'), missing: mem.filter(m => !m).length };
 }
 function fillTables() {
@@ -632,7 +648,7 @@ function fillTables() {
     if (!qtable.options.length) { const o = document.createElement('option'); o.value = ''; o.textContent = '未定'; qtable.appendChild(o); }
     try { const last = localStorage.getItem('halu-renshu:table'); if (last && [...qtable.options].some(o => o.value === last)) qtable.value = last; } catch (e) {}
   } else {
-    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value.startsWith('B') ? bandNo(qround.value) + '卓' : { S1: '2卓（S1）', S2: '5卓（S2）' }[qround.value]; qtable.appendChild(o);
+    const o = document.createElement('option'); o.value = qround.value; o.textContent = qround.value === 'F' ? '決勝卓' : qround.value === 'X' ? '横の卓' : qround.value.startsWith('B') ? bandNo(qround.value) + '卓' : { S1: '2卓（S1）', S2: '5卓（S2）' }[qround.value]; qtable.appendChild(o);
   }
   qtable.disabled = !isPrelim() || !(SCHED[qround.value] || []).length;
   fillSeats();
@@ -651,9 +667,9 @@ function fillSeats() {
   });
   if (!isPrelim()) {
     const note = [];
-    if (t.missing) note.push(qround.value === 'F' ? '決勝の4名は準決勝2卓がそろうと出ます。' : '予選の順位がまだ出ていません。');
+    if (t.missing) note.push(qround.value === 'F' ? '決勝の4名は準決勝2卓がそろうと出ます。' : qround.value === 'X' ? 'エキシビジョン戦は、本田プロが決勝に進めなかったときだけです（準決勝2卓がそろうと出ます）。' : '予選の順位がまだ出ていません。');
     const rk = prelimRanking(), cnt = rk.filter(x => x.n === 4).length;
-    if (qround.value !== 'F' && cnt < 30) note.push('予選を終えたのは ' + cnt + '/30名（メンバーは暫定）。');
+    if (qround.value !== 'F' && qround.value !== 'X' && cnt < 30) note.push('予選を終えたのは ' + cnt + '/30名（メンバーは暫定）。');
     // メンバーが変わる境目（2位/3位・3位/4位・5位/6位＝S1とS2の入れ替え、6位/7位＝進出）の同点のうち、まだ決まらないもの。
     // かたまり全員の生年月日（agerank）が入って日が違えば prelimRanking が年上から並べるので注意は出さない。足りない・同じ日のあいだは【注意】（並びは仮）。
     // 準決勝の時間の卓は、その卓の上下の境目だけを見る
@@ -667,7 +683,8 @@ function fillSeats() {
           : '年齢が上の方が上位です。この人たち全員の生年月日を幹部用ページに入れると、メンバーが決まります（1人でも欠けると並びは変わりません。それまでの並びは仮）。'));
     });
     if (qround.value === 'F') { const edges = semiEdgeTies(); if (edges.length) note.push(semiEdgeNote(edges)); }
-    note.push(qround.value === 'F' ? '素点で順位を決めます（ウマ・オカなし）。並びは席順ではありません。同点は起家に近い方が上位です（集計係が確認）。'
+    note.push(qround.value === 'X' ? 'エキシビジョン戦です（最終順位には使いません）。素点で並べます。並びは席順ではありません。'
+      : qround.value === 'F' ? '素点で順位を決めます（ウマ・オカなし）。並びは席順ではありません。同点は起家に近い方が上位です（集計係が確認）。'
       : '素点で順位を決めます（ウマ・オカなし）。並びは席の順（入口側の左から反時計回り）で、席は固定です。起家はサイコロで決めます。同点は起家に近い方が上位です（集計係が確認）。');
     hint.textContent = note.join(' ');
   }
