@@ -31,7 +31,21 @@ const PRO_ITEMS = { '1': '進行表のご了承', '2': '撮影・SNS投稿', '3'
 const PRO_LOG_MAX = 50;   // 送信履歴（時刻・名前・項目番号だけ）
 const PRO_MAIL_MAX = 30;  // 1日に送る知らせメールの上限
 
-function props_() { return PropertiesService.getScriptProperties(); }
+// スクリプト プロパティ。読み取りは1日の回数に上限がある（無料アカウントは読み書き合わせて1日5万回）。
+// GET と点数の POST は、1回の実行の中で getProperties() を1回だけ呼んで写し（SNAP）を作り、読むのはそこから（2026-10-24。前は1回で約17回読んでいた）。
+// 書き込みは今までどおり保存し、写しも同じに直す。写しを作るのは GET の頭と、点数の POST でロックを取った後だけ（ロックの前の写しで書かない）
+let SNAP = null;
+function props_() {
+  const real = PropertiesService.getScriptProperties();
+  if (!SNAP) return real;
+  return {
+    getProperty: function (k) { return Object.prototype.hasOwnProperty.call(SNAP, k) ? SNAP[k] : null; },
+    setProperty: function (k, v) { real.setProperty(k, v); SNAP[k] = String(v); return this; },
+    setProperties: function (o) { real.setProperties(o); Object.keys(o).forEach(function (k) { SNAP[k] = String(o[k]); }); return this; },
+    deleteProperty: function (k) { real.deleteProperty(k); delete SNAP[k]; return this; }
+  };
+}
+function snap_() { SNAP = PropertiesService.getScriptProperties().getProperties(); }
 
 function emptyPlayers_() {
   const players = {};
@@ -216,8 +230,13 @@ function now_() {
 
 // 読み取り: GET（誰でも）
 function doGet(e) {
-  if (e && e.parameter && e.parameter.views === 'all') return out_({ ok: true, viewLog: loadViewLog_() });   // 閲覧ログの全件の控え
-  return out_({ ok: true, data: load_() });
+  try {
+    snap_();   // 読むのは写しから（props_ の説明）
+    if (e && e.parameter && e.parameter.views === 'all') return out_({ ok: true, viewLog: loadViewLog_() });   // 閲覧ログの全件の控え
+    return out_({ ok: true, data: load_() });
+  } finally {
+    SNAP = null;
+  }
 }
 
 // 書き込み: POST（本文は JSON。キーは要らない＝2026-09-16 主催の指示で撤去。プレイヤー・対局・点数の範囲だけ検査）
@@ -255,8 +274,9 @@ function doPost(e) {
   }
 
   const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+  lock.waitLock(30000);   // 半荘の終わりに8卓の送信が重なっても待てるように（2026-10-24。前は10秒）
   try {
+    snap_();   // ロックを取った後に写しを作る（props_ の説明）
     const d = load_();
     d.players[player][round] = score;
     const c = d.chombo[player] || {};
@@ -270,6 +290,7 @@ function doPost(e) {
     save_(d);
     return out_({ ok: true, data: d });
   } finally {
+    SNAP = null;
     lock.releaseLock();
   }
 }
