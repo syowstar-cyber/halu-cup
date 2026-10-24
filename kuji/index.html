@@ -52,6 +52,8 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
 .rbtn button[data-r=S]{grid-column:1/-1}
 @media (min-width:560px){.rbtn{grid-template-columns:repeat(5,1fr)}.rbtn button[data-r=S]{grid-column:auto}}
 tr.adv td{background:var(--soft);font-weight:700}
+tr.gst td{background:var(--card2)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
 button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertical-align:2px}
 .rbtn button{margin:0;padding:8px 4px;line-height:1.4;background:var(--card);color:var(--accent)}
 .rbtn button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg)}
@@ -92,8 +94,11 @@ button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertic
 <h3>準決勝の時間の卓<button type="button" id="semire" class="mini">最新にする</button></h3>
 <p class="note">予選の結果で決まりました。準決勝の時間は全員が打ちます。席と起家は自動卓のサイコロで決めます。点数が入ると、素点の順に並びます（同じ卓の同点は起家に近い方が上位＝集計係が確かめます）。</p>
 <div id="semi"></div>
-<h3>予選の結果</h3>
+<h3>予選の結果（確定）</h3>
 <div id="prelim"></div>
+<h3>予選の順位表（確定・32名）</h3>
+<p class="note">本田プロ・ゆうこママも含めて、予選4回戦の合計ポイントだけで並べた順位です。準決勝の顔ぶれと最終順位は、上の参加者だけの順位で決まります。</p>
+<div id="allrank"></div>
 </div>
 <div id="result"></div>
 
@@ -319,6 +324,12 @@ function renderSemi() {
   g += '</tbody></table></div><p class="note">色つきの6名が準決勝に進みます（S1卓＝2卓・S2卓＝5卓）。'
     + SEMI.guests.map(([n, tot, r]) => n + 'は ' + fpt(tot) + '（32名中' + r + '位' + (r <= 8 ? '＝最終順位と表彰の対象' : '＝最終順位と表彰の対象外') + '）').join('、') + '。</p>';
   document.getElementById('prelim').innerHTML = g;
+  // 予選の順位表（32名・ゲストを含む・合計だけで並べる）。1〜4回戦のポイントも出す
+  if (SEMI.all) {
+    let a = '<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th><th>合計</th></tr></thead><tbody>';
+    SEMI.all.forEach(([p, tot, q], i) => { a += '<tr' + (GUESTS.includes(p) ? ' class="gst"' : '') + '><td>' + (i + 1) + '位</td><td>' + esc(nm(p)) + '</td>' + q.map(v => '<td class="num">' + fpt(v) + '</td>').join('') + '<td class="num"><b>' + fpt(tot) + '</b></td></tr>'; });
+    document.getElementById('allrank').innerHTML = a + '</tbody></table></div>';
+  }
 }
 async function refreshSemi() {
   if (!API || !SEMI) return;
