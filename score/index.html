@@ -132,7 +132,7 @@ summary{cursor:pointer;font-weight:700}
   <div class="status" id="status"></div>
   <div class="tw">
     <table id="tbl">
-      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th>6位ライン</th><th>準決</th><th>決勝</th></tr></thead>
+      <thead><tr><th>順位</th><th>プレイヤー</th><th>1</th><th>2</th><th>3</th><th>4</th><th>合計pt</th><th id="thline">6位ライン</th><th>準決</th><th>決勝</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -141,11 +141,13 @@ summary{cursor:pointer;font-weight:700}
     <li>卓の4人がそろうまで、その半荘のポイントは出ません。</li>
     <li>4半荘合計の同点は年齢が上の方が上位です。生年月日が入るまでは同じ順位で「同点」と出ます。集計係が同点の人全員の生年月日を幹部用ページに入れると、年上から並びます（順位に「年齢」と出ます）。</li>
   </ul>
+  <div id="linesec">
   <h2>6位ライン（準決勝に行ける目安）</h2>
   <div class="card">
     <label for="bdplayer">プレイヤー</label>
     <select id="bdplayer"></select>
     <div id="bd" style="margin-top:8px"></div>
+  </div>
   </div>
   <h2>準決勝・決勝の時間の卓</h2>
   <div class="card">
@@ -185,9 +187,12 @@ const SCHED_TBD = !['1', '2', '3', '4'].some(r => (SCHED[r] || []).length);
 const LOCK_STATIC = (window.HALU_LOCKED || []).map(String);
 let LOCK_API = [];
 const isLocked = r => LOCK_STATIC.includes(r) || LOCK_API.includes(r);
-// 全部の半荘が確定したら、報告の欄ごと出さない（2026-10-24 主催「点数を確定させて入力も消して」）。練習ページは lock.js を読まないので出る
-if (['1', '2', '3', '4', 'S', 'F'].every(isLocked)) {
+// 全部の半荘が確定したら、報告の欄と6位ライン（節・集計表の列・赤い線）を出さない（2026-10-24 主催「点数を確定させて入力も消して」「6位ラインを消して」）。練習ページは lock.js を読まないので出る
+const ALL_LOCKED = ['1', '2', '3', '4', 'S', 'F'].every(isLocked);
+if (ALL_LOCKED) {
   document.getElementById('entry').hidden = true;
+  document.getElementById('linesec').hidden = true;
+  document.getElementById('thline').remove();
   document.querySelector('header .sub').textContent = '点数はすべて確定しました。集計と最終順位を見られます。';
 }
 const LOCKED_TEXT = 'この半荘は確定しました。点数は変えられません（直すときは集計係へ）';
@@ -310,9 +315,9 @@ function render(d) {
   rows.filter(r => r.guest).concat(players).forEach(r => {
     const tr = document.createElement('tr');
     if (r.guest) tr.className = 'guest'; else if (r.rank && r.rank <= 6 && r.n === 4) tr.className = 'top6';
-    if (!r.guest && players.indexOf(r) === last6) tr.classList.add('line6');
-    const bd = r.guest ? '' : borderText(r.p);
-    const cells = [rankCell(r), dn(r.p), ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), bd, fmt(r.S), fmt(r.F)];
+    if (!ALL_LOCKED && !r.guest && players.indexOf(r) === last6) tr.classList.add('line6');
+    const bd = r.guest || ALL_LOCKED ? '' : borderText(r.p);
+    const cells = [rankCell(r), dn(r.p), ...r.q.map(fpt), r.total === null ? '' : fpt(r.total) + (r.n < 4 ? ' (' + r.n + '/4)' : ''), ...(ALL_LOCKED ? [] : [bd]), fmt(r.S), fmt(r.F)];
     cells.forEach(c => { const td = document.createElement('td'); td.textContent = c; if (typeof c === 'string' && (c.startsWith('-') || c.startsWith('−'))) td.className = 'neg'; tr.appendChild(td); });
     tb.appendChild(tr);
   });
