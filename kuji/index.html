@@ -273,7 +273,9 @@ const SPOT_NAME = ['入口側の左', '入口側の右', '奥の右', '奥の左
 const GUESTS = ['本田プロ', 'ゆうこママ'];
 // 席の場所の番号（SPOT の添字）。ふつうの卓は東が入口側の左。2卓・5卓はゲストが入口側の左のままで、ほかの3人はそこから反時計回り
 const spotOf = (row, i) => (i - Math.max(row.seats.findIndex(s => GUESTS.includes(s)), 0) + 4) % 4;
-let REAL = null, ROUND = '1';
+// 最初に選ぶ回戦は3回戦（2026-10-24 主催）。受け口の点数が読めたら、まだ全卓がそろっていない最初の回戦にする（人が押したら動かさない）
+let REAL = null, ROUND = '3', ROUND_TOUCHED = false;
+const currentRound = players => ['1', '2', '3', '4'].find(r => (REAL && REAL[r] || []).some(row => row.seats.some(p => !players[p] || players[p][r] === null || players[p][r] === undefined))) || '4';
 function renderSeat() {
   const box = document.getElementById('seat'), sel = document.getElementById('me');
   box.hidden = !REAL; if (!REAL) return;
@@ -287,7 +289,7 @@ function drawSeat() {
   ['1', '2', '3', '4'].forEach(r => (REAL[r] || []).forEach(row => row.seats.forEach((s, i) => { if (s === me) mine[r] = { row, i }; })));
   const btn = document.getElementById('rbtn');
   btn.innerHTML = ['1', '2', '3', '4'].map(r => '<button type="button" data-r="' + r + '" aria-pressed="' + (r === ROUND) + '">' + r + '回戦' + (mine[r] ? '<small>' + mine[r].row.table + '卓・' + WINDS[mine[r].i] + '</small>' : '') + '</button>').join('');
-  btn.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ROUND = b.dataset.r; drawSeat(); }));
+  btn.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ROUND = b.dataset.r; ROUND_TOUCHED = true; drawSeat(); }));
   // 2卓・5卓の東南西北は回ごとに変わる＝選んだ回戦の並びを図に書き足す（東は塗りの丸）
   let h = '';
   (REAL[ROUND] || []).filter(row => row.seats.some(s => GUESTS.includes(s))).forEach(row => {
@@ -341,7 +343,7 @@ async function load() {
   if (!API) return;
   try {
     const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json();
-    if (j.ok) { ROSTER = j.data.roster || {}; renderRoster(); renderResult(); }
+    if (j.ok) { ROSTER = j.data.roster || {}; if (!ROUND_TOUCHED && j.data.players) ROUND = currentRound(j.data.players); renderRoster(); renderResult(); }
   } catch (e) {}
 }
 load();
