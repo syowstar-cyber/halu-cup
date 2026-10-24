@@ -55,6 +55,11 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
 .rbtn button small{display:block;font-size:.88rem;font-weight:400}
 .smap{max-width:420px;margin:0 auto}
 .smap svg{display:block;width:100%;height:auto}
+.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
+.pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
+@media (min-width:560px){.pnav a{flex:1 1 30%}}
+@media (min-width:640px){.pnav a{flex:1 1 0}}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 </style>
@@ -65,6 +70,7 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
     <h1>第20回 Halu杯 対戦表</h1>
     <div class="sub">予選の卓と席を、ナンバーズ4の当せん番号で決めます。最終更新: 2026-10-24</div>
   </header>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../renshu/">入力の練習</a><a href="../fu/">点数計算</a><a href="../kuji/" aria-current="page">対戦表</a></nav>
   <p class="lead">予選の対戦表は、くじで決まりました。くじの種は、<b>10月23日（金）のナンバーズ4（第7099回）の当せん番号「4385」</b>です。抽せん会はネットで生中継され、主催を含めて誰にも操作できません。<br>誰でもこのページで同じ結果を計算できます。</p>
 
 <h2 id="s1">1. 結果</h2>
@@ -76,6 +82,7 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
 <div class="smap"><svg viewBox="0 30 340 605" role="img" aria-label="麻雀Firstの卓の配置図。選んだ回戦の自分の卓と席に印が付きます"><image href="../haichi.svg" xlink:href="../haichi.svg" x="0" y="0" width="340" height="790"/><g id="hl"></g></svg></div>
 <p id="seattext" class="big"></p>
 <p class="note">図の下が入口側です。席は、入口側の左が東・右が南・奥の右が西・奥の左が北です。2卓・5卓は、本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わります（図は選んだ回戦の並び）。</p>
+<p class="note">準決勝の時間の卓は、予選の結果で決まります。点数報告ページの「準決勝・決勝の時間の卓」に名前つきで出ます（席と起家は自動卓のサイコロで決めます）。</p>
 </div>
 <div id="result"></div>
 
@@ -134,6 +141,7 @@ select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid v
 
 <h2 id="s8">8. くじ値と枠</h2>
 <div id="lottery"></div>
+<nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../renshu/">入力の練習</a><a href="../fu/">点数計算</a><a href="../kuji/" aria-current="page">対戦表</a></nav>
 </div>
 
 <script src="../score/config.js"></script>
