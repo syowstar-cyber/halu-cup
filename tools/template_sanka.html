@@ -87,7 +87,6 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 </head>
 <body>
 <div class="wrap">
-  <div class="hero"><img src="../poster.jpg" alt="第20回 Halu杯 ポスター"></div>
   <header>
     <h1>第20回 Halu杯 参加者案内</h1>
     <div class="sub">2026年10月24日（土）麻雀First。最終更新: __UPDATED__</div>
@@ -102,6 +101,7 @@ td.me{background:var(--soft)!important;font-weight:700;color:var(--accent);outli
 <script>
 const c = document.getElementById('content'), toc = document.getElementById('toc');
 c.querySelectorAll('h2').forEach(h => { const a = document.createElement('a'); a.href = '#' + h.id; a.textContent = h.textContent; toc.appendChild(a); });
+toc.hidden = c.querySelectorAll('h2').length < 2;   // 章が1つ（打ち上げだけ）のときは目次を出さない
 // 受け口（点数報告と同じ GAS）。出席者一覧（P番号→名前）は受け口にだけある＝このリポにはファイルとして置かない
 const API = (window.HALU_API || '').trim();
 const NAMES = ['本田プロ', 'ゆうこママ'].concat(Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)));

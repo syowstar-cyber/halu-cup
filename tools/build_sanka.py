@@ -49,6 +49,10 @@ def pro_marks(rows_cells):
         legend, legend_done = LEGEND, True
     return row_cls, cell_cls, legend
 
+# ページに出す章（見出しに含む語）。空なら全部。2026-10-24 主催「参加者案内を打ち上げ情報のみに」（正典MDは全章のまま）
+ONLY = ["打ち上げ"]
+keep = True
+
 out, table, lst = [], [], None
 section = ""
 i = 0
@@ -83,10 +87,15 @@ while i < len(src):
         flush_table(); flush_list()
         level = len(m.group(1)); title = m.group(2)
         if level == 2:
+            keep = not ONLY or any(w in title for w in ONLY)
+            if not keep:
+                continue
             section = re.match(r"(\d+)", title).group(1)
-            out.append(f'<h2 id="s{section}">{inline(title)}</h2>')
-        else:
+            out.append(f'<h2 id="s{section}">{inline(re.sub(r"^[0-9]+[.]\s*", "", title) if ONLY else title)}</h2>')
+        elif keep:
             out.append(f"<h3>{inline(title)}</h3>")
+        continue
+    if not keep:
         continue
     if line.startswith("|"):
         flush_list(); table.append(line); continue
