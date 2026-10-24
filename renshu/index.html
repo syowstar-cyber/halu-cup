@@ -26,6 +26,7 @@ input[type=number]{text-align:right}
 button{font-size:1.05rem;padding:14px;border:0;border-radius:8px;font-weight:700;cursor:pointer}
 .primary{width:100%;background:var(--accent);color:var(--accent-fg);margin-top:14px}
 .ghost{background:var(--card2);color:var(--fg);border:1px solid var(--line);padding:8px 12px;font-size:.95rem}
+.primary:disabled,.ghost:disabled{opacity:.5;cursor:default}
 .msg{min-height:1.5em;margin-top:8px;font-weight:700}
 .msg.ok{color:var(--ok)}.msg.ng{color:var(--ng)}
 .pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
@@ -209,8 +210,10 @@ let DATA = null, ROSTER = {};
 // 年齢の上下（受け口の agerank＝生年月日を入れた人どうしの年上からの順。1 が最年長・同じ日は同じ数）。
 // 生年月日は同点のときだけ幹部用ページで入れる。生年月日そのものは受け口から返らない（2026-10-11）
 let AGERANK = {};
-// 点棒を打ち始めたら true。1分ごとの自動更新で入力中の欄を作り直さない（送信・取り消し・卓の切り替えで false）
+// 点棒の欄を押したら true。自動更新で入力中の欄を作り直さない（送信・取り消し・卓の切り替えで false）
 let EDITING = false;
+// 半荘の選択: 初めて読み込んだときだけ、まだ全卓がそろっていない最初の予選の半荘にする（前の半荘を選んだまま送る取り違えを減らす。人が選んだら動かさない）
+let ROUND_PICKED = false, QROUND_TOUCHED = false;
 // 表示名: 受け口の出席者一覧に名前があれば名前、なければ P番号
 const dn = p => (p && ROSTER[p]) || p;
 
@@ -330,6 +333,11 @@ function render(d) {
     const tables = SCHED[r] || [];
     const done = tables.filter(t => t.seats.every(n => (d.players[n] || {})[r] !== null && (d.players[n] || {})[r] !== undefined)).length;
     const sp = document.createElement('span'); sp.textContent = r + '半荘目 ' + done + '/' + tables.length + '卓'; if (done === tables.length && tables.length) sp.className = 'done'; st.appendChild(sp);
+  }
+  if (!ROUND_PICKED) {
+    ROUND_PICKED = true;
+    const r = SCHED_TBD ? null : ['1', '2', '3', '4'].find(k => (SCHED[k] || []).some(t => t.seats.some(n => (d.players[n] || {})[k] === null || (d.players[n] || {})[k] === undefined)));
+    if (r && !QROUND_TOUCHED && qround.value !== r) { qround.value = r; fillTables(); }
   }
   if (!EDITING) fillSeats();
   renderBorder();
@@ -669,10 +677,12 @@ function fillSeats() {
       EDITING = true; delete inp.dataset.auto; inp.classList.remove('auto'); autoFill(); preview();
     });
     inp.addEventListener('blur', () => { autoFill(); preview(); });
-    inp.addEventListener('focus', () => { inp.dataset.good = inp.value; if (inp.dataset.auto) inp.select(); });
+    // 欄を押したら入力中にする（自動更新で欄を作り直さない＝「−」の待ちや打ちかけの数を消さない）
+    inp.addEventListener('focus', () => { EDITING = true; inp.dataset.good = inp.value; if (inp.dataset.auto) inp.select(); });
     // 「−」ボタン: 数が入っていれば符号を変える。空なら、次に打つ数をマイナスにする（もう一度押すと取り消し）
     inp.parentNode.querySelector('.sign').addEventListener('click', () => {
       if (inp.disabled) return;
+      EDITING = true;
       inp.focus();
       const v = inp.value.trim();
       if (v === '') { if (inp.dataset.neg) delete inp.dataset.neg; else inp.dataset.neg = '1'; }
@@ -735,7 +745,7 @@ function preview() {
   if (new Set(filled.map(s => s.raw)).size < filled.length) warn.push(isPrelim() ? '同じ点棒の人がいます。順位点を分けています（起家に近い方が多く）。' : '同じ点棒の人がいます。起家に近い方が上位です（集計係に伝えてください）。');
   document.getElementById('qwarn').textContent = warn.join(' ');
 }
-qround.addEventListener('change', fillTables);
+qround.addEventListener('change', () => { QROUND_TOUCHED = true; fillTables(); });
 qtable.addEventListener('change', () => { try { localStorage.setItem('halu-renshu:table', qtable.value); } catch (e) {} fillSeats(); });
 
 // 練習用の受け口: 本番の受け口と同じ検査をして、このブラウザの中だけに記録する
@@ -754,6 +764,8 @@ async function post(body) {
   return { ok: true, data: JSON.parse(JSON.stringify(LOCAL)) };
 }
 const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
+// 送信・取り消しの最中は、2つのボタンを止める（二重に送らない）
+const BTNS = () => [document.getElementById('qsend'), document.getElementById('qclear')];
 document.getElementById('qsend').addEventListener('click', async () => {
   const t = currentTable(); if (!t) { if (isPrelim()) say('qmsg', '予選の対戦表が未定のため、まだ送れません', false); return; }
   autoFill(true); preview();
@@ -762,27 +774,39 @@ document.getElementById('qsend').addEventListener('click', async () => {
   if (!seats.length) { say('qmsg', '点棒を入れてください', false); return; }
   const big = seats.filter(s => s.raw >= 100000);
   if (big.length && !confirm('10万点以上です。合っていますか？\n' + big.map(s => dn(s.name) + ' ' + fmt(s.raw) + '点').join('\n'))) { say('qmsg', '送るのをやめました。点棒を確かめてください', false); return; }
-  say('qmsg', '送信中…（' + seats.length + '人分）', true);
-  let last = null;
-  for (const s of seats) {
-    const j = await post({ player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
-    if (!j.ok) { say('qmsg', s.name + ': ' + (ERR[j.error] || '送信に失敗しました'), false); if (last) render(last); return; }
-    last = j.data;
-  }
-  EDITING = false; render(last);
-  say('qmsg', t.name + 'の ' + seats.length + '人分を記録しました（練習）', true);
+  // 4人そろっていないとき・すでに入っている点数と違うとき（前の半荘や別の卓を選んだまま送る取り違え）は、送る前に確かめる
+  const named = t.seats.filter(Boolean).length;
+  if (seats.length < named && !confirm(seats.length + '人分だけ送ります（' + named + '人そろっていません）。送りますか？')) { say('qmsg', '送るのをやめました', false); return; }
+  const cur = s => { const v = DATA && DATA.players[s.name] ? DATA.players[s.name][apiRound()] : null; return v === undefined ? null : v; };
+  const over = seats.filter(s => cur(s) !== null && cur(s) !== s.raw);
+  if (over.length && !confirm(t.name + 'には、もう点数が入っています。上書きしますか？\n' + over.map(s => dn(s.name) + ' ' + fmt(cur(s)) + '点 → ' + fmt(s.raw) + '点').join('\n'))) { say('qmsg', '送るのをやめました。半荘と卓が合っているか確かめてください', false); return; }
+  BTNS().forEach(b => { b.disabled = true; });
+  try {
+    say('qmsg', '送信中…（' + seats.length + '人分）', true);
+    let last = null;
+    for (const s of seats) {
+      const j = await post({ player: s.name, round: apiRound(), score: s.raw }).catch(() => ({ ok: false, error: 'net' }));
+      if (!j.ok) { say('qmsg', dn(s.name) + ': ' + (ERR[j.error] || '送信に失敗しました。少し待ってから、もう一度送ってください（送り直すと上書きされます）'), false); if (last) render(last); return; }
+      last = j.data;
+    }
+    EDITING = false; render(last);
+    say('qmsg', t.name + 'の ' + seats.length + '人分を記録しました（練習）', true);
+  } finally { BTNS().forEach(b => { b.disabled = false; }); }
 });
 document.getElementById('qclear').addEventListener('click', async () => {
   const t = currentTable(); if (!t) return;
   const names = t.seats.filter(Boolean); if (!names.length) return;
   if (!confirm(t.name + 'の' + names.length + '人の点数を取り消しますか？')) return;
-  let last = null;
-  for (const n of names) {
-    const j = await post({ player: n, round: apiRound(), action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
-    if (!j.ok) { say('qmsg', n + ': ' + (ERR[j.error] || '取り消しに失敗しました'), false); if (last) render(last); return; }
-    last = j.data;
-  }
-  EDITING = false; render(last); say('qmsg', '取り消しました', true);
+  BTNS().forEach(b => { b.disabled = true; });
+  try {
+    let last = null;
+    for (const n of names) {
+      const j = await post({ player: n, round: apiRound(), action: 'clear' }).catch(() => ({ ok: false, error: 'net' }));
+      if (!j.ok) { say('qmsg', dn(n) + ': ' + (ERR[j.error] || '取り消しに失敗しました。少し待ってから、もう一度押してください'), false); if (last) render(last); return; }
+      last = j.data;
+    }
+    EDITING = false; render(last); say('qmsg', '取り消しました', true);
+  } finally { BTNS().forEach(b => { b.disabled = false; }); }
 });
 
 const bdsel = document.getElementById('bdplayer');

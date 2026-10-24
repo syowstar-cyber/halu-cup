@@ -92,7 +92,11 @@ REPS = [
      "  try { const r = await fetch(API + '?t=' + Date.now(), { cache: 'no-store' }); const j = await r.json(); if (j.ok) render(j.data); }\n"
      "  catch (e) { document.getElementById('updated').textContent = '読み込みに失敗しました（通信）'; }\n}\n"
      "document.getElementById('reload').addEventListener('click', load);", LOAD_JS, 1),
-    ("setInterval(load, 60000);\n", "", 1),
+    ("// 自動更新は、画面に出ているときだけ2分ごと（受け口の読み取りは1日の回数に上限があるため。2026-10-24）。裏から戻ったときは、1分以上たっていれば読み直す\n"
+     "let LAST_LOAD = Date.now();\n"
+     "const autoLoad = () => { LAST_LOAD = Date.now(); load(); };\n"
+     "setInterval(() => { if (!document.hidden && Date.now() - LAST_LOAD >= 120000) autoLoad(); }, 15000);\n"
+     "document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - LAST_LOAD >= 60000) autoLoad(); });\n", "", 1),
     ("'halu:table'", "'halu-renshu:table'", 2),
     ("'halu:bdplayer'", "'halu-renshu:bdplayer'", 2),
     # 練習ページだけ: 上限は 999（99,900点）。1000以上は入れられない（2530 のような打ち間違いを止める。2026-10-10 主催の指示・本番は 9999＝999,900点まで）

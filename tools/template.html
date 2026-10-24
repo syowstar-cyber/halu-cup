@@ -296,7 +296,7 @@ function renderViews(v){
 // そのため、ここには「入力済み」だけを出す（日付は出さない。間違えたら消して入れ直す）。点数報告ページは agerank で同点を年上から並べる
 const GUESTS = ['本田プロ', 'ゆうこママ'];
 let AGERANK = {}, ATTMSG = null;
-const BDRAFT = {};   // 打ちかけの生年月日（1分ごとの自動更新で消さない）
+const BDRAFT = {};   // 打ちかけの生年月日（自動更新で消さない）
 const BUSY = new Set();   // 返事待ちの送信（'att:P番号'・'bd:P番号'）。描き直しても押せないままにする
 const dnA = p => GUESTS.includes(p) ? p : (ROSTER[p] ? ROSTER[p] + '（' + p + '）' : p);
 function renderAttend(force){
@@ -404,8 +404,11 @@ function setupChecks(c){
     });
   });
   syncChecks(c);
-  setInterval(() => { if (!document.hidden) syncChecks(c); }, 60000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) syncChecks(c); });
+  // 読み直しは、画面に出ているときだけ2分ごと。裏から戻ったときは1分以上たっていれば（受け口の読み取りは1日の回数に上限があるため。2026-10-24）
+  let syncAt = Date.now();
+  const resync = gap => { if (!document.hidden && Date.now() - syncAt >= gap) { syncAt = Date.now(); syncChecks(c); } };
+  setInterval(() => resync(120000), 15000);
+  document.addEventListener('visibilitychange', () => resync(60000));
 }
 (() => {
   const c = document.getElementById('content');
