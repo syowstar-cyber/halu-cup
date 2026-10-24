@@ -83,7 +83,7 @@ REPS = [
     ('<button class="ghost" type="button" id="reload">最新に更新</button>',
      '<button class="ghost" type="button" id="reset">練習の点数をぜんぶ消す</button>', 1),
     ("<summary>組み合わせ表（予選）</summary>", "<summary>組み合わせ表（練習用の仮の卓）</summary>", 1),
-    ('<script src="config.js"></script>\n<script src="schedule.js"></script>\n', "", 1),
+    ('<script src="config.js"></script>\n<script src="schedule.js"></script>\n<script src="lock.js"></script>\n', "", 1),
     ("const API = (window.HALU_API || '').trim();\nconst SCHED = window.HALU_SCHEDULE || {};", HEAD_JS, 1),
     ("async function post(body) {\n  const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });\n  return r.json();\n}", POST_JS, 1),
     ("  if (!API) { say('qmsg', 'APIが未設定です', false); return; }\n", "", 1),
@@ -113,7 +113,7 @@ REPS = [
 ]
 
 # 練習ページに残ってはいけないもの（本番の受け口へ届く道・本番の保存キー）
-FORBIDDEN = ["fetch(", 'src="config.js"', 'src="schedule.js"', "HALU_API", "HALU_SCHEDULE", "'halu:"]
+FORBIDDEN = ["fetch(", 'src="config.js"', 'src="schedule.js"', 'src="lock.js"', "HALU_API", "HALU_SCHEDULE", "'halu:"]
 
 
 def main():

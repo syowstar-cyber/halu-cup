@@ -172,11 +172,17 @@ summary{cursor:pointer;font-weight:700}
 
 <script src="config.js"></script>
 <script src="schedule.js"></script>
+<script src="lock.js"></script>
 <script>
 const API = (window.HALU_API || '').trim();
 const SCHED = window.HALU_SCHEDULE || {};
 // 予選の対戦表が未定（schedule.js が空）。予選の卓選び・入力・組み合わせ表を「製作中」の表示にする
 const SCHED_TBD = !['1', '2', '3', '4'].some(r => (SCHED[r] || []).length);
+// 確定した半荘（送信も取り消しもできない）。lock.js と、受け口の locked（あれば）を合わせる
+const LOCK_STATIC = (window.HALU_LOCKED || []).map(String);
+let LOCK_API = [];
+const isLocked = r => LOCK_STATIC.includes(r) || LOCK_API.includes(r);
+const LOCKED_TEXT = 'この半荘は確定しました。点数は変えられません（直すときは集計係へ）';
 const TBD_TEXT = '予選の対戦表は製作中です（未定）。前に載っていた表は使いません。決まったら、ここで卓を選んで点棒を入れられます。';
 const WINDS = ['東', '南', '西', '北'];
 // 準決勝の時間の6卓（予選7〜10位から順に）の卓番号。内部の呼び名 B3〜B8 はこの順（B3＝1卓 … B8＝8卓）。S1卓＝2卓・S2卓＝5卓（店との打ち合わせ・2026-10-17）
@@ -275,6 +281,7 @@ const plabel = x => '予選' + x.rank + '位' + (x.tie ? '（同点）' : '') + 
 // ---- 集計表 ----
 function render(d) {
   DATA = d; ROSTER = d.roster || {}; AGERANK = d.agerank || {};
+  LOCK_API = Array.isArray(d.locked) ? d.locked.map(String) : []; labelRounds();
   document.querySelectorAll('#bdplayer option').forEach(o => { if (o.value) o.textContent = dn(o.value); });
   document.getElementById('updated').textContent = d.updated ? '最終更新 ' + d.updated : 'まだ報告がありません';
   const pts = calcAll(d);
@@ -315,7 +322,7 @@ function render(d) {
   }
   if (!ROUND_PICKED) {
     ROUND_PICKED = true;
-    const r = SCHED_TBD ? null : ['1', '2', '3', '4'].find(k => (SCHED[k] || []).some(t => t.seats.some(n => (d.players[n] || {})[k] === null || (d.players[n] || {})[k] === undefined)));
+    const r = SCHED_TBD ? null : ['1', '2', '3', '4'].find(k => !isLocked(k) && (SCHED[k] || []).some(t => t.seats.some(n => (d.players[n] || {})[k] === null || (d.players[n] || {})[k] === undefined)));
     if (r && !QROUND_TOUCHED && qround.value !== r) { qround.value = r; fillTables(); }
   }
   if (!EDITING) fillSeats();
@@ -674,13 +681,24 @@ function fillSeats() {
       autoFill(); preview();
     });
   });
+  // 確定した半荘は、点数を見せるだけ（打てない・「−」も押せない）
+  if (isLocked(apiRound())) {
+    box.querySelectorAll('input').forEach(i => { i.readOnly = true; });
+    box.querySelectorAll('.sign').forEach(b => { b.disabled = true; });
+    const b = document.createElement('b'); b.className = 'neg'; b.textContent = LOCKED_TEXT + '。';
+    hint.prepend(b, hint.textContent ? ' ' : '');
+  }
   autoFill(); preview();
+}
+// 確定した半荘には「（確定）」を付ける
+function labelRounds() {
+  [...qround.options].forEach(o => { if (!o.dataset.base) o.dataset.base = o.textContent; o.textContent = o.dataset.base + (isLocked(STAGE[o.value] ? STAGE[o.value].api : o.value) ? '（確定）' : ''); });
 }
 // 3人分が入ったら、残る1人を 100,000 − 3人の合計 で埋める（卓の合計は必ず100,000）。
 // 打とうとしている空欄（フォーカス中）は埋めない（force は送信時）。条件が崩れたら自動の値は消す
 function autoFill(force) {
   const ins = [...document.querySelectorAll('#seats input')];
-  if (ins.length !== 4 || ins.some(i => i.disabled)) return;
+  if (ins.length !== 4 || ins.some(i => i.disabled) || isLocked(apiRound())) return;
   const manual = ins.filter(i => !i.dataset.auto && i.value.trim() !== '');
   const units = manual.map(i => Number(i.value));
   const ok = manual.length === 3 && units.every(u => Number.isInteger(u) && u >= -2000 && u <= 9999);
@@ -731,12 +749,13 @@ async function post(body) {
   const r = await fetch(API, { method: 'POST', body: JSON.stringify(body) });
   return r.json();
 }
-const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です' };
+const ERR = { player: 'プレイヤーが不正です', round: '対局の指定が不正です', score: '点数の値が不正です', locked: LOCKED_TEXT };
 // 送信・取り消しの最中は、2つのボタンを止める（二重に送らない）
 const BTNS = () => [document.getElementById('qsend'), document.getElementById('qclear')];
 document.getElementById('qsend').addEventListener('click', async () => {
   if (!API) { say('qmsg', 'APIが未設定です', false); return; }
   const t = currentTable(); if (!t) { if (isPrelim()) say('qmsg', '予選の対戦表が未定のため、まだ送れません', false); return; }
+  if (isLocked(apiRound())) { say('qmsg', LOCKED_TEXT, false); return; }
   autoFill(true); preview();
   if (readSeats().some(s => s.bad)) { say('qmsg', BAD_UNIT, false); return; }
   const seats = readSeats().filter(s => s.name && s.raw !== null && Number.isInteger(s.raw));
@@ -764,6 +783,7 @@ document.getElementById('qsend').addEventListener('click', async () => {
 });
 document.getElementById('qclear').addEventListener('click', async () => {
   const t = currentTable(); if (!t) return;
+  if (isLocked(apiRound())) { say('qmsg', LOCKED_TEXT, false); return; }
   const names = t.seats.filter(Boolean); if (!names.length) return;
   if (!confirm(t.name + 'の' + names.length + '人の点数を取り消しますか？')) return;
   BTNS().forEach(b => { b.disabled = true; });
@@ -799,6 +819,7 @@ document.getElementById('reload').addEventListener('click', load);
   }
   box.innerHTML = h;
 })();
+labelRounds();
 fillTables();
 load();
 // 自動更新は、画面に出ているときだけ2分ごと（受け口の読み取りは1日の回数に上限があるため。2026-10-24）。裏から戻ったときは、1分以上たっていれば読み直す
