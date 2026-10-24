@@ -521,7 +521,7 @@ function renderFinal() {
   const und = prelimDone && undecided(all[7], all[8], T);
   const [lo, hi] = und ? tieRun(all, 7, 8, T) : [7, 8];
   const edgeNames = und ? all.slice(lo, hi + 1).map(x => dn(x.p)).join('・') : '';
-  if (exMode) notes.push('本田プロが決勝に進めなかったため、1〜4位は決勝、5〜8位はエキシビジョン戦、9位からは準決勝の時間の卓ごとの素点で決めます（本田プロ・ゆうこママも順位に入ります）。');
+  if (exMode) notes.push('本田プロが決勝に進めなかったため、1〜4位は決勝、5〜8位はエキシビジョン戦、9位からは準決勝の時間の卓ごとの素点で決めます（本田プロ・ゆうこママも順位に入ります）。優勝は2つです。イベント優勝は最終順位の1位（ゆうこママも対象）、優勝・準優勝・第3位は参加者の上から3人です。');
   ['本田プロ', 'ゆうこママ'].forEach(g => {
     if (!prelimDone || exMode) return;
     const i = all.findIndex(x => x.p === g), x = all[i], edge = und && i >= lo && i <= hi;
@@ -535,7 +535,11 @@ function renderFinal() {
   // 順位の数字。まだ決まらない同点（同じかたまりで同じ素点の「同点」）は同じ数にする
   rows.forEach((r, i) => { const q = rows[i - 1]; r.rank = !r.done ? null : (q && q.done && q.tg === r.tg && q.tie && r.tie && q.raw === r.raw ? q.rank : i + 1); });
   if (fin.every(Boolean) && rows.filter(r => r.grp === 'top' || r.grp === 'fin').every(r => r.done)) {
-    rows.filter(r => r.p).slice(0, 3).forEach((r, i) => { r.award = ['優勝', '準優勝', '第3位'][i] + (r.tie ? '（仮）' : ''); });
+    // エキシビジョン戦をしたとき（2026-10-24 主催）: 優勝は2つ。イベント優勝＝最終順位の1位（ゲストも）、優勝・準優勝・第3位＝参加者の上から3人
+    const prize = exMode ? rows.filter(r => r.p && r.p.startsWith('P')) : rows.filter(r => r.p);
+    prize.slice(0, 3).forEach((r, i) => { r.award = ['優勝', '準優勝', '第3位'][i]; });
+    if (exMode && rows[0] && rows[0].p) rows[0].award = 'イベント優勝' + (rows[0].award ? '・' + rows[0].award : '');
+    rows.forEach(r => { if (r.award && r.tie) r.award += '（仮）'; });
   }
   const tw = document.createElement('div'); tw.className = 'tw';
   const tb = document.createElement('table'); tb.className = 'stage';
