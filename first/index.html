@@ -5,192 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#7a1a1a">
-<title>Halu杯 打ち合わせ内容のご確認（麻雀First様）</title>
-<!-- 麻雀First様が見る、打ち合わせ内容のご確認のページ（2026-10-17・手書き・JSなし）。店との取り決めはこのページだけに書く（幹部用MD 14章は案内だけ）。
-     お店をお借りする立場で書く。打ち合わせには主催も出ていたので、伝え聞きの「うかがいました」は使わず「〜をお願いします」で書く（2026-10-17 主催）。
-     「決まったこと」「注意事項」「〜してかまいません」のような、主催が主・こちらが許可する言い方はしない（同日 主催「なんか失礼」）。
-     金額・連絡先・幹部向けの判断は書かない。店の方は「ママス様・パパス様」と書き、「スタッフ」とは書かない（実名は載せない）。
-     自動卓の設定は「大会のルールに合わせて」と書く（ルールの出典の名前は公開物に出さない。出典はまとめMD 3章だけ）。
-     タイムテーブルは幹部用MD 2章と同じ時刻にそろえる。卓の配置図は ../haichi.svg（参加者案内8章と同じファイル）。
-     幹部の下見で使ったチェック表は check.html（どこからもリンクしない） -->
+<title>Halu杯 打ち合わせ内容のご確認（公開終了）</title>
+<!-- 2026-10-24 主催の指示で閉鎖。中身は外し、公開終了の案内だけを出す -->
 <style>
-:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db}
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--card:#ffffff}
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
-a{color:var(--accent);text-decoration:underline}
-main p,main li{overflow-wrap:anywhere}
-.wrap{max-width:760px;margin:0 auto;padding:14px 16px 84px}
-header{border-bottom:3px solid var(--accent);margin-bottom:12px;padding-bottom:10px}
-header .badge{display:inline-block;background:var(--accent);color:var(--accent-fg);font-weight:bold;font-size:.85rem;padding:2px 12px;border-radius:999px;letter-spacing:.05em}
-header h1{font-size:1.35rem;margin:6px 0 0;line-height:1.4}
-header .sub{color:var(--muted);font-size:.9rem}
-.lead{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.98rem;margin:10px 0}
-nav.toc{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:14px 0}
-nav.toc a{display:inline-block;margin:4px 6px 4px 0;padding:8px 12px;font-size:.95rem;color:var(--fg);background:var(--card2);border:1px solid var(--line);border-radius:999px;text-decoration:none}
-h2{font-size:1.15rem;margin:30px 0 10px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
-h3{font-size:1.05rem;margin:20px 0 8px;border-left:5px solid var(--accent);padding-left:10px}
-p{margin:8px 0}
-ul,ol{padding-left:1.5em;margin:8px 0}
-li{margin:5px 0}
-.tw{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
-table{border-collapse:collapse;width:100%;background:var(--card);font-size:.98rem}
-th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top;line-height:1.55}
-td + td,th + td{border-left:1px solid var(--line)}
-th{background:#ececE8;white-space:nowrap;font-weight:700}
-td:first-child{white-space:nowrap}
-table.kv th{width:6em}
-tr.brk td{background:var(--card2)}
-.tag{display:inline-block;font-size:.78rem;font-weight:700;line-height:1.4;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:1px;white-space:nowrap}
-.tag.mic{background:#fff;color:var(--accent);border:1px solid var(--accent)}
-.tag.shop{background:var(--accent);color:var(--accent-fg)}
-.note{font-size:.9rem;color:var(--muted)}
-.haichi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 6px;margin:10px 0}
-.haichi img{display:block;width:100%;max-width:420px;height:auto;margin:0 auto}
-.two{display:grid;grid-template-columns:1fr;gap:12px;margin:10px 0}
-@media (min-width:640px){.two{grid-template-columns:1fr 1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
-.card h3{margin:4px 0 6px}
-.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
-@media (min-width:560px){.pnav a{flex:1 1 22%}}
-:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.8}
+main{max-width:640px;margin:0 auto;padding:48px 16px}
+.card{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:20px 18px}
+h1{font-size:1.2rem;margin:0 0 8px}
+p{margin:0;color:var(--muted)}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <span class="badge">麻雀First様</span>
-  <h1>第20回 Halu杯 打ち合わせ内容のご確認</h1>
-  <div class="sub">10月17日（土）のお打ち合わせの内容と、当日の予定です。最終更新: 2026-10-23</div>
-</header>
-<p class="lead">先日はお打ち合わせのお時間をいただき、ありがとうございました。<br>お打ち合わせの内容を、このページにまとめました。<br>違っている点がございましたら、お知らせいただけますと幸いです。</p>
-<nav class="toc" aria-label="目次"><a href="#s1">1. 大会の概要</a><a href="#s2">2. お打ち合わせの内容</a><a href="#s3">3. 卓の配置（予定）</a><a href="#s4">4. 当日の流れ（予定）</a><a href="#s5">5. ご協力のお願い</a><a href="#s6">6. あらかじめお伝えしたいこと</a><a href="#s7">7. 関連ページ</a></nav>
 <main>
-
-<h2 id="s1">1. 大会の概要</h2>
-<div class="tw"><table class="kv">
-<tr><th>大会</th><td>第20回 Halu杯（四人麻雀）</td></tr>
-<tr><th>日にち</th><td>2026年10月24日（土）</td></tr>
-<tr><th>貸切</th><td>10:00〜18:30でお願いします</td></tr>
-<tr><th>人数</th><td>32名・8卓（参加者30名・本田朋広プロ・ゆうこママ）とカメラマン1名</td></tr>
-<tr><th>ゲスト</th><td>本田朋広プロ（日本プロ麻雀連盟）</td></tr>
-<tr><th>主催</th><td>ゆうこママ</td></tr>
-</table></div>
-
-<h2 id="s2">2. お打ち合わせの内容</h2>
-<h3>時間</h3>
-<ul>
-<li>当日は、10:00の開店をお願いします。</li>
-<li>10:30より前に着いた参加者の入店も、お願いします。</li>
-<li>貸切は、10:00〜18:30でお願いします。</li>
-<li>19:00からは、延長料金でのご対応をお願いします。</li>
-</ul>
-<h3>立ち会いとお手伝い</h3>
-<ul>
-<li>当日は、ママス様とパパス様の立ち会いをお願いします。</li>
-<li>写真撮影の補助・トイレのときの代走・点数計算などのお手伝いを、お願いします。</li>
-<li>当日のご連絡は、LINEでお願いします。</li>
-</ul>
-<h3>卓と設備</h3>
-<ul>
-<li>自動卓は、大会のルールに合わせたご準備をお願いします。赤ドラは5萬・5筒・5索が1枚ずつ、25,000点持ちです。</li>
-<li>マイクの貸し出しをお願いします。</li>
-<li>集計表は主催側のシステム（点数報告ページ）で出しますので、テレビなどのご用意はなくて大丈夫です。</li>
-</ul>
-<h3>お部屋と場所</h3>
-<ul>
-<li>主催用と本田プロ用の控室を、利用させていただきます。</li>
-<li>控室は、本田プロの休憩と、賞品・トロフィーの置き場に使わせていただきます。</li>
-<li>荷物は、それぞれの席にかけさせていただきます。</li>
-<li>喫煙は、受付の反対側の外にある喫煙所を、利用させていただきます。</li>
-</ul>
-<h3>飲食とサイン</h3>
-<ul>
-<li>軽食は、片手で食べられるものかお菓子を中心にいたします。</li>
-<li>サイン用の品の販売を、お願いします。</li>
-<li>サインをご希望の参加者には、そちらをご購入いただくようご案内します（主催から色紙は配りません）。</li>
-</ul>
-
-<h2 id="s3">3. 卓の配置（予定）</h2>
-<div class="haichi"><img src="../haichi.svg" width="340" height="790" alt="店内の卓の配置図。入口側から奥に向かって、左の列に1・2・3・8卓、右の列に受付・4・5・6・7卓。2卓に本田プロ、5卓にゆうこママ。予選の席は入口側の左が東、右が南、奥の右が西、奥の左が北。2卓・5卓は本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わる。"></div>
-<ul>
-<li>入口側から店の奥（窓）に向かって、左の列が1・2・3・8卓、右の列が4・5・6・7卓と理解しております。</li>
-<li>本田プロの組は2・4・7・8卓、ゆうこママの組は1・3・5・6卓を使わせていただく予定です。</li>
-<li>予選で本田プロと当たらないゆうこママの組は、本田プロが見える近くの卓にしております。</li>
-<li>予選の席は、入口側の左を東、右を南、奥の右を西、奥の左を北とする予定です（2卓・5卓を除く）。</li>
-<li>2卓・5卓は、本田プロ・ゆうこママが入口側の左の席のまま打ちます。東南西北は回ごとに変わります（図の下）。</li>
-<li>準決勝・決勝は、2卓と5卓を使わせていただく予定です。準決勝の時間は席を固定し、起家だけをサイコロで決めます。決勝は席と起家をサイコロで決めます。</li>
-<li>予選で誰がどの卓・どの席に座るかは、10月23日（金）にくじで決まりました。</li>
-<li>図は、お店の写真をもとに作った目安です。</li>
-</ul>
-
-<h2 id="s4">4. 当日の流れ（予定）</h2>
-<div class="tw"><table>
-<tr><th>時刻</th><th>内容</th></tr>
-<tr><td>10:00</td><td>開店（ファースト様）・主催側の設営</td></tr>
-<tr><td>10:30</td><td>参加者の集合・受付</td></tr>
-<tr><td>10:45ごろ</td><td>本田プロが到着（福岡空港からタクシー）</td></tr>
-<tr><td>11:00</td><td>開会・ルール説明・ゲスト紹介<span class="tag mic">マイク</span></td></tr>
-<tr><td>11:15</td><td>予選1回戦（11:55打ち切り）</td></tr>
-<tr><td>12:00</td><td>予選2回戦（12:40打ち切り）</td></tr>
-<tr class="brk"><td>12:45</td><td>軽食休憩（15分）</td></tr>
-<tr><td>13:00</td><td>本田プロのトークショー（15分）<span class="tag mic">マイク</span></td></tr>
-<tr class="brk"><td>13:15</td><td>休憩・移動（5分）</td></tr>
-<tr><td>13:20</td><td>予選3回戦（14:00打ち切り）</td></tr>
-<tr><td>14:05</td><td>予選4回戦（14:45打ち切り）</td></tr>
-<tr class="brk"><td>14:50</td><td>集計・準決勝に進む人の発表（15分）</td></tr>
-<tr><td>15:05</td><td>サイン会・写真会（50分）<span class="tag mic">マイク</span><span class="tag shop">撮影のお手伝い</span></td></tr>
-<tr><td>15:55</td><td>準決勝（2卓・5卓。60分制・16:55打ち切り）。ほかの24名も、ほかの6卓で打ちます</td></tr>
-<tr class="brk"><td>16:55</td><td>集計・決勝に進む人の発表（10分）</td></tr>
-<tr><td>17:05</td><td>決勝（時間制限なし・18:00が目安）。全員で観戦します</td></tr>
-<tr class="brk"><td>18:00</td><td>集計（5分）。決勝が終わってから</td></tr>
-<tr><td>18:05</td><td>表彰・閉会（25分）<span class="tag mic">マイク</span></td></tr>
-<tr><td>18:30〜19:00</td><td>終了・片付け。本田プロはタクシーで空港へ出発します。19:00からは延長となります</td></tr>
-</table></div>
-<p class="note">予選は1回40分です。40分が経ったら、その局で終わります。<br>決勝は時間制限がないため、18:00より後の時刻は目安です。</p>
-
-<h2 id="s5">5. ご協力のお願いと、主催側で行うこと</h2>
-<p>当日は、次のことでお世話になります。</p>
-<div class="two">
-<div class="card">
-<h3>ファースト様にお願いしたいこと</h3>
-<ul>
-<li>10:00の開店</li>
-<li>ママス様・パパス様の立ち会い</li>
-<li>写真撮影の補助・トイレのときの代走・点数計算などのお手伝い</li>
-<li>大会のルールに合わせた自動卓のご準備</li>
-<li>マイクのお貸し出し</li>
-<li>サイン用の品の販売</li>
-<li>19:00からの延長のご対応</li>
-</ul>
-</div>
-<div class="card">
-<h3>主催側で行うこと</h3>
-<ul>
-<li>10:00〜10:30の設営と、終了後の片付け</li>
-<li>受付と、当日の進行（司会）</li>
-<li>卓番号札と名札の用意</li>
-<li>点数の集計（各卓の代表が、スマホで点数報告ページから送ります）</li>
-<li>写真と動画の撮影（運営が撮ります。動画は公開しません）</li>
-</ul>
-</div>
-</div>
-
-<h2 id="s6">6. あらかじめお伝えしたいこと</h2>
-<ul>
-<li>トイレが1つのため、対局中にトイレへ行く参加者がいるときは、代走をお願いします。</li>
-<li>動画は運営だけが撮影し、公開いたしません。参加者には、写真だけを撮るようご案内します。</li>
-<li>本田プロをご紹介いただく際は、「日本プロ麻雀連盟の本田朋広プロ」でお願いします。</li>
-</ul>
-
-<h2 id="s7">7. 関連ページ</h2>
-<p>点数は、各卓の代表がスマホで点数報告ページから送ります。</p>
-<nav class="pnav" aria-label="関連ページ"><a href="../score/">点数報告</a></nav>
-
+  <div class="card">
+    <h1>このページの公開は終了しました</h1>
+    <p>第20回 Halu杯は、2026年10月24日（土）に終了しました。</p>
+  </div>
 </main>
-</div>
-<a class="top" href="#" title="上へ">↑</a>
 </body>
 </html>
