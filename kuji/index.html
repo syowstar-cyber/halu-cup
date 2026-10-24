@@ -73,38 +73,27 @@ button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertic
 <div class="wrap">
   <header>
     <h1>第20回 Halu杯 対戦表</h1>
-    <div class="sub">予選・準決勝の時間の卓と席。最終更新: 2026-10-24</div>
+    <div class="sub">順位発表と、決勝・準決勝・予選の結果。最終更新: 2026-10-24</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../renshu/">入力の練習</a><a href="../fu/">点数計算</a><a href="../kuji/" aria-current="page">対戦表</a></nav>
-  <div class="box big">決勝の4名が決まりました。1〜4位は決勝、5〜8位はエキシビジョン戦、9位からは準決勝の時間の結果で決まります（1章の「最終順位」）。</div>
+  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../kuji/" aria-current="page">対戦表</a></nav>
 
-<h2 id="s1">1. 結果</h2>
-<div id="seat" class="box" hidden>
-<h3 style="margin-top:4px">今日の自分の席（座席表）</h3>
-<label for="me">名前を選ぶと、予選1〜4回戦の卓と席が図に出ます</label>
-<select id="me"><option value="">名前を選んでください</option></select>
-<div id="rbtn" class="rbtn"></div>
-<div class="smap"><svg viewBox="0 30 340 605" role="img" aria-label="麻雀Firstの卓の配置図。選んだ回戦の自分の卓と席に印が付きます"><image href="../haichi.svg" xlink:href="../haichi.svg" x="0" y="0" width="340" height="790"/><g id="hl"></g></svg></div>
-<p id="seattext" class="big"></p>
-<p class="note">図の下が入口側です。席は、入口側の左が東・右が南・奥の右が西・奥の左が北です。2卓・5卓は、本田プロ・ゆうこママが入口側の左の席のままで、東南西北は回ごとに変わります（図は選んだ回戦の並び）。</p>
-<p class="note">「準決勝」を押すと、準決勝の時間に座る卓と席に印が付きます（席は固定。起家は自動卓のサイコロで決めます）。</p>
-</div>
+<h2 id="s1">1. 順位発表</h2>
 <div id="finalwrap" hidden>
-<h3>決勝</h3>
-<p class="note">準決勝の結果で決まった4名です。席と起家は自動卓のサイコロで決めます。点数が入ると、素点の順に並びます（同点は起家に近い方が上位＝集計係が確かめます）。</p>
-<div id="kessho"></div>
-<div id="exwrap" hidden>
-<h3>エキシビジョン戦（横の卓）</h3>
-<p class="note">本田プロが決勝に進めなかったため、準決勝で敗退した4名で打ちます。最終順位には関係しません。点数が入ると、素点の順に並びます。</p>
-<div id="exhi"></div>
-</div>
 <h3>最終順位<button type="button" id="finalre" class="mini">最新にする</button></h3>
 <p class="note">決勝とエキシビジョン戦の点数が入ると、上から順位が決まります。9位からは、準決勝の時間の卓ごとの素点で決まりました。</p>
 <div id="saishu"></div>
+<h3>決勝</h3>
+<p class="note">準決勝の結果で決まった4名です。点数が入ると、素点の順に並びます（同点は起家に近い方が上位＝集計係が確かめます）。</p>
+<div id="kessho"></div>
+<div id="exwrap" hidden>
+<h3>エキシビジョン戦（横の卓）</h3>
+<p class="note">本田プロが決勝に進めなかったため、準決勝で敗退した4名で打ちます。点数が入ると、素点の順に並びます。</p>
+<div id="exhi"></div>
+</div>
 </div>
 <div id="semiwrap" hidden>
 <h3>準決勝の時間の卓<button type="button" id="semire" class="mini">最新にする</button></h3>
-<p class="note">予選の結果で決まりました。準決勝の時間は全員が打ちます。席は固定で、各卓の上から順に、入口側の左から反時計回り（入口側の左→入口側の右→奥の右→奥の左）に座ります。起家は自動卓のサイコロで決めます。点数が入ると、素点の順に並びます（同じ卓の同点は起家に近い方が上位＝集計係が確かめます）。</p>
+<p class="note">予選の結果で決まった卓です。素点の順に並びます（同じ卓の同点は起家に近い方が上位＝集計係が確かめます）。</p>
 <div id="semi"></div>
 <h3>予選の結果（確定）</h3>
 <div id="prelim"></div>
@@ -169,7 +158,7 @@ button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertic
 
 <h2 id="s8">8. くじ値と枠</h2>
 <div id="lottery"></div>
-<nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../renshu/">入力の練習</a><a href="../fu/">点数計算</a><a href="../kuji/" aria-current="page">対戦表</a></nav>
+<nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../rule/">ルール</a><a href="../score/">点数報告</a><a href="../kuji/" aria-current="page">対戦表</a></nav>
 </div>
 
 <script src="../score/config.js"></script>
@@ -290,7 +279,7 @@ function renderResult() {
   if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; lot.innerHTML = ''; return; }
   const n4 = normN4(KUJI.n4), pairs = SWAPS[n4] || [];
   REAL = scheduleOf(applySwaps(draw(seedN4(n4)), pairs));
-  box.innerHTML = tablesHtml(seedN4(n4), pairs);
+  box.innerHTML = '';   // 予選の卓と席（回戦ごと・選手別）は、決勝だけになったので出さない（2026-10-24 主催。4章の検算では出る）
   lot.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + lotteryHtml(seedN4(n4), '<span class="tag real">本番</span>', pairs);
   renderSeat();
 }
@@ -335,7 +324,7 @@ function renderSemi() {
   let h = '<div class="tw"><table><thead><tr><th>卓</th><th>メンバー</th><th>素点</th></tr></thead><tbody>';
   SEMI.tables.forEach(t => {
     const done = t.members.every(p => sOf(p) !== null), order = done ? sorted(t) : t.members;
-    const who = order.map((p, i) => (done ? (i + 1) + '位' + (order.some(q => q !== p && sOf(q) === sOf(p)) ? '（同点）' : '') + ' ' : '') + esc(nm(p)) + '<small>（' + SPOT_NAME[t.members.indexOf(p)] + (rk(p) ? '・' + rk(p) : '') + '）</small>');
+    const who = order.map((p, i) => (done ? (i + 1) + '位' + (order.some(q => q !== p && sOf(q) === sOf(p)) ? '（同点）' : '') + ' ' : '') + esc(nm(p)) + (rk(p) ? '<small>（' + rk(p) + '）</small>' : ''));
     h += '<tr><td>' + t.table + '卓<br><small>' + esc(t.name) + '</small></td><td class="wrap">' + who.join('<br>') + '</td><td>' + order.map(p => sOf(p) === null ? '—' : sOf(p).toLocaleString('ja-JP')).join('<br>') + '</td></tr>';
   });
   h += '</tbody></table></div>';
@@ -429,7 +418,7 @@ async function refreshSemi() {
 }
 function renderSeat() {
   const box = document.getElementById('seat'), sel = document.getElementById('me');
-  box.hidden = !REAL; if (!REAL) return;
+  if (!box || !REAL) return;   // 座席表は、決勝だけになったので出さない（2026-10-24 主催）
   let keep = sel.value; if (!keep) { try { keep = localStorage.getItem('halu:seat') || ''; } catch (e) {} }
   sel.innerHTML = '<option value="">名前を選んでください</option>' + Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).map(p => '<option value="' + p + '">' + esc(nm(p)) + '</option>').join('');
   if (/^P\d+$/.test(keep)) sel.value = keep;
@@ -472,7 +461,7 @@ function drawSeat() {
   } else txt.textContent = me ? '' : '名前を選ぶと、図に印が付きます。';
   document.getElementById('hl').innerHTML = h;
 }
-document.getElementById('me').addEventListener('change', e => { try { localStorage.setItem('halu:seat', e.target.value); } catch (er) {} drawSeat(); });
+if (document.getElementById('me')) document.getElementById('me').addEventListener('change', e => { try { localStorage.setItem('halu:seat', e.target.value); } catch (er) {} drawSeat(); });
 // 5章: 型
 function renderKata() {
   let h = roundTables(KATA, label);
