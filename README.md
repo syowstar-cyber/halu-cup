@@ -29,7 +29,6 @@
 スクリプト プロパティ（ドライブ不使用）に JSON として保存する。配置手順は `gas/README.md`。
 API の URL は `score/config.js` に書く。送信にキーは要らない（2026-09-16 撤去）。
 
-## 早川麻雀研究会（hayakawa/）
+## 早川麻雀研究会
 
-2026-10-25 に mahjong リポ（https://syowstar-cyber.github.io/mahjong/hayakawa/）へ移した。
-ここの `hayakawa/` に残るのは、前の URL を開いた人を新しいページへ送る案内（4ページ）だけ。
+2026-10-25 に、ここにあった `hayakawa/` を消した。いまは mahjong リポの普段の回のキットの会の1つ（https://syowstar-cyber.github.io/mahjong/kai/?g=hayakawa）。
