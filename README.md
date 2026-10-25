@@ -1,12 +1,13 @@
 # halu-cup
 
-麻雀大会「Halu杯」の幹部向けページ。`index.html` は平文の公開ページ（2026-09-16 にパスワードを外した）。
+麻雀大会「Halu杯」の記念大会（店の貸し切り・ゲストあり）のページ一式。`index.html` は幹部向けの平文の公開ページ（2026-09-16 にパスワードを外した）。
 全ページに `noindex, nofollow` を入れ、`robots.txt` で全クローラを拒否している（検索には載らない。URL を知っている人だけが開く）。
-正典は fp リポの `events/` 配下。更新はそちらを直してから再生成する。
+正典は `docs/第20回/` のMD（2026-10-25 に fp リポから移した）。更新はそちらを直してから再生成する。
+普段の回（組み合わせと点数だけ）のページは mahjong リポ（https://syowstar-cyber.github.io/mahjong/kai/）にある。
 
 ## 更新のしかた
 
-1. fp リポの `events/第20回_四麻Halu杯.md` を直す。
+1. `docs/第20回/第20回_四麻Halu杯.md` を直す。
 2. `python tools/rebuild.py` を実行。PowerShell が使える端末なら `powershell -File tools\rebuild.ps1` でも同じ。
 3. `git commit` → `git push`。GitHub Pages が数十秒で反映する。
 
@@ -18,7 +19,7 @@
 
 `fu/index.html` は符計算と点数表のページ（手書き。生成しない）。
 
-`sanka/index.html` は参加者向けの公開ページ。正典は fp リポの `events/第20回_四麻Halu杯_参加者案内.md`。
+`sanka/index.html` は参加者向けの公開ページ。正典は `docs/第20回/第20回_四麻Halu杯_参加者案内.md`。
 `tools/rebuild.py` が幹部用と一緒に作り直す（`tools/build_sanka.py`）。金銭の記述は載せない。
 
 ## 点数報告（score/）
@@ -29,6 +30,5 @@ API の URL は `score/config.js` に書く。送信にキーは要らない（2
 
 ## 早川麻雀研究会（hayakawa/）
 
-Halu杯のページを複製したプライベート麻雀用のページ（2026-09-25）。参加者案内はなし。6半荘・ウマはワンツー・25,000点持ち30,000点返し。
-`hayakawa/score/`（点数報告・集計）・`hayakawa/rule/`（ルール）・`hayakawa/fu/`（点数計算）。どれも手書きで、`tools/rebuild.py` の対象外。
-点数の受け口は Halu杯とは別の Apps Script（`hayakawa/gas/`）。URL を `hayakawa/score/config.js` に入れるまでは、各端末のブラウザにだけ保存する。
+2026-10-25 に mahjong リポ（https://syowstar-cyber.github.io/mahjong/hayakawa/）へ移した。
+ここの `hayakawa/` に残るのは、前の URL を開いた人を新しいページへ送る案内（4ページ）だけ。

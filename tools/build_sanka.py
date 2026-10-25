@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""fp/events/第20回_四麻Halu杯_参加者案内.md → sanka/index.html（暗号化なし・公開）"""
+"""docs/第20回/第20回_四麻Halu杯_参加者案内.md → sanka/index.html（暗号化なし・公開）"""
 import re, html, sys, datetime
 from pathlib import Path
 
 repo = Path(__file__).resolve().parents[1]
-SRC = Path(__file__).resolve().parents[2] / "fp" / "events" / "第20回_四麻Halu杯_参加者案内.md"
+SRC = repo / "docs" / "第20回" / "第20回_四麻Halu杯_参加者案内.md"
 src = SRC.read_text(encoding="utf-8-sig").splitlines()
 updated = sys.argv[1] if len(sys.argv) > 1 else datetime.date.today().isoformat()
 

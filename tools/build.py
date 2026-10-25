@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""fp/events/第20回_四麻Halu杯.md → 幹部向けHTML断片(body.html)。
+"""docs/第20回/第20回_四麻Halu杯.md → 幹部向けHTML断片(body.html)。
 除外: 冒頭の手元資料メモ／ゲスト表の依頼ルート・出身／出典／主催マター。"""
 import re, html, sys, io
 from pathlib import Path
 
 here = Path(__file__).resolve().parents[1] / ".work"; here.mkdir(exist_ok=True)
-SRC = Path(__file__).resolve().parents[2] / "fp" / "events" / "第20回_四麻Halu杯.md"
+SRC = Path(__file__).resolve().parents[1] / "docs" / "第20回" / "第20回_四麻Halu杯.md"
 src = SRC.read_text(encoding="utf-8-sig").splitlines()
 
 def inline(s):
