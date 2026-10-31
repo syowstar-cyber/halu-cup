@@ -1,34 +1,23 @@
 # halu-cup
 
-麻雀大会「Halu杯」の記念大会（店の貸し切り・ゲストあり）のページ一式。`index.html` は幹部向けの平文の公開ページ（2026-09-16 にパスワードを外した）。
-全ページに `noindex, nofollow` を入れ、`robots.txt` で全クローラを拒否している（検索には載らない。URL を知っている人だけが開く）。
-正典は `docs/第20回/` のMD（2026-10-25 に fp リポから移した）。更新はそちらを直してから再生成する。
+麻雀大会「Halu杯」の記念大会（店の貸し切り・ゲストあり）のリポ。
+いま公開しているのは、第20回（2026-10-24）の順位表だけ（https://syowstar-cyber.github.io/halu-cup/kuji/）。
+全ページに `noindex, nofollow` を入れ、`robots.txt` で全クローラを拒否している。検索には載らず、URL を知っている人だけが開く。
+
+## いまの中身（2026-11-01 に片付けた）
+
+| もの | 中身 |
+|---|---|
+| `kuji/index.html` | 第20回の順位表。確定した点数の固定の表。名前だけ受け口の出席者一覧から読み、読めないときは P番号のまま出る |
+| `index.html` | 順位表へ移るだけ |
+| `404.html` | 消したページを開いたときの、公開終了の案内と順位表へのリンク |
+| `docs/第20回/` | 第20回の正典MD（記録） |
+| `docs/記念大会_手順書.md` | 次の記念大会を第20回の一式から準備する手順 |
+| `gas/` | 点数の受け口（Google Apps Script）の元と手順。受け口は動いたまま |
+
+片付け前の一式（参加者案内・幹部用・点数報告・ルール・点数計算・入力の練習・打ち上げ・tools など）は `1857c3a` にある。
+閉鎖した3ページ（ファースト確認・本田プロ確認用・進行台本）の中身は `faf220b` にある。
+
 普段の回（組み合わせと点数だけ）のページは mahjong リポ（https://syowstar-cyber.github.io/mahjong/kai/）にある。
-次の記念大会を第20回の一式から準備する手順は `docs/記念大会_手順書.md`。
 
-## 更新のしかた
-
-1. `docs/第20回/第20回_四麻Halu杯.md` を直す。
-2. `python tools/rebuild.py` を実行。PowerShell が使える端末なら `powershell -File tools\rebuild.ps1` でも同じ。
-3. `git commit` → `git push`。GitHub Pages が数十秒で反映する。
-
-`.work/` は git 対象外（ビルドの中間ファイルを置く場所）。
-
-## 参加者用ページ
-
-`rule/index.html` は競技ルールをやさしく書き直したルールページ（手書き。生成しない）。本大会だけのルールを変えたら早見表・2章・3章・13章も直す。
-
-`fu/index.html` は符計算と点数表のページ（手書き。生成しない）。
-
-`sanka/index.html` は参加者向けの公開ページ。正典は `docs/第20回/第20回_四麻Halu杯_参加者案内.md`。
-`tools/rebuild.py` が幹部用と一緒に作り直す（`tools/build_sanka.py`）。金銭の記述は載せない。
-
-## 点数報告（score/）
-
-`score/index.html` は点数の送信と集計の画面。データは Google Apps Script のウェブアプリ（`gas/Code.gs`）が
-スクリプト プロパティ（ドライブ不使用）に JSON として保存する。配置手順は `gas/README.md`。
-API の URL は `score/config.js` に書く。送信にキーは要らない（2026-09-16 撤去）。
-
-## 早川麻雀研究会
-
-2026-10-25 に、ここにあった `hayakawa/` を消した。いまは mahjong リポの普段の回のキットの会の1つ（https://syowstar-cyber.github.io/mahjong/kai/?g=hayakawa）。
+`.work/` は git 対象外（手元の作業ファイル）。

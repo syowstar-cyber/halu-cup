@@ -6,8 +6,9 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#7a1a1a">
 <title>第20回 Halu杯 順位表</title>
+<!-- 2026-11-01 に、確定した点数から固定の表にした（点数は受け口と kuji/semi.js で照合済み）。名前だけ受け口の出席者一覧から読む -->
 <style>
-:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db;--pro:#e8f0fa;--pro-fg:#1f5c99;--mama:#fbeaf0;--mama-fg:#993556;--ok:#146c2e;--ng:#b00020}
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--soft:#faf3e3;--focus:#1a56db}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
@@ -16,54 +17,21 @@ a{color:var(--accent);text-decoration:underline}
 header{border-bottom:3px solid var(--accent);margin:18px 0 14px;padding-bottom:10px}
 header h1{font-size:1.35rem;margin:0;line-height:1.4}
 header .sub{color:var(--muted);font-size:.9rem}
-.lead{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.98rem}
 h2{font-size:1.15rem;margin:34px 0 12px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
 h3{font-size:1.05rem;margin:22px 0 8px;border-left:5px solid var(--accent);padding-left:10px}
 p{margin:8px 0}
-ul,ol{padding-left:1.4em;margin:8px 0}
-li{margin:5px 0}
 .tw{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
 table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
 th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top;line-height:1.5;white-space:nowrap}
 td + td, th + th, th + td{border-left:1px solid var(--line)}
 th{background:#ececE8;font-weight:700}
 td.wrap{white-space:normal}
-tr.pro td{background:var(--pro)}
-tr.mama td{background:var(--mama)}
-td.pro{background:var(--pro);color:var(--pro-fg);font-weight:700}
-td.mama{background:var(--mama);color:var(--mama-fg);font-weight:700}
-.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;word-break:break-all}
+tr.adv td{background:var(--soft);font-weight:700}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
 .note{font-size:.92rem;color:var(--muted)}
 .box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0}
-.big{font-size:1.05rem;font-weight:700}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.88rem;color:var(--muted);margin:6px 0}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px;margin-right:4px}
-label{font-weight:700;font-size:.95rem}
-input[type=text]{width:100%;font:inherit;font-size:1.05rem;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
-button{font:inherit;font-weight:700;padding:12px 16px;border-radius:8px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-fg);width:100%;margin-top:10px;cursor:pointer}
-.msg{margin-top:8px;font-weight:700}
-.msg.ng{color:var(--ng)}
-.tag{display:inline-block;font-size:.8rem;font-weight:700;border-radius:4px;padding:0 6px;margin-left:4px}
-.tag.try{background:#ececE8;color:var(--muted)}
-.tag.real{background:var(--ok);color:#fff}
-.tag.swap{background:#ececE8;color:var(--muted);font-weight:400}
-select{width:100%;font:inherit;font-size:1.05rem;padding:10px;border:2px solid var(--accent);border-radius:8px;background:#fff;color:var(--fg)}
-.rbtn{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.rbtn button[data-r=S]{grid-column:1/-1}
-@media (min-width:560px){.rbtn{grid-template-columns:repeat(5,1fr)}.rbtn button[data-r=S]{grid-column:auto}}
-tr.adv td{background:var(--soft);font-weight:700}
-tr.gst td{background:var(--card2)}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
-button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertical-align:2px}
-.rbtn button{margin:0;padding:8px 4px;line-height:1.4;background:var(--card);color:var(--accent)}
-.rbtn button[aria-pressed=true]{background:var(--accent);color:var(--accent-fg)}
-.rbtn button small{display:block;font-size:.88rem;font-weight:400}
-.smap{max-width:420px;margin:0 auto}
-.smap svg{display:block;width:100%;height:auto}
 .pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
-.pnav a[aria-current=page]{background:var(--accent);color:var(--accent-fg)}
-@media (min-width:560px){.pnav a{flex:1 1 30%}}
 @media (min-width:640px){.pnav a{flex:1 1 0}}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
@@ -73,439 +41,126 @@ button.mini{width:auto;margin:0 0 0 8px;padding:2px 10px;font-size:.85rem;vertic
 <div class="wrap">
   <header>
     <h1>第20回 Halu杯 順位表</h1>
-    <div class="sub">順位発表と、決勝・準決勝・予選の結果。最終更新: 2026-10-24</div>
+    <div class="sub">2026年10月24日（土）・麻雀First。最終更新: 2026-11-01</div>
   </header>
-  <nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/">点数報告</a><a href="../kuji/" aria-current="page">順位表</a></nav>
+  <nav class="pnav" aria-label="この順位表の中"><a href="#s1">最終順位</a><a href="#s2">決勝</a><a href="#s3">準決勝</a><a href="#s4">予選</a></nav>
 
-<h2 id="s1">1. 順位発表</h2>
-<div id="finalwrap" hidden>
-<h3>最終順位<button type="button" id="finalre" class="mini">最新にする</button></h3>
-<p class="note">決勝とエキシビジョン戦の点数が入ると、上から順位が決まります。9位からは、準決勝の時間の卓ごとの素点で決まりました。</p>
-<div id="saishu"></div>
+<h2 id="s1">1. 最終順位</h2>
+<div class="box"><b>表彰</b><br>イベント優勝（最終順位の1位）: <span data-p="P22">P22</span><br>優勝: <span data-p="P22">P22</span><br>準優勝: <span data-p="P23">P23</span><br>第3位: <span data-p="P10">P10</span></div>
+<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>決め方</th><th>素点</th></tr></thead><tbody>
+<tr class="adv"><td>1位</td><td><span data-p="P22">P22</span> <b>イベント優勝・優勝</b></td><td>決勝</td><td class="num">42,600</td></tr>
+<tr class="adv"><td>2位</td><td><span data-p="P23">P23</span> <b>準優勝</b></td><td>決勝</td><td class="num">41,600</td></tr>
+<tr class="adv"><td>3位</td><td><span data-p="P10">P10</span> <b>第3位</b></td><td>決勝</td><td class="num">19,700</td></tr>
+<tr class="adv"><td>4位</td><td>ゆうこママ</td><td>決勝</td><td class="num">−3,900</td></tr>
+<tr class="adv"><td>5位</td><td>本田プロ</td><td>エキシビジョン</td><td class="num">73,600</td></tr>
+<tr class="adv"><td>6位</td><td><span data-p="P18">P18</span></td><td>エキシビジョン</td><td class="num">23,700</td></tr>
+<tr class="adv"><td>7位</td><td><span data-p="P24">P24</span></td><td>エキシビジョン</td><td class="num">20,900</td></tr>
+<tr class="adv"><td>8位</td><td><span data-p="P21">P21</span></td><td>エキシビジョン</td><td class="num">−18,200</td></tr>
+<tr><td>9位</td><td><span data-p="P8">P8</span></td><td>1卓</td><td class="num">43,400</td></tr>
+<tr><td>10位</td><td><span data-p="P12">P12</span></td><td>1卓</td><td class="num">28,400</td></tr>
+<tr><td>11位</td><td><span data-p="P27">P27</span></td><td>1卓</td><td class="num">17,400</td></tr>
+<tr><td>12位</td><td><span data-p="P2">P2</span></td><td>1卓</td><td class="num">10,800</td></tr>
+<tr><td>13位</td><td><span data-p="P30">P30</span></td><td>3卓</td><td class="num">70,000</td></tr>
+<tr><td>14位</td><td><span data-p="P17">P17</span></td><td>3卓</td><td class="num">20,800</td></tr>
+<tr><td>15位</td><td><span data-p="P13">P13</span></td><td>3卓</td><td class="num">9,400</td></tr>
+<tr><td>16位</td><td><span data-p="P5">P5</span></td><td>3卓</td><td class="num">−200</td></tr>
+<tr><td>17位</td><td><span data-p="P28">P28</span></td><td>4卓</td><td class="num">36,500</td></tr>
+<tr><td>18位</td><td><span data-p="P3">P3</span></td><td>4卓</td><td class="num">32,700</td></tr>
+<tr><td>19位</td><td><span data-p="P29">P29</span></td><td>4卓</td><td class="num">19,600</td></tr>
+<tr><td>20位</td><td><span data-p="P26">P26</span></td><td>4卓</td><td class="num">11,200</td></tr>
+<tr><td>21位</td><td><span data-p="P6">P6</span></td><td>6卓</td><td class="num">55,600</td></tr>
+<tr><td>22位</td><td><span data-p="P9">P9</span></td><td>6卓</td><td class="num">32,500</td></tr>
+<tr><td>23位</td><td><span data-p="P1">P1</span></td><td>6卓</td><td class="num">24,200</td></tr>
+<tr><td>24位</td><td><span data-p="P19">P19</span></td><td>6卓</td><td class="num">−12,300</td></tr>
+<tr><td>25位</td><td><span data-p="P14">P14</span></td><td>7卓</td><td class="num">48,300</td></tr>
+<tr><td>26位</td><td><span data-p="P11">P11</span></td><td>7卓</td><td class="num">28,700</td></tr>
+<tr><td>27位</td><td><span data-p="P4">P4</span></td><td>7卓</td><td class="num">22,800</td></tr>
+<tr><td>28位</td><td><span data-p="P15">P15</span></td><td>7卓</td><td class="num">200</td></tr>
+<tr><td>29位</td><td><span data-p="P7">P7</span></td><td>8卓</td><td class="num">34,100</td></tr>
+<tr><td>30位</td><td><span data-p="P16">P16</span></td><td>8卓</td><td class="num">32,500</td></tr>
+<tr><td>31位</td><td><span data-p="P20">P20</span></td><td>8卓</td><td class="num">16,800</td></tr>
+<tr><td>32位</td><td><span data-p="P25">P25</span></td><td>8卓</td><td class="num">16,600</td></tr>
+</tbody></table></div>
+<p class="note">1〜4位は決勝、5〜8位はエキシビジョン戦の素点の順です。9位からは、準決勝の時間の卓ごとに素点で決めました。</p>
+<p class="note">本田プロ・ゆうこママも順位に入ります。イベント優勝は最終順位の1位、優勝・準優勝・第3位は参加者の上から3人です。</p>
+
+<h2 id="s2">2. 決勝とエキシビジョン戦</h2>
 <h3>決勝</h3>
-<p class="note">準決勝の結果で決まった4名です。点数が入ると、素点の順に並びます（同点は起家に近い方が上位＝集計係が確かめます）。</p>
-<div id="kessho"></div>
-<div id="exwrap" hidden>
+<p class="note">準決勝の各卓の上位2名が打ちました。</p>
+<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>素点</th></tr></thead><tbody>
+<tr><td>1位</td><td><span data-p="P22">P22</span></td><td class="num">42,600</td></tr>
+<tr><td>2位</td><td><span data-p="P23">P23</span></td><td class="num">41,600</td></tr>
+<tr><td>3位</td><td><span data-p="P10">P10</span></td><td class="num">19,700</td></tr>
+<tr><td>4位</td><td>ゆうこママ</td><td class="num">−3,900</td></tr>
+</tbody></table></div>
 <h3>エキシビジョン戦（横の卓）</h3>
-<p class="note">本田プロが決勝に進めなかったため、準決勝で敗退した4名で打ちます。点数が入ると、素点の順に並びます。</p>
-<div id="exhi"></div>
-</div>
-</div>
-<div id="semiwrap" hidden>
-<h3>準決勝の時間の卓<button type="button" id="semire" class="mini">最新にする</button></h3>
-<p class="note">予選の結果で決まった卓です。素点の順に並びます（同じ卓の同点は起家に近い方が上位＝集計係が確かめます）。</p>
-<div id="semi"></div>
-<h3>予選の結果（確定）</h3>
-<div id="prelim"></div>
-<h3>予選の順位表（確定・32名）</h3>
-<p class="note">本田プロ・ゆうこママも含めて、予選4回戦の合計ポイントだけで並べた順位です。準決勝の顔ぶれと最終順位は、上の参加者だけの順位で決まります。</p>
-<div id="allrank"></div>
-</div>
-<div id="result"></div>
-
-<h2 id="s2">2. 決まるまでの流れ</h2>
-<div class="tw"><table>
-<thead><tr><th>いつ</th><th>決まること</th></tr></thead>
-<tbody>
-<tr><td>確定済み</td><td class="wrap">出席者一覧（P1〜P30）。くじはこのNo.で引く（6章）</td></tr>
-<tr><td>10月23日（金）夕方</td><td class="wrap">ナンバーズ4の抽せん（第7099回・当せん番号 4385）</td></tr>
-<tr><td>10月23日（金）夜</td><td class="wrap">当せん番号をこのページに入れて、結果を発表した</td></tr>
-<tr><td>10月24日（土）</td><td class="wrap">対戦表のとおりに打つ</td></tr>
+<p class="note">本田プロが決勝に進めなかったため、準決勝で敗退した4名による対局です。</p>
+<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>素点</th></tr></thead><tbody>
+<tr><td>1位</td><td>本田プロ</td><td class="num">73,600</td></tr>
+<tr><td>2位</td><td><span data-p="P18">P18</span></td><td class="num">23,700</td></tr>
+<tr><td>3位</td><td><span data-p="P24">P24</span></td><td class="num">20,900</td></tr>
+<tr><td>4位</td><td><span data-p="P21">P21</span></td><td class="num">−18,200</td></tr>
 </tbody></table></div>
 
-<h2 id="s3">3. 公平にするための決まり</h2>
-<ul>
-<li>くじの種は、主催を含めて、抽せんまで誰にも分からない番号です。</li>
-<li>計算の手順・対戦表の型・出席者一覧は、抽せんの前に公開して固定しました。</li>
-<li>抽せんの後に、くじを引き直すことはできません。同じ番号からは、いつ誰が計算しても同じ結果です。</li>
-<li>本田プロ・ゆうこママと同じ組になるか、同卓になるかも、くじで決まります。</li>
-</ul>
+<h2 id="s3">3. 準決勝と準決勝の時間の卓</h2>
+<p class="note">準決勝は2卓（S1卓）と5卓（S2卓）です。S1卓は本田プロ・ゆうこママと予選3位・6位、S2卓は予選1・2・4・5位の4名です。各卓の上位2名が決勝に進みました。</p>
+<p class="note">ほかの24名は、予選の順位で4人ずつ6卓に分かれて打ち、最終順位を決めています。卓の名前にある順位は、参加者30名の中の予選の順位です。</p>
+<div class="tw"><table><thead><tr><th>卓</th><th>順位と名前</th><th>素点</th></tr></thead><tbody>
+<tr><td>2卓<br><small>準決勝 S1卓</small></td><td class="wrap">1位 ゆうこママ<br>2位 <span data-p="P23">P23</span><br>3位 <span data-p="P18">P18</span><br>4位 本田プロ</td><td class="num">37,700<br>31,500<br>18,900<br>11,900</td></tr>
+<tr><td>5卓<br><small>準決勝 S2卓</small></td><td class="wrap">1位 <span data-p="P10">P10</span><br>2位 <span data-p="P22">P22</span><br>3位 <span data-p="P24">P24</span><br>4位 <span data-p="P21">P21</span></td><td class="num">66,600<br>31,100<br>18,900<br>−16,600</td></tr>
+<tr><td>1卓<br><small>予選7〜10位</small></td><td class="wrap">1位 <span data-p="P8">P8</span><br>2位 <span data-p="P12">P12</span><br>3位 <span data-p="P27">P27</span><br>4位 <span data-p="P2">P2</span></td><td class="num">43,400<br>28,400<br>17,400<br>10,800</td></tr>
+<tr><td>3卓<br><small>予選11〜14位</small></td><td class="wrap">1位 <span data-p="P30">P30</span><br>2位 <span data-p="P17">P17</span><br>3位 <span data-p="P13">P13</span><br>4位 <span data-p="P5">P5</span></td><td class="num">70,000<br>20,800<br>9,400<br>−200</td></tr>
+<tr><td>4卓<br><small>予選15〜18位</small></td><td class="wrap">1位 <span data-p="P28">P28</span><br>2位 <span data-p="P3">P3</span><br>3位 <span data-p="P29">P29</span><br>4位 <span data-p="P26">P26</span></td><td class="num">36,500<br>32,700<br>19,600<br>11,200</td></tr>
+<tr><td>6卓<br><small>予選19〜22位</small></td><td class="wrap">1位 <span data-p="P6">P6</span><br>2位 <span data-p="P9">P9</span><br>3位 <span data-p="P1">P1</span><br>4位 <span data-p="P19">P19</span></td><td class="num">55,600<br>32,500<br>24,200<br>−12,300</td></tr>
+<tr><td>7卓<br><small>予選23〜26位</small></td><td class="wrap">1位 <span data-p="P14">P14</span><br>2位 <span data-p="P11">P11</span><br>3位 <span data-p="P4">P4</span><br>4位 <span data-p="P15">P15</span></td><td class="num">48,300<br>28,700<br>22,800<br>200</td></tr>
+<tr><td>8卓<br><small>予選27〜30位</small></td><td class="wrap">1位 <span data-p="P7">P7</span><br>2位 <span data-p="P16">P16</span><br>3位 <span data-p="P20">P20</span><br>4位 <span data-p="P25">P25</span></td><td class="num">34,100<br>32,500<br>16,800<br>16,600</td></tr>
+</tbody></table></div>
 
-<h2 id="s4">4. 計算してみる（検算）</h2>
-<p>ナンバーズ4の当せん番号（4385）を入れて「計算する」を押すと、1章の対戦表と8章のくじ値と同じになることを確かめられます。</p>
-<form id="calc" autocomplete="off">
-<label for="n4">ナンバーズ4の当せん番号（4桁）</label><input type="text" id="n4" inputmode="numeric" maxlength="4" placeholder="例 0482">
-<button type="submit">計算する</button>
-<div id="cmsg" class="msg" aria-live="polite"></div>
-</form>
-<p class="note">当せん番号の確かめ先: <a href="https://www.takarakuji-official.jp/check/" target="_blank" rel="noopener">宝くじ公式サイト 当せん番号のご案内</a></p>
-<div id="calcout"></div>
-
-<h2 id="s5">5. 対戦表の型（枠1〜枠30）</h2>
-<p>卓と席は、先にこの「型」で決めてあります。くじで決めるのは、<b>誰がどの枠に入るか</b>だけです。</p>
-<ul>
-<li>枠1〜15 は本田プロの組（2・4・7・8卓）、枠16〜30 はゆうこママの組（1・3・5・6卓）です。</li>
-<li>本田プロは2卓、ゆうこママは5卓に固定です（席は動かず、相手が来ます）。</li>
-<li>同じ相手とは2度当たりません。全員が東南西北を1回ずつ打ちます。</li>
-<li>本田プロと同卓になる枠は15のうち12です（ゆうこママも同じ）。</li>
-</ul>
-<div class="legend"><span><i style="background:var(--pro)"></i>本田プロの卓</span><span><i style="background:var(--mama)"></i>ゆうこママの卓</span></div>
-<div id="kata"></div>
-
-<h2 id="s6">6. 出席者一覧（P1〜P30）</h2>
-<p>くじは、このNo.で引きました。出席者が変わっても、くじは引き直しません。</p>
-<div id="roster" class="tw"></div>
-
-<h2 id="s7">7. 計算のしかた（くわしく）</h2>
-<ol>
-<li>種の文字列を作ります。<br><span class="mono">HALU20|2026-10-23|N4=ナンバーズ4の当せん番号</span><br>当せん番号は、先頭の0も残して4桁で書きます（例 <span class="mono">HALU20|2026-10-23|N4=0482</span>）。</li>
-<li>P1〜P30 それぞれ、種の後ろに「|P番号」を付けて SHA-256 で計算します（例 <span class="mono">HALU20|2026-10-23|N4=0482|P7</span>）。出てきた64桁の英数字が、その人のくじ値です。</li>
-<li>くじ値の小さい順に、枠1・枠2…枠30 を割り当てます（0〜9、a〜f の順で比べます）。</li>
-<li>5章の型のとおりに、卓と席が決まります。</li>
-</ol>
-<ul class="note">
-<li>SHA-256 は世界共通の計算方法です。Webの計算サイトやパソコンでも、同じくじ値になります。</li></ul>
-
-<h2 id="s8">8. くじ値と枠</h2>
-<div id="lottery"></div>
-<nav class="pnav" aria-label="ページ切り替え"><a href="../sanka/">参加者案内</a><a href="../score/">点数報告</a><a href="../kuji/" aria-current="page">順位表</a></nav>
+<h2 id="s4">4. 予選の順位表（32名）</h2>
+<p class="note">予選4回戦の合計ポイントの順です。本田プロ・ゆうこママも含めています。色つきは準決勝に進んだ8名です（参加者の上位6名と、本田プロ・ゆうこママ）。</p>
+<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th><th>合計</th></tr></thead><tbody>
+<tr class="adv"><td>1位</td><td><span data-p="P22">P22</span></td><td class="num">+71.2</td><td class="num">+56.1</td><td class="num">+52.5</td><td class="num">+72.0</td><td class="num"><b>+251.8</b></td></tr>
+<tr class="adv"><td>2位</td><td><span data-p="P10">P10</span></td><td class="num">−20.8</td><td class="num">+60.8</td><td class="num">+58.2</td><td class="num">+64.0</td><td class="num"><b>+162.2</b></td></tr>
+<tr class="adv"><td>3位</td><td><span data-p="P18">P18</span></td><td class="num">+59.8</td><td class="num">−18.1</td><td class="num">+56.9</td><td class="num">+61.7</td><td class="num"><b>+160.3</b></td></tr>
+<tr class="adv"><td>4位</td><td><span data-p="P21">P21</span></td><td class="num">+60.1</td><td class="num">+53.6</td><td class="num">+78.8</td><td class="num">−43.8</td><td class="num"><b>+148.7</b></td></tr>
+<tr class="adv"><td>5位</td><td><span data-p="P24">P24</span></td><td class="num">+5.8</td><td class="num">+58.4</td><td class="num">+18.6</td><td class="num">+63.1</td><td class="num"><b>+145.9</b></td></tr>
+<tr class="adv"><td>6位</td><td>本田プロ</td><td class="num">+74.6</td><td class="num">+62.2</td><td class="num">−24.4</td><td class="num">−0.4</td><td class="num"><b>+112.0</b></td></tr>
+<tr class="adv"><td>7位</td><td><span data-p="P23">P23</span></td><td class="num">−66.7</td><td class="num">+68.0</td><td class="num">−43.4</td><td class="num">+131.1</td><td class="num"><b>+89.0</b></td></tr>
+<tr><td>8位</td><td><span data-p="P12">P12</span></td><td class="num">−24.9</td><td class="num">+80.2</td><td class="num">+13.7</td><td class="num">+0.4</td><td class="num"><b>+69.4</b></td></tr>
+<tr class="adv"><td>9位</td><td>ゆうこママ</td><td class="num">−28.5</td><td class="num">+70.2</td><td class="num">+6.2</td><td class="num">+5.8</td><td class="num"><b>+53.7</b></td></tr>
+<tr><td>10位</td><td><span data-p="P2">P2</span></td><td class="num">+57.6</td><td class="num">−14.3</td><td class="num">−55.3</td><td class="num">+59.9</td><td class="num"><b>+47.9</b></td></tr>
+<tr><td>11位</td><td><span data-p="P8">P8</span></td><td class="num">+56.6</td><td class="num">−26.5</td><td class="num">+61.1</td><td class="num">−48.7</td><td class="num"><b>+42.5</b></td></tr>
+<tr><td>12位</td><td><span data-p="P27">P27</span></td><td class="num">−49.5</td><td class="num">+8.0</td><td class="num">+65.7</td><td class="num">−22.9</td><td class="num"><b>+1.3</b></td></tr>
+<tr><td>13位</td><td><span data-p="P13">P13</span></td><td class="num">+17.0</td><td class="num">−54.0</td><td class="num">−17.2</td><td class="num">+49.1</td><td class="num"><b>−5.1</b></td></tr>
+<tr><td>14位</td><td><span data-p="P17">P17</span></td><td class="num">+61.0</td><td class="num">−15.9</td><td class="num">+8.9</td><td class="num">−60.2</td><td class="num"><b>−6.2</b></td></tr>
+<tr><td>15位</td><td><span data-p="P5">P5</span></td><td class="num">−45.1</td><td class="num">+4.7</td><td class="num">−24.1</td><td class="num">+56.7</td><td class="num"><b>−7.8</b></td></tr>
+<tr><td>16位</td><td><span data-p="P30">P30</span></td><td class="num">+10.8</td><td class="num">−22.1</td><td class="num">+7.3</td><td class="num">−10.4</td><td class="num"><b>−14.4</b></td></tr>
+<tr><td>17位</td><td><span data-p="P3">P3</span></td><td class="num">+7.6</td><td class="num">+14.6</td><td class="num">−17.9</td><td class="num">−20.2</td><td class="num"><b>−15.9</b></td></tr>
+<tr><td>18位</td><td><span data-p="P28">P28</span></td><td class="num">−55.5</td><td class="num">+7.4</td><td class="num">+65.7</td><td class="num">−33.8</td><td class="num"><b>−16.2</b></td></tr>
+<tr><td>19位</td><td><span data-p="P29">P29</span></td><td class="num">+10.7</td><td class="num">−44.9</td><td class="num">+70.5</td><td class="num">−53.1</td><td class="num"><b>−16.8</b></td></tr>
+<tr><td>20位</td><td><span data-p="P26">P26</span></td><td class="num">−20.7</td><td class="num">+6.8</td><td class="num">−4.4</td><td class="num">−21.9</td><td class="num"><b>−40.2</b></td></tr>
+<tr><td>21位</td><td><span data-p="P6">P6</span></td><td class="num">+1.2</td><td class="num">+8.2</td><td class="num">−19.4</td><td class="num">−33.8</td><td class="num"><b>−43.8</b></td></tr>
+<tr><td>22位</td><td><span data-p="P9">P9</span></td><td class="num">+73.3</td><td class="num">−52.3</td><td class="num">−55.5</td><td class="num">−17.0</td><td class="num"><b>−51.5</b></td></tr>
+<tr><td>23位</td><td><span data-p="P1">P1</span></td><td class="num">−20.9</td><td class="num">+16.0</td><td class="num">−10.4</td><td class="num">−40.1</td><td class="num"><b>−55.4</b></td></tr>
+<tr><td>24位</td><td><span data-p="P19">P19</span></td><td class="num">+12.7</td><td class="num">−45.1</td><td class="num">−45.0</td><td class="num">+15.5</td><td class="num"><b>−61.9</b></td></tr>
+<tr><td>25位</td><td><span data-p="P11">P11</span></td><td class="num">−25.1</td><td class="num">−22.7</td><td class="num">−26.6</td><td class="num">+10.9</td><td class="num"><b>−63.5</b></td></tr>
+<tr><td>26位</td><td><span data-p="P14">P14</span></td><td class="num">−21.8</td><td class="num">+6.6</td><td class="num">+13.1</td><td class="num">−80.6</td><td class="num"><b>−82.7</b></td></tr>
+<tr><td>27位</td><td><span data-p="P4">P4</span></td><td class="num">−21.1</td><td class="num">−60.3</td><td class="num">+8.8</td><td class="num">−15.6</td><td class="num"><b>−88.2</b></td></tr>
+<tr><td>28位</td><td><span data-p="P15">P15</span></td><td class="num">−43.3</td><td class="num">−25.0</td><td class="num">−45.6</td><td class="num">+6.5</td><td class="num"><b>−107.4</b></td></tr>
+<tr><td>29位</td><td><span data-p="P7">P7</span></td><td class="num">−41.5</td><td class="num">−50.7</td><td class="num">+3.3</td><td class="num">−25.5</td><td class="num"><b>−114.4</b></td></tr>
+<tr><td>30位</td><td><span data-p="P25">P25</span></td><td class="num">−45.2</td><td class="num">−24.2</td><td class="num">−79.9</td><td class="num">+13.2</td><td class="num"><b>−136.1</b></td></tr>
+<tr><td>31位</td><td><span data-p="P20">P20</span></td><td class="num">−1.4</td><td class="num">−51.0</td><td class="num">−51.2</td><td class="num">−41.9</td><td class="num"><b>−145.5</b></td></tr>
+<tr><td>32位</td><td><span data-p="P16">P16</span></td><td class="num">−48.0</td><td class="num">−54.7</td><td class="num">−69.0</td><td class="num">−40.0</td><td class="num"><b>−211.7</b></td></tr>
+</tbody></table></div>
 </div>
 
-<script src="../score/config.js"></script>
-<script src="kata.js"></script>
-<script src="seed.js"></script>
-<script src="semi.js"></script>
 <script>
-const API = (window.HALU_API || '').trim();
-const KATA = window.HALU_KATA || {};
-const KUJI = window.HALU_KUJI || {};
-const DATE = '2026-10-23';            // 種の日付（tools/kuji.py の DATE と同じ）
-const WINDS = ['東', '南', '西', '北'];
-let ROSTER = {};
-const dn = p => ROSTER[p] ? p + ' ' + ROSTER[p] : p;
-const nm = p => ROSTER[p] || p;   // 対戦表は名前だけ（一覧が届かないときは P番号）
-function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-
-// SHA-256（標準の手順どおり。ブラウザの設定に左右されないよう自前で計算）
-const K = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
-function sha256hex(str) {
-  const bytes = new TextEncoder().encode(str), len = bytes.length, nblk = (len + 72) >> 6;
-  const m = new Uint8Array(nblk * 64); m.set(bytes); m[len] = 0x80;
-  const dv = new DataView(m.buffer), bits = len * 8;
-  dv.setUint32(m.length - 8, Math.floor(bits / 4294967296)); dv.setUint32(m.length - 4, bits >>> 0);
-  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]), W = new Uint32Array(64);
-  const rot = (x, n) => (x >>> n) | (x << (32 - n));
-  for (let blk = 0; blk < nblk; blk++) {
-    for (let t = 0; t < 16; t++) W[t] = dv.getUint32(blk * 64 + t * 4);
-    for (let t = 16; t < 64; t++) {
-      const s0 = rot(W[t - 15], 7) ^ rot(W[t - 15], 18) ^ (W[t - 15] >>> 3), s1 = rot(W[t - 2], 17) ^ rot(W[t - 2], 19) ^ (W[t - 2] >>> 10);
-      W[t] = (W[t - 16] + s0 + W[t - 7] + s1) >>> 0;
-    }
-    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
-    for (let t = 0; t < 64; t++) {
-      const t1 = (h + (rot(e, 6) ^ rot(e, 11) ^ rot(e, 25)) + ((e & f) ^ (~e & g)) + K[t] + W[t]) >>> 0;
-      const t2 = ((rot(a, 2) ^ rot(a, 13) ^ rot(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
-      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
-    }
-    H[0] += a; H[1] += b; H[2] += c; H[3] += d; H[4] += e; H[5] += f; H[6] += g; H[7] += h;
-  }
-  return [...H].map(x => x.toString(16).padStart(8, '0')).join('');
-}
-
-// 当せん番号の書き方をそろえる（tools/kuji.py と同じ規則。全角は半角に）。null は形の誤り
-function normN4(s) { s = String(s).normalize('NFKC').replace(/\s/g, ''); return /^\d{4}$/.test(s) ? s : null; }
-// 種: ナンバーズ4の当せん番号
-const seedN4 = n4 => 'HALU20|' + DATE + '|N4=' + n4;
-// くじの後の入れ替え（主催の判断・2026-10-23）。本番の番号のときだけ当てる。tools/kuji.py の SWAPS と同じ
-const SWAPS = { '4385': [['P6', 'P14']] };
-
-// くじ: P1〜P30 のくじ値を小さい順に並べ、先頭から枠1〜枠30
-function draw(seed) {
-  const v = Array.from({ length: 30 }, (_, i) => ({ p: 'P' + (i + 1), n: i + 1, h: sha256hex(seed + '|P' + (i + 1)) }));
-  v.sort((x, y) => (x.h < y.h ? -1 : x.h > y.h ? 1 : x.n - y.n));
-  v.forEach((x, k) => { x.slot = k + 1; });
-  return v;
-}
-// くじの順で、入れ替える2人の枠を取り替えた順（くじ値はそのまま）
-function applySwaps(order, pairs) {
-  const out = order.map(x => ({ ...x }));
-  pairs.forEach(([a, b]) => { const x = out.find(o => o.p === a), y = out.find(o => o.p === b); x.p = b; y.p = a; });
-  return out;
-}
-// 型の枠を P番号に置き換えた対戦表
-function scheduleOf(order) {
-  const slot = {}; order.forEach(x => { slot[x.slot] = x.p; });
-  const out = {};
-  Object.keys(KATA).forEach(r => { out[r] = KATA[r].map(row => ({ table: row.table, seats: row.seats.map(s => typeof s === 'number' ? slot[s] : s) })); });
-  return out;
-}
-// 枠ごとに、本田プロ・ゆうこママと同卓する回数
-const MEET = (() => { const m = {}; Object.values(KATA).forEach(rows => rows.forEach(row => ['本田プロ', 'ゆうこママ'].forEach(g => { if (row.seats.includes(g)) row.seats.forEach(s => { if (typeof s === 'number') m[s] = g; }); }))); return m; })();
-
-const label = s => typeof s === 'number' ? '枠' + s : s;
-function roundTables(sched, show) {
-  let h = '';
-  ['1', '2', '3', '4'].forEach(r => {
-    h += '<h3>予選' + r + '回戦</h3><div class="tw"><table><thead><tr><th>卓</th><th>東（起家）</th><th>南</th><th>西</th><th>北</th></tr></thead><tbody>';
-    (sched[r] || []).forEach(row => {
-      const cls = row.seats.includes('本田プロ') ? ' class="pro"' : row.seats.includes('ゆうこママ') ? ' class="mama"' : '';
-      h += '<tr' + cls + '><td>' + row.table + '卓</td>' + row.seats.map(s => '<td>' + esc(show(s)) + '</td>').join('') + '</tr>';
-    });
-    h += '</tbody></table></div>';
-  });
-  return h;
-}
-// くじ値と枠（種の文字列・くじ値の表・くじの後の入れ替え）
-function lotteryHtml(seed, tag, pairs = []) {
-  const order = draw(seed);
-  const moved = {}; pairs.forEach(([a, b]) => { moved[a] = b; moved[b] = a; });
-  let h = '<div class="box"><div>種の文字列 ' + tag + '</div><div class="mono">' + esc(seed) + '</div></div>';
-  h += '<h3>くじ値と枠</h3><div class="tw"><table><thead><tr><th>枠</th><th>No.</th><th>組</th><th>くじ値（先頭12桁）</th></tr></thead><tbody>';
-  order.forEach(x => {
-    const g = x.slot <= 15 ? '本田プロの組' : 'ゆうこママの組', meet = MEET[x.slot] ? '（同卓あり）' : '';
-    h += '<tr' + (x.slot <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + x.slot + '</td><td>' + esc(dn(x.p)) + (moved[x.p] ? '<span class="tag swap">' + esc(moved[x.p]) + 'と入れ替え</span>' : '') + '</td><td>' + g + meet + '</td><td class="mono" title="' + x.h + '">' + x.h.slice(0, 12) + '</td></tr>';
-  });
-  h += '</tbody></table></div><p class="note">くじ値の全部の桁は、行に指を置くか、マウスを重ねると出ます。</p>';
-  if (pairs.length) h += '<p class="note">くじの後、主催の判断で2人の枠を入れ替えました（' + pairs.map(([a, b]) => esc(a) + '・' + esc(b)).join('、') + '）。対戦表（回戦ごと・選手別）は入れ替えた後です。</p>';
-  return h;
-}
-// 対戦表（予選の回戦ごと・選手別）
-function tablesHtml(seed, pairs = []) {
-  const sched = scheduleOf(applySwaps(draw(seed), pairs));
-  let h = roundTables(sched, s => s.startsWith('P') ? nm(s) : s);
-  // 選手別
-  const where = {};
-  ['1', '2', '3', '4'].forEach(r => (sched[r] || []).forEach(row => row.seats.forEach((s, i) => { (where[s] = where[s] || [])[+r - 1] = row.table + '卓 ' + WINDS[i]; })));
-  h += '<h3>選手別（卓・席）</h3><div class="tw"><table><thead><tr><th>名前</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th></tr></thead><tbody>';
-  Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).forEach(p => { h += '<tr><td>' + esc(nm(p)) + '</td>' + (where[p] || []).map(c => '<td>' + c + '</td>').join('') + '</tr>'; });
-  return h + '</tbody></table></div>';
-}
-// 検算の出力: くじ値と枠 → 対戦表
-const resultHtml = (seed, tag, pairs = []) => lotteryHtml(seed, tag, pairs) + tablesHtml(seed, pairs);
-
-// 1章（対戦表）と8章（くじ値と枠）: 本番の結果（kuji/seed.js に数字が入ったら出す）
-function renderResult() {
-  const box = document.getElementById('result'), lot = document.getElementById('lottery');
-  if (!KUJI.n4) { box.innerHTML = '<div class="box big">結果は10月23日（金）の夜に、ここへ出ます。</div><p class="note">いまは「4. 計算してみる」で、仕組みを試せます。</p>'; lot.innerHTML = ''; return; }
-  const n4 = normN4(KUJI.n4), pairs = SWAPS[n4] || [];
-  REAL = scheduleOf(applySwaps(draw(seedN4(n4)), pairs));
-  box.innerHTML = '';   // 予選の卓と席（回戦ごと・選手別）は、決勝だけになったので出さない（2026-10-24 主催。4章の検算では出る）
-  lot.innerHTML = '<div class="box"><div class="big">本番の番号</div>ナンバーズ4の当せん番号（10月23日）: <b>' + esc(KUJI.n4) + '</b></div>' + lotteryHtml(seedN4(n4), '<span class="tag real">本番</span>', pairs);
-  renderSeat();
-}
-// 1章の座席表（2026-10-24）: 名前を選ぶと、予選1〜4回戦の卓と席を配置図（../haichi.svg）の上に印で出す。選んだ名前は端末に覚える（halu:seat）
-// 卓の中心と席の場所は haichi.svg と同じ座標。卓の場所や席の並びを変えたら、haichi.svg と一緒にここも直す
-const TABLE_XY = { 1: [100, 460], 2: [100, 355], 3: [100, 250], 8: [100, 145], 4: [240, 460], 5: [240, 355], 6: [240, 250], 7: [240, 145] };
-const SPOT = [[-31.8, 31.8], [31.8, 31.8], [31.8, -31.8], [-31.8, -31.8]];   // 席の場所（上から見て反時計回り）
-const SPOT_NAME = ['入口側の左', '入口側の右', '奥の右', '奥の左'];
-const GUESTS = ['本田プロ', 'ゆうこママ'];
-// 席の場所の番号（SPOT の添字）。ふつうの卓は東が入口側の左。2卓・5卓はゲストが入口側の左のままで、ほかの3人はそこから反時計回り
-const spotOf = (row, i) => (i - Math.max(row.seats.findIndex(s => GUESTS.includes(s)), 0) + 4) % 4;
-// 最初に選ぶ回戦は3回戦（2026-10-24 主催）。受け口の点数が読めたら、まだ全卓がそろっていない最初の回戦にする（人が押したら動かさない）
-let REAL = null, ROUND = '3', ROUND_TOUCHED = false;
-const currentRound = players => ['1', '2', '3', '4'].find(r => (REAL && REAL[r] || []).some(row => row.seats.some(p => !players[p] || players[p][r] === null || players[p][r] === undefined))) || (SEMI ? 'S' : '4');
-// 準決勝の時間の卓（2026-10-24）。顔ぶれは予選の結果で決まったもの（semi.js）。点数（素点）は受け口から読み、入ったら順に並べる
-const SEMI = window.HALU_SEMI || null;
-let PD = {};   // 受け口の点数（players）
-const semiOf = p => SEMI && SEMI.tables.find(t => t.members.includes(p));
-const fpt = n => (n > 0 ? '+' : n < 0 ? '−' : '') + (Math.abs(n) / 10).toFixed(1);
-const sOf = p => (PD[p] && PD[p].S !== null && PD[p].S !== undefined) ? PD[p].S : null;
-const sorted = t => t.members.slice().sort((a, b) => sOf(b) - sOf(a));   // 同点は並び順のまま（点数報告ページと同じ）
-// 準決勝の時間の店内図（卓の場所は TABLE_XY＝haichi.svg と同じ）
-function semiMap() {
-  const T = (x, y, s, size, fill, w) => '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="' + size + '" font-weight="' + (w || 700) + '" fill="' + fill + '">' + s + '</text>';
-  let s = '<rect x="0" y="30" width="340" height="625" fill="#fff"/>' + T(170, 44, '店の奥（窓）', 13, '#4f4f4f')
-    + '<rect x="20" y="60" width="300" height="500" rx="10" fill="#fbfbf9" stroke="#9a9a96" stroke-width="2"/>'
-    + '<rect x="205" y="520" width="70" height="28" rx="4" fill="#ececE8" stroke="#9a9a96"/>' + T(240, 539, '受付', 13, '#1c1c1c') + T(170, 580, '入口側', 13, '#4f4f4f');
-  SEMI.tables.forEach(t => {
-    const [x, y] = TABLE_XY[t.table], s1 = t.table === 2, s2 = t.table === 5, top = s1 || s2;
-    s += '<g transform="translate(' + x + ' ' + y + ') rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="' + (top ? '#fbe9c4' : '#f1f1ee') + '" stroke="' + (top ? '#9a6a0c' : '#9a9a96') + '" stroke-width="' + (top ? 3 : 1.5) + '"/></g>'
-      + SPOT.map(([dx, dy]) => '<circle cx="' + (x + dx) + '" cy="' + (y + dy) + '" r="9.5" fill="#fff" stroke="' + (top ? '#9a6a0c' : '#9a9a96') + '" stroke-width="1.2"/>').join('')   // 席（固定。風は起家で決まる）
-      + T(x, y - 4, t.table, 22, '#1c1c1c') + T(x, y + 11, s1 ? 'S1卓' : s2 ? 'S2卓' : t.name.replace('予選', ''), 10.5, top ? '#6b4a08' : '#4f4f4f');
-    if (s1) s += T(x, y + 23, '本田プロ', 9.5, '#6b4a08') + T(x, y + 34, 'ゆうこママ', 9.5, '#6b4a08');
-  });
-  return s + T(170, 604, '2卓＝準決勝 S1卓（本田プロ・ゆうこママ・予選3位・6位）', 11, '#333', 400)
-    + T(170, 620, '5卓＝準決勝 S2卓（予選1・2・4・5位）・席は固定・起家はサイコロ', 11, '#333', 400);
-}
-function renderSemi() {
-  if (!SEMI) return;
-  document.getElementById('semiwrap').hidden = false;
-  const rk = p => { const i = SEMI.rank.findIndex(x => x[0] === p); return i >= 0 ? '予選' + (i + 1) + '位' : ''; };
-  let h = '<div class="tw"><table><thead><tr><th>卓</th><th>メンバー</th><th>素点</th></tr></thead><tbody>';
-  SEMI.tables.forEach(t => {
-    const done = t.members.every(p => sOf(p) !== null), order = done ? sorted(t) : t.members;
-    const who = order.map((p, i) => (done ? (i + 1) + '位' + (order.some(q => q !== p && sOf(q) === sOf(p)) ? '（同点）' : '') + ' ' : '') + esc(nm(p)) + (rk(p) ? '<small>（' + rk(p) + '）</small>' : ''));
-    h += '<tr><td>' + t.table + '卓<br><small>' + esc(t.name) + '</small></td><td class="wrap">' + who.join('<br>') + '</td><td>' + order.map(p => sOf(p) === null ? '—' : sOf(p).toLocaleString('ja-JP')).join('<br>') + '</td></tr>';
-  });
-  h += '</tbody></table></div>';
-  const s1 = SEMI.tables[0], s2 = SEMI.tables[1];
-  if ([s1, s2].every(t => t.members.every(p => sOf(p) !== null))) {
-    const a = sorted(s1), b = sorted(s2), fin = [a[0], b[0], a[1], b[1]];
-    const edge = [a, b].some(o => sOf(o[1]) === sOf(o[2]));   // 2位と3位が同点＝起家に近い方が決勝へ（ページでは決められない）
-    h += '<p class="box"><b>決勝に進む4名</b>: ' + fin.map(p => esc(nm(p))).join('・') + (edge ? '<br>【注意】2位と3位が同点の卓があります。決勝に進むのは起家に近い方なので、集計係が確かめます（ここは仮）。' : '')
-      + (fin.includes('本田プロ') ? '' : '<br>本田プロは決勝に進めなかったため、準決勝で敗退した4名で横の卓のエキシビジョン戦をします。') + '</p>';
-  }
-  document.getElementById('semi').innerHTML = h;
-  let g = '<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>合計</th><th>準決勝の時間</th></tr></thead><tbody>';
-  SEMI.rank.forEach(([p, tot], i) => { const t = semiOf(p); g += '<tr' + (i < 6 ? ' class="adv"' : '') + '><td>' + (i + 1) + '位</td><td>' + esc(nm(p)) + '</td><td>' + fpt(tot) + '</td><td>' + (t ? t.table + '卓' : '') + '</td></tr>'; });
-  g += '</tbody></table></div><p class="note">色つきの6名が準決勝に進みます（S1卓＝2卓・S2卓＝5卓）。'
-    + SEMI.guests.map(([n, tot, r]) => n + 'は ' + fpt(tot) + '（32名中' + r + '位' + (r <= 8 ? '＝最終順位と表彰の対象' : '＝最終順位と表彰の対象外') + '）').join('、') + '。</p>';
-  document.getElementById('prelim').innerHTML = g;
-  // 予選の順位表（32名・ゲストを含む・合計だけで並べる）。1〜4回戦のポイントも出す
-  if (SEMI.all) {
-    let a = '<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th><th>合計</th></tr></thead><tbody>';
-    SEMI.all.forEach(([p, tot, q], i) => { a += '<tr' + (GUESTS.includes(p) ? ' class="gst"' : '') + '><td>' + (i + 1) + '位</td><td>' + esc(nm(p)) + '</td>' + q.map(v => '<td class="num">' + fpt(v) + '</td>').join('') + '<td class="num"><b>' + fpt(tot) + '</b></td></tr>'; });
-    document.getElementById('allrank').innerHTML = a + '</tbody></table></div>';
-  }
-}
-// 決勝と最終順位（2026-10-24）。決勝のメンバーと決勝以外の最終順位は semi.js の final（準決勝の時間の結果で確定）。
-// 決勝の素点と生年月日の上下（agerank）は受け口から読む。決勝以外の同点（別の卓どうし）は、全員の生年月日が入れば年上から並べる
-let AGE = {};
-function renderKessho() {
-  const F = SEMI && SEMI.final; if (!F) return;
-  document.getElementById('finalwrap').hidden = false;
-  const fOf = p => (PD[p] && PD[p].F !== null && PD[p].F !== undefined) ? PD[p].F : null;
-  const done = F.members.every(p => fOf(p) !== null), order = done ? F.members.slice().sort((a, b) => fOf(b) - fOf(a)) : F.members;
-  const tied = p => done && order.some(q => q !== p && fOf(q) === fOf(p));
-  const ex = F.members.includes('本田プロ') ? [] : SEMI.tables[0].members.concat(SEMI.tables[1].members).filter(p => !F.members.includes(p));
-  const out = p => !ex.length && F.excluded.includes(p) ? '<small>（最終順位の対象外）</small>' : '';
-  let h = '<div class="tw"><table><thead><tr><th>順</th><th>名前</th><th>素点</th></tr></thead><tbody>';
-  order.forEach((p, i) => { h += '<tr><td>' + (done ? (i + 1) + '位' + (tied(p) ? '（同点）' : '') : '') + '</td><td>' + esc(nm(p)) + out(p) + '</td><td class="num">' + (fOf(p) === null ? '—' : fOf(p).toLocaleString('ja-JP')) + '</td></tr>'; });
-  document.getElementById('kessho').innerHTML = h + '</tbody></table></div>';
-  // エキシビジョン戦（本田プロが決勝に進めなかったとき）。点数は各人の決勝の枠（F）に入る＝点数報告ページの「エキシビジョン戦」
-  document.getElementById('exwrap').hidden = !ex.length;
-  if (ex.length) {
-    const xdone = ex.every(p => fOf(p) !== null), xo = xdone ? ex.slice().sort((a, b) => fOf(b) - fOf(a)) : ex;
-    const xtied = p => xdone && xo.some(q => q !== p && fOf(q) === fOf(p));
-    let x = '<div class="tw"><table><thead><tr><th>順</th><th>名前</th><th>素点</th></tr></thead><tbody>';
-    xo.forEach((p, i) => { x += '<tr><td>' + (xdone ? (i + 1) + '位' + (xtied(p) ? '（同点）' : '') : '') + '</td><td>' + esc(nm(p)) + '</td><td class="num">' + (fOf(p) === null ? '—' : fOf(p).toLocaleString('ja-JP')) + '</td></tr>'; });
-    document.getElementById('exhi').innerHTML = x + '</tbody></table></div>';
-    // 最終順位（2026-10-24 主催）: 1〜4位＝決勝、5〜8位＝エキシビジョン戦、9位から＝準決勝の時間の卓ごとの素点。ゲストも抜かない
-    const row = (rank, p, how, raw, aw, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + rank + '</td><td>' + esc(nm(p)) + (aw ? ' <b>' + aw + '</b>' : '') + '</td><td>' + how + '</td><td class="num">' + (raw === null ? '' : raw.toLocaleString('ja-JP')) + '</td></tr>';
-    let g = '<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>決め方</th><th>素点</th></tr></thead><tbody>';
-    const first = (arr, p) => arr.findIndex(q => fOf(q) === fOf(p));   // 同点は同じ順位の数字（点数報告ページと同じ）
-    // 優勝は2つ（主催）: イベント優勝＝最終順位の1位（ゲストも）、優勝・準優勝・第3位＝参加者の上から3人
-    const prize = order.filter(p => p.startsWith('P'));
-    const award = (p, i) => {
-      if (!done) return '';
-      const k = prize.indexOf(p), a = [i === 0 ? 'イベント優勝' : '', k >= 0 && k < 3 ? ['優勝', '準優勝', '第3位'][k] : ''].filter(Boolean).join('・');
-      return a && tied(p) ? a + '（仮）' : a;
-    };
-    order.forEach((p, i) => { g += row(done ? (1 + first(order, p)) + '位' + (tied(p) ? ' 同点' : '') : '1〜4位', p, '決勝', fOf(p), award(p, i), 'adv'); });
-    // 表彰のまとめ（決勝がそろったら）
-    const hyosho = done ? '<div class="box"><b>表彰</b><br>イベント優勝（最終順位の1位）: ' + esc(nm(order[0])) + '<br>' + ['優勝', '準優勝', '第3位'].map((t, k) => t + ': ' + (prize[k] ? esc(nm(prize[k])) : '')).join('<br>') + (order.some(tied) ? '<br><small>決勝に同点があるため仮です（起家に近い方が上位＝集計係が確かめます）</small>' : '') + '</div>' : '';
-    xo.forEach((p, i) => { g += row(xdone ? (5 + first(xo, p)) + '位' + (xtied(p) ? ' 同点' : '') : '5〜8位', p, 'エキシビジョン', fOf(p), '', 'adv'); });
-    F.rest.filter(r => r[2] !== '準決勝').forEach((r, i) => { g += row((9 + i) + '位', r[1], r[2], r[3], '', ''); });
-    const notes = ['本田プロが決勝に進めなかったため、1〜4位は決勝、5〜8位はエキシビジョン戦、9位からは準決勝の時間の卓ごとの素点で決めます（本田プロ・ゆうこママも順位に入ります）。優勝は2つです。イベント優勝は最終順位の1位（ゆうこママも対象）、優勝・準優勝・第3位は参加者の上から3人です。'];
-    if (order.some(tied) || xo.some(xtied)) notes.push('【注意】同点があります。同じ卓の同点は起家に近い方が上位なので、集計係が確かめます（その順位と賞は仮）。');
-    document.getElementById('saishu').innerHTML = hyosho + g + '</tbody></table></div>' + notes.map(t => '<p class="note">' + t + '</p>').join('');
-    return;
-  }
-  // 最終順位: 1〜3位＝決勝（対象外のゲストは抜く）、4位から＝決勝以外（確定）
-  const ranked = order.filter(p => !F.excluded.includes(p));
-  let g = '<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>決め方</th><th>素点</th></tr></thead><tbody>';
-  ranked.forEach((p, i) => { const aw = done ? ['優勝', '準優勝', '第3位'][i] + (tied(p) ? '（仮）' : '') : ''; g += '<tr class="adv"><td>' + (done ? (i + 1) + '位' : '1〜' + ranked.length + '位') + '</td><td>' + esc(nm(p)) + (aw ? ' <b>' + aw + '</b>' : '') + '</td><td>決勝</td><td class="num">' + (fOf(p) === null ? '' : fOf(p).toLocaleString('ja-JP')) + '</td></tr>'; });
-  const notes = [];
-  for (let i = 0; i < F.rest.length;) {
-    let j = i; while (j + 1 < F.rest.length && F.rest[j + 1][4] && F.rest[i][4] && F.rest[j + 1][0] === F.rest[i][0]) j++;
-    let grp = F.rest.slice(i, j + 1);
-    const aged = grp.length > 1 && grp.every(r => AGE[r[1]]);
-    if (aged) grp = grp.slice().sort((a, b) => AGE[a[1]] - AGE[b[1]]);
-    grp.forEach((r, k) => {
-      const rank = aged ? r[0] + k : r[0], same = grp.length > 1 && (!aged || grp.some(q => q !== r && AGE[q[1]] === AGE[r[1]]));
-      g += '<tr><td>' + rank + '位' + (grp.length > 1 ? (same ? ' 同点' : ' 年齢') : '') + '</td><td>' + esc(nm(r[1])) + '</td><td>' + r[2] + '</td><td class="num">' + r[3].toLocaleString('ja-JP') + '</td></tr>';
-    });
-    if (grp.length > 1 && !aged) notes.push('【注意】' + grp[0][0] + '位は ' + grp.map(r => esc(nm(r[1]))).join('・') + ' が同点です（準決勝の素点 ' + grp[0][3].toLocaleString('ja-JP') + '）。別の卓どうしの同点は年齢が上の方が上位なので、この人たちの生年月日を幹部用ページ11章に入れると決まります。');
-    i = j + 1;
-  }
-  if (F.excluded.length) notes.push(F.excluded.join('・') + 'は、予選の合計が32名中9位以下のため最終順位に入りません（その分、下を繰り上げています）。');
-  if (done && ranked.some(tied)) notes.push('【注意】決勝に同点があります。起家に近い方が上位なので、集計係が確かめます（賞は仮）。');
-  document.getElementById('saishu').innerHTML = g + '</tbody></table></div>' + notes.map(t => '<p class="note">' + t + '</p>').join('');
-}
-async function refreshSemi() {
-  if (!API || !SEMI) return;
-  try { const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json(); if (j.ok) { ROSTER = j.data.roster || ROSTER; PD = j.data.players || {}; AGE = j.data.agerank || {}; renderSemi(); renderKessho(); } } catch (e) {}
-}
-function renderSeat() {
-  const box = document.getElementById('seat'), sel = document.getElementById('me');
-  if (!box || !REAL) return;   // 座席表は、決勝だけになったので出さない（2026-10-24 主催）
-  let keep = sel.value; if (!keep) { try { keep = localStorage.getItem('halu:seat') || ''; } catch (e) {} }
-  sel.innerHTML = '<option value="">名前を選んでください</option>' + Array.from({ length: 30 }, (_, i) => 'P' + (i + 1)).map(p => '<option value="' + p + '">' + esc(nm(p)) + '</option>').join('');
-  if (/^P\d+$/.test(keep)) sel.value = keep;
-  drawSeat();
-}
-function drawSeat() {
-  const me = document.getElementById('me').value, mine = {};
-  ['1', '2', '3', '4'].forEach(r => (REAL[r] || []).forEach(row => row.seats.forEach((s, i) => { if (s === me) mine[r] = { row, i }; })));
-  const btn = document.getElementById('rbtn');
-  const sem = SEMI ? semiOf(me) : null;
-  btn.innerHTML = ['1', '2', '3', '4'].map(r => '<button type="button" data-r="' + r + '" aria-pressed="' + (r === ROUND) + '">' + r + '回戦' + (mine[r] ? '<small>' + mine[r].row.table + '卓・' + WINDS[mine[r].i] + '</small>' : '') + '</button>').join('')
-    + (SEMI ? '<button type="button" data-r="S" aria-pressed="' + (ROUND === 'S') + '">準決勝' + (sem ? '<small>' + sem.table + '卓（' + esc(sem.name) + '）</small>' : '') + '</button>' : '');
-  btn.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { ROUND = b.dataset.r; ROUND_TOUCHED = true; drawSeat(); }));
-  // 準決勝の時間は、予選の図（haichi.svg）の代わりに準決勝用の図を描く（2卓＝S1卓 本田プロ・ゆうこママ、5卓＝S2卓、ほかは予選の順位帯。席の東南西北は出さない）
-  const semiMode = ROUND === 'S' && !!SEMI;
-  document.querySelector('.smap image').style.display = semiMode ? 'none' : '';
-  document.querySelector('.smap svg').setAttribute('viewBox', semiMode ? '0 30 340 625' : '0 30 340 605');
-  // 2卓・5卓の東南西北は回ごとに変わる＝選んだ回戦の並びを図に書き足す（東は塗りの丸）
-  let h = semiMode ? semiMap() : '';
-  (REAL[ROUND] || []).filter(row => row.seats.some(s => GUESTS.includes(s))).forEach(row => {
-    const [x, y] = TABLE_XY[row.table], pro = row.seats.includes('本田プロ'), fill = pro ? '#7a1a1a' : '#1b6670', ink = pro ? '#5c1414' : '#124a52';
-    row.seats.forEach((s, i) => {
-      const [dx, dy] = SPOT[spotOf(row, i)], cx = x + dx, cy = y + dy;
-      if (i === 0) h += '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="' + fill + '"/>';
-      h += '<text x="' + cx + '" y="' + (cy + 4) + '" font-size="11" font-weight="700" text-anchor="middle" fill="' + (i === 0 ? '#fff' : ink) + '">' + WINDS[i] + '</text>';
-    });
-  });
-  const txt = document.getElementById('seattext'), m = mine[ROUND];
-  if (ROUND === 'S' && sem) {
-    // 準決勝の時間の席は固定（卓の並びの順に、入口側の左から反時計回り）。起家はサイコロ
-    const [x, y] = TABLE_XY[sem.table], k = sem.members.indexOf(me), [dx, dy] = SPOT[k];
-    h += '<g transform="translate(' + x + ' ' + y + ') rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#ff7a00" fill-opacity=".28" stroke="#ff7a00" stroke-width="4"/></g>'
-      + '<circle cx="' + (x + dx) + '" cy="' + (y + dy) + '" r="14" fill="#ff7a00" fill-opacity=".3" stroke="#ff7a00" stroke-width="4"><animate attributeName="r" values="13;18;13" dur="1.6s" repeatCount="indefinite"/></circle>';
-    txt.textContent = '準決勝の時間は ' + sem.table + '卓（' + sem.name + '）の' + SPOT_NAME[k] + 'の席です。起家は自動卓のサイコロで決めます。同卓: ' + sem.members.filter(s => s !== me).map(nm).join('・');
-  } else if (m) {
-    const [x, y] = TABLE_XY[m.row.table], k = spotOf(m.row, m.i), [dx, dy] = SPOT[k];
-    h += '<g transform="translate(' + x + ' ' + y + ') rotate(45)"><rect x="-34" y="-34" width="68" height="68" rx="6" fill="#ff7a00" fill-opacity=".28" stroke="#ff7a00" stroke-width="4"/></g>'
-      + '<circle cx="' + (x + dx) + '" cy="' + (y + dy) + '" r="14" fill="#ff7a00" fill-opacity=".3" stroke="#ff7a00" stroke-width="4"><animate attributeName="r" values="13;18;13" dur="1.6s" repeatCount="indefinite"/></circle>';
-    txt.textContent = ROUND + '回戦は ' + m.row.table + '卓の' + WINDS[m.i] + (m.i === 0 ? '（起家）' : '') + '・' + SPOT_NAME[k] + 'の席です。同卓: ' + m.row.seats.filter(s => s !== me).map(nm).join('・');
-  } else txt.textContent = me ? '' : '名前を選ぶと、図に印が付きます。';
-  document.getElementById('hl').innerHTML = h;
-}
-if (document.getElementById('me')) document.getElementById('me').addEventListener('change', e => { try { localStorage.setItem('halu:seat', e.target.value); } catch (er) {} drawSeat(); });
-// 5章: 型
-function renderKata() {
-  let h = roundTables(KATA, label);
-  h += '<h3>枠別（卓・席）</h3><div class="tw"><table><thead><tr><th>枠</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th><th>同卓</th></tr></thead><tbody>';
-  const where = {};
-  ['1', '2', '3', '4'].forEach(r => (KATA[r] || []).forEach(row => row.seats.forEach((s, i) => { (where[s] = where[s] || [])[+r - 1] = row.table + '卓 ' + WINDS[i]; })));
-  Array.from({ length: 30 }, (_, i) => i + 1).forEach(n => {
-    const g = MEET[n];
-    h += '<tr' + (n <= 15 ? ' class="pro"' : ' class="mama"') + '><td>枠' + n + '</td>' + (where[n] || []).map(c => '<td>' + c + '</td>').join('') + '<td>' + (g ? g + 'と1回' : 'なし') + '</td></tr>';
-  });
-  document.getElementById('kata').innerHTML = h + '</tbody></table></div>';
-}
-function renderRoster() {
-  let h = '<table><thead><tr><th>No.</th><th>名前</th></tr></thead><tbody>';
-  for (let i = 1; i <= 30; i++) h += '<tr><td>P' + i + '</td><td>' + esc(ROSTER['P' + i] || '') + '</td></tr>';
-  document.getElementById('roster').innerHTML = h + '</tbody></table>';
-}
-
-document.getElementById('calc').addEventListener('submit', ev => {
-  ev.preventDefault();
-  const b = normN4(document.getElementById('n4').value), msg = document.getElementById('cmsg');
-  msg.textContent = ''; msg.className = 'msg';
-  if (!b) { msg.textContent = 'ナンバーズ4の当せん番号を4桁で入れてください（例 0482）'; msg.className = 'msg ng'; return; }
-  const real = KUJI.n4 && b === normN4(KUJI.n4);
-  document.getElementById('calcout').innerHTML = resultHtml(seedN4(b), real ? '<span class="tag real">本番と同じ番号</span>' : '<span class="tag try">試し（本番の結果ではありません）</span>', real ? SWAPS[b] || [] : []);
-});
-
-async function load() {
-  renderKata(); renderRoster(); renderResult();
-  if (KUJI.n4) document.getElementById('n4').value = KUJI.n4;
-  if (!API) return;
-  try {
-    const j = await (await fetch(API + '?t=' + Date.now(), { cache: 'no-store' })).json();
-    if (j.ok) { ROSTER = j.data.roster || {}; PD = j.data.players || {}; AGE = j.data.agerank || {}; if (!ROUND_TOUCHED && j.data.players) ROUND = currentRound(j.data.players); renderRoster(); renderResult(); renderSemi(); renderKessho(); }
-  } catch (e) {}
-}
-load();
-renderSemi();
-renderKessho();
-document.getElementById('finalre').addEventListener('click', () => { SEMI_AT = Date.now(); refreshSemi(); });
-// 準決勝の時間の点数: 画面に出ているときだけ2分ごとに読み直す（受け口の読み取りの上限のため）。「最新にする」で今すぐ
-let SEMI_AT = Date.now();
-document.getElementById('semire').addEventListener('click', () => { SEMI_AT = Date.now(); refreshSemi(); });
-setInterval(() => { if (SEMI && !document.hidden && Date.now() - SEMI_AT >= 120000) { SEMI_AT = Date.now(); refreshSemi(); } }, 15000);
+// 名前は受け口の出席者一覧（ROSTER）から出す。読めないときは P番号のまま
+const API = 'https://script.google.com/macros/s/AKfycbzvf1cx3Ro0q__l9HD3lPRgWyb--BykCrPvftfZM7xtgcIZunNjbvdET59kn_7RAgsH/exec';
+fetch(API + '?t=' + Date.now(), { cache: 'no-store' })
+  .then(r => r.json())
+  .then(j => { const R = (j.ok && j.data && j.data.roster) || {}; document.querySelectorAll('[data-p]').forEach(el => { if (R[el.dataset.p]) el.textContent = R[el.dataset.p]; }); })
+  .catch(() => {});
 </script>
 <a class="top" href="#" title="上へ">↑</a>
 </body>
