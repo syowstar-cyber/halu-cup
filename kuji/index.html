@@ -5,162 +5,258 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#7a1a1a">
-<title>第20回 Halu杯 順位表</title>
+<title>第20回 Halu杯 結果</title>
 <!-- 2026-11-01 に、確定した点数から固定の表にした（点数は受け口と kuji/semi.js で照合済み）。名前だけ受け口の出席者一覧から読む -->
+<!-- 2026-11-15 に、第5回 三麻Halu杯の結果のページと同じ形にした。題名を「順位表」から「結果」にし、優勝の帯・決め方ごとに区切った最終順位・たたんだ予選の成績と卓ごとの結果にした。点数は前の表のまま -->
 <style>
-:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--soft:#faf3e3;--focus:#1a56db}
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--accent-fg:#ffffff;--card:#ffffff;--card2:#f1f1ee;--soft:#faf3e3;--focus:#1a56db;--ng:#b00020}
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.8;-webkit-text-size-adjust:100%}
-a{color:var(--accent);text-decoration:underline}
-.wrap{max-width:760px;margin:0 auto;padding:0 16px 84px}
-header{border-bottom:3px solid var(--accent);margin:18px 0 14px;padding-bottom:10px}
-header h1{font-size:1.35rem;margin:0;line-height:1.4}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.7;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 84px}
+header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
+header h1{font-size:1.3rem;margin:0}
 header .sub{color:var(--muted);font-size:.9rem}
-h2{font-size:1.15rem;margin:34px 0 12px;padding:10px 14px;background:var(--accent);color:var(--accent-fg);border-radius:8px}
-h3{font-size:1.05rem;margin:22px 0 8px;border-left:5px solid var(--accent);padding-left:10px}
+h3{font-size:1.02rem;margin:18px 0 6px;border-left:5px solid var(--accent);padding-left:10px}
 p{margin:8px 0}
-.tw{overflow-x:auto;margin:10px 0;border:1px solid var(--line);border-radius:8px;background:var(--card)}
-table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
-th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top;line-height:1.5;white-space:nowrap}
-td + td, th + th, th + td{border-left:1px solid var(--line)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0}
+.small{color:var(--muted);font-size:.9rem}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.95rem;background:var(--card);table-layout:fixed}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top;word-break:keep-all;overflow-wrap:anywhere}
 th{background:#ececE8;font-weight:700}
-td.wrap{white-space:normal}
-tr.adv td{background:var(--soft);font-weight:700}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
-.note{font-size:.92rem;color:var(--muted)}
-.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0}
-.pnav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.pnav a{flex:1 1 40%;text-align:center;padding:10px 6px;white-space:nowrap;font-size:.95rem;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;color:var(--accent);background:var(--card)}
-@media (min-width:640px){.pnav a{flex:1 1 0}}
+tr:nth-child(even) td{background:var(--card2)}
+td.neg{color:var(--ng)}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+/* たたむ箱（第5回 三麻Halu杯の結果のページと同じ形） */
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:10px 0}
+summary{cursor:pointer;font-weight:700}
+details[open]>summary{margin-bottom:8px}
+/* 結果（優勝の帯と最終順位） */
+.result{border:2px solid var(--accent);background:var(--soft)}
+.result .lab{font-size:.95rem;font-weight:700;color:var(--muted)}
+.result .win{font-size:1.6rem;font-weight:700;color:var(--accent);line-height:1.4;margin:2px 0}
+.result h3{margin-top:14px}
+/* 最終順位の表。決め方ごとに見出しの行で区切り、右の列はその決め方の素点だけ（右に寄せる）。名前の横は表彰 */
+table.rk th,table.rk td{width:auto}
+table.rk col.c1{width:3.6em}
+table.rk col.c3{width:6.5em}
+table.rk tr.grp th{font-size:.9rem}
+table.rk td.v{text-align:right;white-space:nowrap}
+table.rk td b{font-size:.85rem;color:var(--accent)}
+/* 予選の成績。横に動かしても名前の列は左に残す。色つきは準決勝に進んだ8名 */
+table.pre{table-layout:auto;width:auto;min-width:100%}
+table.pre th,table.pre td{white-space:nowrap;text-align:right}
+table.pre th:first-child,table.pre td:first-child{text-align:left}
+table.pre .nm{text-align:left;position:sticky;left:0;z-index:1;background:var(--card);box-shadow:inset -1px 0 0 var(--line)}
+table.pre th.nm{background:#ececE8;z-index:2}
+table.pre tr:nth-child(even) td.nm{background:var(--card2)}
+table.pre td.sum{font-weight:700}
+table.pre tr.adv td,table.pre tr.adv td.nm{background:var(--soft)}
+/* 卓ごとの結果。名前の列を広く、数の列は右に寄せる */
+table.tres .r{width:3.4em}
+table.tres .n{width:6.5em;text-align:right}
+.top{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-fg);border-radius:50%;width:48px;height:48px;font-size:1.3rem;font-weight:bold;display:none;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.3)}.top.on{display:flex}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>第20回 Halu杯 順位表</h1>
-    <div class="sub">2026年10月24日（土）・麻雀First。最終更新: 2026-11-01</div>
+    <h1>第20回 Halu杯 結果</h1>
+    <div class="sub">2026年10月24日（土）・麻雀First</div>
   </header>
-  <nav class="pnav" aria-label="この順位表の中"><a href="#s1">最終順位</a><a href="#s2">決勝</a><a href="#s3">準決勝</a><a href="#s4">予選</a></nav>
 
-<h2 id="s1">1. 最終順位</h2>
-<div class="box"><b>表彰</b><br>イベント優勝（最終順位の1位）: <span data-p="P22">P22</span><br>優勝: <span data-p="P22">P22</span><br>準優勝: <span data-p="P23">P23</span><br>第3位: <span data-p="P10">P10</span></div>
-<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>決め方</th><th>素点</th></tr></thead><tbody>
-<tr class="adv"><td>1位</td><td><span data-p="P22">P22</span> <b>イベント優勝・優勝</b></td><td>決勝</td><td class="num">42,600</td></tr>
-<tr class="adv"><td>2位</td><td><span data-p="P23">P23</span> <b>準優勝</b></td><td>決勝</td><td class="num">41,600</td></tr>
-<tr class="adv"><td>3位</td><td><span data-p="P10">P10</span> <b>第3位</b></td><td>決勝</td><td class="num">19,700</td></tr>
-<tr class="adv"><td>4位</td><td>ゆうこママ</td><td>決勝</td><td class="num">−3,900</td></tr>
-<tr class="adv"><td>5位</td><td>本田プロ</td><td>エキシビジョン</td><td class="num">73,600</td></tr>
-<tr class="adv"><td>6位</td><td><span data-p="P18">P18</span></td><td>エキシビジョン</td><td class="num">23,700</td></tr>
-<tr class="adv"><td>7位</td><td><span data-p="P24">P24</span></td><td>エキシビジョン</td><td class="num">20,900</td></tr>
-<tr class="adv"><td>8位</td><td><span data-p="P21">P21</span></td><td>エキシビジョン</td><td class="num">−18,200</td></tr>
-<tr><td>9位</td><td><span data-p="P8">P8</span></td><td>1卓</td><td class="num">43,400</td></tr>
-<tr><td>10位</td><td><span data-p="P12">P12</span></td><td>1卓</td><td class="num">28,400</td></tr>
-<tr><td>11位</td><td><span data-p="P27">P27</span></td><td>1卓</td><td class="num">17,400</td></tr>
-<tr><td>12位</td><td><span data-p="P2">P2</span></td><td>1卓</td><td class="num">10,800</td></tr>
-<tr><td>13位</td><td><span data-p="P30">P30</span></td><td>3卓</td><td class="num">70,000</td></tr>
-<tr><td>14位</td><td><span data-p="P17">P17</span></td><td>3卓</td><td class="num">20,800</td></tr>
-<tr><td>15位</td><td><span data-p="P13">P13</span></td><td>3卓</td><td class="num">9,400</td></tr>
-<tr><td>16位</td><td><span data-p="P5">P5</span></td><td>3卓</td><td class="num">−200</td></tr>
-<tr><td>17位</td><td><span data-p="P28">P28</span></td><td>4卓</td><td class="num">36,500</td></tr>
-<tr><td>18位</td><td><span data-p="P3">P3</span></td><td>4卓</td><td class="num">32,700</td></tr>
-<tr><td>19位</td><td><span data-p="P29">P29</span></td><td>4卓</td><td class="num">19,600</td></tr>
-<tr><td>20位</td><td><span data-p="P26">P26</span></td><td>4卓</td><td class="num">11,200</td></tr>
-<tr><td>21位</td><td><span data-p="P6">P6</span></td><td>6卓</td><td class="num">55,600</td></tr>
-<tr><td>22位</td><td><span data-p="P9">P9</span></td><td>6卓</td><td class="num">32,500</td></tr>
-<tr><td>23位</td><td><span data-p="P1">P1</span></td><td>6卓</td><td class="num">24,200</td></tr>
-<tr><td>24位</td><td><span data-p="P19">P19</span></td><td>6卓</td><td class="num">−12,300</td></tr>
-<tr><td>25位</td><td><span data-p="P14">P14</span></td><td>7卓</td><td class="num">48,300</td></tr>
-<tr><td>26位</td><td><span data-p="P11">P11</span></td><td>7卓</td><td class="num">28,700</td></tr>
-<tr><td>27位</td><td><span data-p="P4">P4</span></td><td>7卓</td><td class="num">22,800</td></tr>
-<tr><td>28位</td><td><span data-p="P15">P15</span></td><td>7卓</td><td class="num">200</td></tr>
-<tr><td>29位</td><td><span data-p="P7">P7</span></td><td>8卓</td><td class="num">34,100</td></tr>
-<tr><td>30位</td><td><span data-p="P16">P16</span></td><td>8卓</td><td class="num">32,500</td></tr>
-<tr><td>31位</td><td><span data-p="P20">P20</span></td><td>8卓</td><td class="num">16,800</td></tr>
-<tr><td>32位</td><td><span data-p="P25">P25</span></td><td>8卓</td><td class="num">16,600</td></tr>
-</tbody></table></div>
-<p class="note">1〜4位は決勝、5〜8位はエキシビジョン戦の素点の順です。9位からは、準決勝の時間の卓ごとに素点で決めました。</p>
-<p class="note">本田プロ・ゆうこママも順位に入ります。イベント優勝は最終順位の1位、優勝・準優勝・第3位は参加者の上から3人です。</p>
+<div class="card result">
+<div class="lab">結果（確定）</div>
+<div class="win">🏆 優勝　<span data-p="P22">P22</span></div>
+<div class="small">決勝 42,600点。イベント優勝（最終順位の1位）も同じ人です。</div>
+<h3>最終順位</h3>
+<div class="tw"><table class="rk"><colgroup><col class="c1"><col><col class="c3"></colgroup>
+<tbody><tr class="grp"><th colspan="3">決勝（素点）</th></tr>
+<tr><td>1位</td><td><span data-p="P22">P22</span> <b>イベント優勝・優勝</b></td><td class="v">42,600点</td></tr>
+<tr><td>2位</td><td><span data-p="P23">P23</span> <b>準優勝</b></td><td class="v">41,600点</td></tr>
+<tr><td>3位</td><td><span data-p="P10">P10</span> <b>第3位</b></td><td class="v">19,700点</td></tr>
+<tr><td>4位</td><td>ゆうこママ</td><td class="v neg">−3,900点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">エキシビジョン戦（素点）</th></tr>
+<tr><td>5位</td><td>本田プロ</td><td class="v">73,600点</td></tr>
+<tr><td>6位</td><td><span data-p="P18">P18</span></td><td class="v">23,700点</td></tr>
+<tr><td>7位</td><td><span data-p="P24">P24</span></td><td class="v">20,900点</td></tr>
+<tr><td>8位</td><td><span data-p="P21">P21</span></td><td class="v neg">−18,200点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">準決勝の時間の1卓 9〜12位（素点）</th></tr>
+<tr><td>9位</td><td><span data-p="P8">P8</span></td><td class="v">43,400点</td></tr>
+<tr><td>10位</td><td><span data-p="P12">P12</span></td><td class="v">28,400点</td></tr>
+<tr><td>11位</td><td><span data-p="P27">P27</span></td><td class="v">17,400点</td></tr>
+<tr><td>12位</td><td><span data-p="P2">P2</span></td><td class="v">10,800点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">準決勝の時間の3卓 13〜16位（素点）</th></tr>
+<tr><td>13位</td><td><span data-p="P30">P30</span></td><td class="v">70,000点</td></tr>
+<tr><td>14位</td><td><span data-p="P17">P17</span></td><td class="v">20,800点</td></tr>
+<tr><td>15位</td><td><span data-p="P13">P13</span></td><td class="v">9,400点</td></tr>
+<tr><td>16位</td><td><span data-p="P5">P5</span></td><td class="v neg">−200点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">準決勝の時間の4卓 17〜20位（素点）</th></tr>
+<tr><td>17位</td><td><span data-p="P28">P28</span></td><td class="v">36,500点</td></tr>
+<tr><td>18位</td><td><span data-p="P3">P3</span></td><td class="v">32,700点</td></tr>
+<tr><td>19位</td><td><span data-p="P29">P29</span></td><td class="v">19,600点</td></tr>
+<tr><td>20位</td><td><span data-p="P26">P26</span></td><td class="v">11,200点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">準決勝の時間の6卓 21〜24位（素点）</th></tr>
+<tr><td>21位</td><td><span data-p="P6">P6</span></td><td class="v">55,600点</td></tr>
+<tr><td>22位</td><td><span data-p="P9">P9</span></td><td class="v">32,500点</td></tr>
+<tr><td>23位</td><td><span data-p="P1">P1</span></td><td class="v">24,200点</td></tr>
+<tr><td>24位</td><td><span data-p="P19">P19</span></td><td class="v neg">−12,300点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">準決勝の時間の7卓 25〜28位（素点）</th></tr>
+<tr><td>25位</td><td><span data-p="P14">P14</span></td><td class="v">48,300点</td></tr>
+<tr><td>26位</td><td><span data-p="P11">P11</span></td><td class="v">28,700点</td></tr>
+<tr><td>27位</td><td><span data-p="P4">P4</span></td><td class="v">22,800点</td></tr>
+<tr><td>28位</td><td><span data-p="P15">P15</span></td><td class="v">200点</td></tr>
+</tbody>
+<tbody><tr class="grp"><th colspan="3">準決勝の時間の8卓 29〜32位（素点）</th></tr>
+<tr><td>29位</td><td><span data-p="P7">P7</span></td><td class="v">34,100点</td></tr>
+<tr><td>30位</td><td><span data-p="P16">P16</span></td><td class="v">32,500点</td></tr>
+<tr><td>31位</td><td><span data-p="P20">P20</span></td><td class="v">16,800点</td></tr>
+<tr><td>32位</td><td><span data-p="P25">P25</span></td><td class="v">16,600点</td></tr>
+</tbody>
+</table></div>
+<p class="small" style="margin:6px 0 0">本田プロ・ゆうこママも順位に入ります。イベント優勝は最終順位の1位、優勝・準優勝・第3位は参加者の上から3人です。</p>
+</div>
 
-<h2 id="s2">2. 決勝とエキシビジョン戦</h2>
-<h3>決勝</h3>
-<p class="note">準決勝の各卓の上位2名が打ちました。</p>
-<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>素点</th></tr></thead><tbody>
-<tr><td>1位</td><td><span data-p="P22">P22</span></td><td class="num">42,600</td></tr>
-<tr><td>2位</td><td><span data-p="P23">P23</span></td><td class="num">41,600</td></tr>
-<tr><td>3位</td><td><span data-p="P10">P10</span></td><td class="num">19,700</td></tr>
-<tr><td>4位</td><td>ゆうこママ</td><td class="num">−3,900</td></tr>
+<details><summary>予選の成績（回戦ごとのpt）</summary>
+<div class="tw"><table class="pre"><thead><tr><th>順位</th><th class="nm">名前</th><th>合計</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead><tbody>
+<tr class="adv"><td>1位</td><td class="nm"><span data-p="P22">P22</span></td><td class="sum">+251.8</td><td>+71.2</td><td>+56.1</td><td>+52.5</td><td>+72.0</td></tr>
+<tr class="adv"><td>2位</td><td class="nm"><span data-p="P10">P10</span></td><td class="sum">+162.2</td><td class="neg">−20.8</td><td>+60.8</td><td>+58.2</td><td>+64.0</td></tr>
+<tr class="adv"><td>3位</td><td class="nm"><span data-p="P18">P18</span></td><td class="sum">+160.3</td><td>+59.8</td><td class="neg">−18.1</td><td>+56.9</td><td>+61.7</td></tr>
+<tr class="adv"><td>4位</td><td class="nm"><span data-p="P21">P21</span></td><td class="sum">+148.7</td><td>+60.1</td><td>+53.6</td><td>+78.8</td><td class="neg">−43.8</td></tr>
+<tr class="adv"><td>5位</td><td class="nm"><span data-p="P24">P24</span></td><td class="sum">+145.9</td><td>+5.8</td><td>+58.4</td><td>+18.6</td><td>+63.1</td></tr>
+<tr class="adv"><td>6位</td><td class="nm">本田プロ</td><td class="sum">+112.0</td><td>+74.6</td><td>+62.2</td><td class="neg">−24.4</td><td class="neg">−0.4</td></tr>
+<tr class="adv"><td>7位</td><td class="nm"><span data-p="P23">P23</span></td><td class="sum">+89.0</td><td class="neg">−66.7</td><td>+68.0</td><td class="neg">−43.4</td><td>+131.1</td></tr>
+<tr><td>8位</td><td class="nm"><span data-p="P12">P12</span></td><td class="sum">+69.4</td><td class="neg">−24.9</td><td>+80.2</td><td>+13.7</td><td>+0.4</td></tr>
+<tr class="adv"><td>9位</td><td class="nm">ゆうこママ</td><td class="sum">+53.7</td><td class="neg">−28.5</td><td>+70.2</td><td>+6.2</td><td>+5.8</td></tr>
+<tr><td>10位</td><td class="nm"><span data-p="P2">P2</span></td><td class="sum">+47.9</td><td>+57.6</td><td class="neg">−14.3</td><td class="neg">−55.3</td><td>+59.9</td></tr>
+<tr><td>11位</td><td class="nm"><span data-p="P8">P8</span></td><td class="sum">+42.5</td><td>+56.6</td><td class="neg">−26.5</td><td>+61.1</td><td class="neg">−48.7</td></tr>
+<tr><td>12位</td><td class="nm"><span data-p="P27">P27</span></td><td class="sum">+1.3</td><td class="neg">−49.5</td><td>+8.0</td><td>+65.7</td><td class="neg">−22.9</td></tr>
+<tr><td>13位</td><td class="nm"><span data-p="P13">P13</span></td><td class="sum neg">−5.1</td><td>+17.0</td><td class="neg">−54.0</td><td class="neg">−17.2</td><td>+49.1</td></tr>
+<tr><td>14位</td><td class="nm"><span data-p="P17">P17</span></td><td class="sum neg">−6.2</td><td>+61.0</td><td class="neg">−15.9</td><td>+8.9</td><td class="neg">−60.2</td></tr>
+<tr><td>15位</td><td class="nm"><span data-p="P5">P5</span></td><td class="sum neg">−7.8</td><td class="neg">−45.1</td><td>+4.7</td><td class="neg">−24.1</td><td>+56.7</td></tr>
+<tr><td>16位</td><td class="nm"><span data-p="P30">P30</span></td><td class="sum neg">−14.4</td><td>+10.8</td><td class="neg">−22.1</td><td>+7.3</td><td class="neg">−10.4</td></tr>
+<tr><td>17位</td><td class="nm"><span data-p="P3">P3</span></td><td class="sum neg">−15.9</td><td>+7.6</td><td>+14.6</td><td class="neg">−17.9</td><td class="neg">−20.2</td></tr>
+<tr><td>18位</td><td class="nm"><span data-p="P28">P28</span></td><td class="sum neg">−16.2</td><td class="neg">−55.5</td><td>+7.4</td><td>+65.7</td><td class="neg">−33.8</td></tr>
+<tr><td>19位</td><td class="nm"><span data-p="P29">P29</span></td><td class="sum neg">−16.8</td><td>+10.7</td><td class="neg">−44.9</td><td>+70.5</td><td class="neg">−53.1</td></tr>
+<tr><td>20位</td><td class="nm"><span data-p="P26">P26</span></td><td class="sum neg">−40.2</td><td class="neg">−20.7</td><td>+6.8</td><td class="neg">−4.4</td><td class="neg">−21.9</td></tr>
+<tr><td>21位</td><td class="nm"><span data-p="P6">P6</span></td><td class="sum neg">−43.8</td><td>+1.2</td><td>+8.2</td><td class="neg">−19.4</td><td class="neg">−33.8</td></tr>
+<tr><td>22位</td><td class="nm"><span data-p="P9">P9</span></td><td class="sum neg">−51.5</td><td>+73.3</td><td class="neg">−52.3</td><td class="neg">−55.5</td><td class="neg">−17.0</td></tr>
+<tr><td>23位</td><td class="nm"><span data-p="P1">P1</span></td><td class="sum neg">−55.4</td><td class="neg">−20.9</td><td>+16.0</td><td class="neg">−10.4</td><td class="neg">−40.1</td></tr>
+<tr><td>24位</td><td class="nm"><span data-p="P19">P19</span></td><td class="sum neg">−61.9</td><td>+12.7</td><td class="neg">−45.1</td><td class="neg">−45.0</td><td>+15.5</td></tr>
+<tr><td>25位</td><td class="nm"><span data-p="P11">P11</span></td><td class="sum neg">−63.5</td><td class="neg">−25.1</td><td class="neg">−22.7</td><td class="neg">−26.6</td><td>+10.9</td></tr>
+<tr><td>26位</td><td class="nm"><span data-p="P14">P14</span></td><td class="sum neg">−82.7</td><td class="neg">−21.8</td><td>+6.6</td><td>+13.1</td><td class="neg">−80.6</td></tr>
+<tr><td>27位</td><td class="nm"><span data-p="P4">P4</span></td><td class="sum neg">−88.2</td><td class="neg">−21.1</td><td class="neg">−60.3</td><td>+8.8</td><td class="neg">−15.6</td></tr>
+<tr><td>28位</td><td class="nm"><span data-p="P15">P15</span></td><td class="sum neg">−107.4</td><td class="neg">−43.3</td><td class="neg">−25.0</td><td class="neg">−45.6</td><td>+6.5</td></tr>
+<tr><td>29位</td><td class="nm"><span data-p="P7">P7</span></td><td class="sum neg">−114.4</td><td class="neg">−41.5</td><td class="neg">−50.7</td><td>+3.3</td><td class="neg">−25.5</td></tr>
+<tr><td>30位</td><td class="nm"><span data-p="P25">P25</span></td><td class="sum neg">−136.1</td><td class="neg">−45.2</td><td class="neg">−24.2</td><td class="neg">−79.9</td><td>+13.2</td></tr>
+<tr><td>31位</td><td class="nm"><span data-p="P20">P20</span></td><td class="sum neg">−145.5</td><td class="neg">−1.4</td><td class="neg">−51.0</td><td class="neg">−51.2</td><td class="neg">−41.9</td></tr>
+<tr><td>32位</td><td class="nm"><span data-p="P16">P16</span></td><td class="sum neg">−211.7</td><td class="neg">−48.0</td><td class="neg">−54.7</td><td class="neg">−69.0</td><td class="neg">−40.0</td></tr>
 </tbody></table></div>
-<h3>エキシビジョン戦（横の卓）</h3>
-<p class="note">本田プロが決勝に進めなかったため、準決勝で敗退した4名による対局です。</p>
-<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>素点</th></tr></thead><tbody>
-<tr><td>1位</td><td>本田プロ</td><td class="num">73,600</td></tr>
-<tr><td>2位</td><td><span data-p="P18">P18</span></td><td class="num">23,700</td></tr>
-<tr><td>3位</td><td><span data-p="P24">P24</span></td><td class="num">20,900</td></tr>
-<tr><td>4位</td><td><span data-p="P21">P21</span></td><td class="num">−18,200</td></tr>
-</tbody></table></div>
+<p class="small" style="margin:6px 0 0">予選4回戦の合計ポイントの順です。1〜4 は回戦ごとのポイントです。本田プロ・ゆうこママも含めています。</p>
+<p class="small" style="margin:2px 0 0">色つきは準決勝に進んだ8名です（参加者の上位6名と、本田プロ・ゆうこママ）。</p>
+</details>
 
-<h2 id="s3">3. 準決勝と準決勝の時間の卓</h2>
-<p class="note">準決勝は2卓（S1卓）と5卓（S2卓）です。S1卓は本田プロ・ゆうこママと予選3位・6位、S2卓は予選1・2・4・5位の4名です。各卓の上位2名が決勝に進みました。</p>
-<p class="note">ほかの24名は、予選の順位で4人ずつ6卓に分かれて打ち、最終順位を決めています。卓の名前にある順位は、参加者30名の中の予選の順位です。</p>
-<div class="tw"><table><thead><tr><th>卓</th><th>順位と名前</th><th>素点</th></tr></thead><tbody>
-<tr><td>2卓<br><small>準決勝 S1卓</small></td><td class="wrap">1位 ゆうこママ<br>2位 <span data-p="P23">P23</span><br>3位 <span data-p="P18">P18</span><br>4位 本田プロ</td><td class="num">37,700<br>31,500<br>18,900<br>11,900</td></tr>
-<tr><td>5卓<br><small>準決勝 S2卓</small></td><td class="wrap">1位 <span data-p="P10">P10</span><br>2位 <span data-p="P22">P22</span><br>3位 <span data-p="P24">P24</span><br>4位 <span data-p="P21">P21</span></td><td class="num">66,600<br>31,100<br>18,900<br>−16,600</td></tr>
-<tr><td>1卓<br><small>予選7〜10位</small></td><td class="wrap">1位 <span data-p="P8">P8</span><br>2位 <span data-p="P12">P12</span><br>3位 <span data-p="P27">P27</span><br>4位 <span data-p="P2">P2</span></td><td class="num">43,400<br>28,400<br>17,400<br>10,800</td></tr>
-<tr><td>3卓<br><small>予選11〜14位</small></td><td class="wrap">1位 <span data-p="P30">P30</span><br>2位 <span data-p="P17">P17</span><br>3位 <span data-p="P13">P13</span><br>4位 <span data-p="P5">P5</span></td><td class="num">70,000<br>20,800<br>9,400<br>−200</td></tr>
-<tr><td>4卓<br><small>予選15〜18位</small></td><td class="wrap">1位 <span data-p="P28">P28</span><br>2位 <span data-p="P3">P3</span><br>3位 <span data-p="P29">P29</span><br>4位 <span data-p="P26">P26</span></td><td class="num">36,500<br>32,700<br>19,600<br>11,200</td></tr>
-<tr><td>6卓<br><small>予選19〜22位</small></td><td class="wrap">1位 <span data-p="P6">P6</span><br>2位 <span data-p="P9">P9</span><br>3位 <span data-p="P1">P1</span><br>4位 <span data-p="P19">P19</span></td><td class="num">55,600<br>32,500<br>24,200<br>−12,300</td></tr>
-<tr><td>7卓<br><small>予選23〜26位</small></td><td class="wrap">1位 <span data-p="P14">P14</span><br>2位 <span data-p="P11">P11</span><br>3位 <span data-p="P4">P4</span><br>4位 <span data-p="P15">P15</span></td><td class="num">48,300<br>28,700<br>22,800<br>200</td></tr>
-<tr><td>8卓<br><small>予選27〜30位</small></td><td class="wrap">1位 <span data-p="P7">P7</span><br>2位 <span data-p="P16">P16</span><br>3位 <span data-p="P20">P20</span><br>4位 <span data-p="P25">P25</span></td><td class="num">34,100<br>32,500<br>16,800<br>16,600</td></tr>
+<details><summary>卓ごとの結果（準決勝と決勝の時間）</summary>
+<h3>準決勝の時間</h3>
+<p class="small">準決勝は2卓（S1卓）と5卓（S2卓）です。S1卓は本田プロ・ゆうこママと予選3位・6位、S2卓は予選1・2・4・5位の4名です。各卓の上位2名が決勝に進みました。</p>
+<p class="small">ほかの24名は、予選の順位で4人ずつ6卓に分かれて打ち、最終順位を決めています。卓の名前にある順位は、参加者30名の中の予選の順位です。</p>
+<div class="small">2卓（準決勝 S1卓）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td>ゆうこママ</td><td class="n">37,700</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P23">P23</span></td><td class="n">31,500</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P18">P18</span></td><td class="n">18,900</td></tr>
+<tr><td class="r">4位</td><td>本田プロ</td><td class="n">11,900</td></tr>
 </tbody></table></div>
-
-<h2 id="s4">4. 予選の順位表（32名）</h2>
-<p class="note">予選4回戦の合計ポイントの順です。本田プロ・ゆうこママも含めています。色つきは準決勝に進んだ8名です（参加者の上位6名と、本田プロ・ゆうこママ）。</p>
-<div class="tw"><table><thead><tr><th>順位</th><th>名前</th><th>1回戦</th><th>2回戦</th><th>3回戦</th><th>4回戦</th><th>合計</th></tr></thead><tbody>
-<tr class="adv"><td>1位</td><td><span data-p="P22">P22</span></td><td class="num">+71.2</td><td class="num">+56.1</td><td class="num">+52.5</td><td class="num">+72.0</td><td class="num"><b>+251.8</b></td></tr>
-<tr class="adv"><td>2位</td><td><span data-p="P10">P10</span></td><td class="num">−20.8</td><td class="num">+60.8</td><td class="num">+58.2</td><td class="num">+64.0</td><td class="num"><b>+162.2</b></td></tr>
-<tr class="adv"><td>3位</td><td><span data-p="P18">P18</span></td><td class="num">+59.8</td><td class="num">−18.1</td><td class="num">+56.9</td><td class="num">+61.7</td><td class="num"><b>+160.3</b></td></tr>
-<tr class="adv"><td>4位</td><td><span data-p="P21">P21</span></td><td class="num">+60.1</td><td class="num">+53.6</td><td class="num">+78.8</td><td class="num">−43.8</td><td class="num"><b>+148.7</b></td></tr>
-<tr class="adv"><td>5位</td><td><span data-p="P24">P24</span></td><td class="num">+5.8</td><td class="num">+58.4</td><td class="num">+18.6</td><td class="num">+63.1</td><td class="num"><b>+145.9</b></td></tr>
-<tr class="adv"><td>6位</td><td>本田プロ</td><td class="num">+74.6</td><td class="num">+62.2</td><td class="num">−24.4</td><td class="num">−0.4</td><td class="num"><b>+112.0</b></td></tr>
-<tr class="adv"><td>7位</td><td><span data-p="P23">P23</span></td><td class="num">−66.7</td><td class="num">+68.0</td><td class="num">−43.4</td><td class="num">+131.1</td><td class="num"><b>+89.0</b></td></tr>
-<tr><td>8位</td><td><span data-p="P12">P12</span></td><td class="num">−24.9</td><td class="num">+80.2</td><td class="num">+13.7</td><td class="num">+0.4</td><td class="num"><b>+69.4</b></td></tr>
-<tr class="adv"><td>9位</td><td>ゆうこママ</td><td class="num">−28.5</td><td class="num">+70.2</td><td class="num">+6.2</td><td class="num">+5.8</td><td class="num"><b>+53.7</b></td></tr>
-<tr><td>10位</td><td><span data-p="P2">P2</span></td><td class="num">+57.6</td><td class="num">−14.3</td><td class="num">−55.3</td><td class="num">+59.9</td><td class="num"><b>+47.9</b></td></tr>
-<tr><td>11位</td><td><span data-p="P8">P8</span></td><td class="num">+56.6</td><td class="num">−26.5</td><td class="num">+61.1</td><td class="num">−48.7</td><td class="num"><b>+42.5</b></td></tr>
-<tr><td>12位</td><td><span data-p="P27">P27</span></td><td class="num">−49.5</td><td class="num">+8.0</td><td class="num">+65.7</td><td class="num">−22.9</td><td class="num"><b>+1.3</b></td></tr>
-<tr><td>13位</td><td><span data-p="P13">P13</span></td><td class="num">+17.0</td><td class="num">−54.0</td><td class="num">−17.2</td><td class="num">+49.1</td><td class="num"><b>−5.1</b></td></tr>
-<tr><td>14位</td><td><span data-p="P17">P17</span></td><td class="num">+61.0</td><td class="num">−15.9</td><td class="num">+8.9</td><td class="num">−60.2</td><td class="num"><b>−6.2</b></td></tr>
-<tr><td>15位</td><td><span data-p="P5">P5</span></td><td class="num">−45.1</td><td class="num">+4.7</td><td class="num">−24.1</td><td class="num">+56.7</td><td class="num"><b>−7.8</b></td></tr>
-<tr><td>16位</td><td><span data-p="P30">P30</span></td><td class="num">+10.8</td><td class="num">−22.1</td><td class="num">+7.3</td><td class="num">−10.4</td><td class="num"><b>−14.4</b></td></tr>
-<tr><td>17位</td><td><span data-p="P3">P3</span></td><td class="num">+7.6</td><td class="num">+14.6</td><td class="num">−17.9</td><td class="num">−20.2</td><td class="num"><b>−15.9</b></td></tr>
-<tr><td>18位</td><td><span data-p="P28">P28</span></td><td class="num">−55.5</td><td class="num">+7.4</td><td class="num">+65.7</td><td class="num">−33.8</td><td class="num"><b>−16.2</b></td></tr>
-<tr><td>19位</td><td><span data-p="P29">P29</span></td><td class="num">+10.7</td><td class="num">−44.9</td><td class="num">+70.5</td><td class="num">−53.1</td><td class="num"><b>−16.8</b></td></tr>
-<tr><td>20位</td><td><span data-p="P26">P26</span></td><td class="num">−20.7</td><td class="num">+6.8</td><td class="num">−4.4</td><td class="num">−21.9</td><td class="num"><b>−40.2</b></td></tr>
-<tr><td>21位</td><td><span data-p="P6">P6</span></td><td class="num">+1.2</td><td class="num">+8.2</td><td class="num">−19.4</td><td class="num">−33.8</td><td class="num"><b>−43.8</b></td></tr>
-<tr><td>22位</td><td><span data-p="P9">P9</span></td><td class="num">+73.3</td><td class="num">−52.3</td><td class="num">−55.5</td><td class="num">−17.0</td><td class="num"><b>−51.5</b></td></tr>
-<tr><td>23位</td><td><span data-p="P1">P1</span></td><td class="num">−20.9</td><td class="num">+16.0</td><td class="num">−10.4</td><td class="num">−40.1</td><td class="num"><b>−55.4</b></td></tr>
-<tr><td>24位</td><td><span data-p="P19">P19</span></td><td class="num">+12.7</td><td class="num">−45.1</td><td class="num">−45.0</td><td class="num">+15.5</td><td class="num"><b>−61.9</b></td></tr>
-<tr><td>25位</td><td><span data-p="P11">P11</span></td><td class="num">−25.1</td><td class="num">−22.7</td><td class="num">−26.6</td><td class="num">+10.9</td><td class="num"><b>−63.5</b></td></tr>
-<tr><td>26位</td><td><span data-p="P14">P14</span></td><td class="num">−21.8</td><td class="num">+6.6</td><td class="num">+13.1</td><td class="num">−80.6</td><td class="num"><b>−82.7</b></td></tr>
-<tr><td>27位</td><td><span data-p="P4">P4</span></td><td class="num">−21.1</td><td class="num">−60.3</td><td class="num">+8.8</td><td class="num">−15.6</td><td class="num"><b>−88.2</b></td></tr>
-<tr><td>28位</td><td><span data-p="P15">P15</span></td><td class="num">−43.3</td><td class="num">−25.0</td><td class="num">−45.6</td><td class="num">+6.5</td><td class="num"><b>−107.4</b></td></tr>
-<tr><td>29位</td><td><span data-p="P7">P7</span></td><td class="num">−41.5</td><td class="num">−50.7</td><td class="num">+3.3</td><td class="num">−25.5</td><td class="num"><b>−114.4</b></td></tr>
-<tr><td>30位</td><td><span data-p="P25">P25</span></td><td class="num">−45.2</td><td class="num">−24.2</td><td class="num">−79.9</td><td class="num">+13.2</td><td class="num"><b>−136.1</b></td></tr>
-<tr><td>31位</td><td><span data-p="P20">P20</span></td><td class="num">−1.4</td><td class="num">−51.0</td><td class="num">−51.2</td><td class="num">−41.9</td><td class="num"><b>−145.5</b></td></tr>
-<tr><td>32位</td><td><span data-p="P16">P16</span></td><td class="num">−48.0</td><td class="num">−54.7</td><td class="num">−69.0</td><td class="num">−40.0</td><td class="num"><b>−211.7</b></td></tr>
+<div class="small">5卓（準決勝 S2卓）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P10">P10</span></td><td class="n">66,600</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P22">P22</span></td><td class="n">31,100</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P24">P24</span></td><td class="n">18,900</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P21">P21</span></td><td class="n neg">−16,600</td></tr>
 </tbody></table></div>
+<div class="small">1卓（予選7〜10位）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P8">P8</span></td><td class="n">43,400</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P12">P12</span></td><td class="n">28,400</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P27">P27</span></td><td class="n">17,400</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P2">P2</span></td><td class="n">10,800</td></tr>
+</tbody></table></div>
+<div class="small">3卓（予選11〜14位）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P30">P30</span></td><td class="n">70,000</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P17">P17</span></td><td class="n">20,800</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P13">P13</span></td><td class="n">9,400</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P5">P5</span></td><td class="n neg">−200</td></tr>
+</tbody></table></div>
+<div class="small">4卓（予選15〜18位）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P28">P28</span></td><td class="n">36,500</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P3">P3</span></td><td class="n">32,700</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P29">P29</span></td><td class="n">19,600</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P26">P26</span></td><td class="n">11,200</td></tr>
+</tbody></table></div>
+<div class="small">6卓（予選19〜22位）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P6">P6</span></td><td class="n">55,600</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P9">P9</span></td><td class="n">32,500</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P1">P1</span></td><td class="n">24,200</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P19">P19</span></td><td class="n neg">−12,300</td></tr>
+</tbody></table></div>
+<div class="small">7卓（予選23〜26位）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P14">P14</span></td><td class="n">48,300</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P11">P11</span></td><td class="n">28,700</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P4">P4</span></td><td class="n">22,800</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P15">P15</span></td><td class="n">200</td></tr>
+</tbody></table></div>
+<div class="small">8卓（予選27〜30位）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P7">P7</span></td><td class="n">34,100</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P16">P16</span></td><td class="n">32,500</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P20">P20</span></td><td class="n">16,800</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P25">P25</span></td><td class="n">16,600</td></tr>
+</tbody></table></div>
+<h3>決勝の時間</h3>
+<p class="small">決勝は、準決勝の各卓の上位2名が打ちました。エキシビジョン戦は、本田プロが決勝に進めなかったため、準決勝で敗退した4名による対局です。</p>
+<div class="small">決勝</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td><span data-p="P22">P22</span></td><td class="n">42,600</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P23">P23</span></td><td class="n">41,600</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P10">P10</span></td><td class="n">19,700</td></tr>
+<tr><td class="r">4位</td><td>ゆうこママ</td><td class="n neg">−3,900</td></tr>
+</tbody></table></div>
+<div class="small">エキシビジョン戦（横の卓）</div>
+<div class="tw" style="margin-bottom:8px"><table class="tres"><thead><tr><th class="r">順位</th><th>名前</th><th class="n">素点</th></tr></thead><tbody>
+<tr><td class="r">1位</td><td>本田プロ</td><td class="n">73,600</td></tr>
+<tr><td class="r">2位</td><td><span data-p="P18">P18</span></td><td class="n">23,700</td></tr>
+<tr><td class="r">3位</td><td><span data-p="P24">P24</span></td><td class="n">20,900</td></tr>
+<tr><td class="r">4位</td><td><span data-p="P21">P21</span></td><td class="n neg">−18,200</td></tr>
+</tbody></table></div>
+</details>
 </div>
 
 <script>
-// 名前は受け口の出席者一覧（ROSTER）から出す。読めないときは P番号のまま
+// 名前は受け口の出席者一覧（ROSTER）から出す。読めないときは P番号のまま。
+// 読めた名前はこの端末に覚え、次に開いたときは受け口を待たずに出す（2026-11-15。第5回 三麻Halu杯の結果のページと同じ考え方）。受け口を読めなかったときは、覚えた名前のまま。
+// 名前はファイルに置かない決まりのまま（覚えるのは見た人の端末の中だけ）。名前を出すのをやめるときは、この読み込みごと外す（端末に覚えた名前も出なくなる）
 const API = 'https://script.google.com/macros/s/AKfycbzvf1cx3Ro0q__l9HD3lPRgWyb--BykCrPvftfZM7xtgcIZunNjbvdET59kn_7RAgsH/exec';
+const KEY = 'halu:roster:20';
+const putNames = R => document.querySelectorAll('[data-p]').forEach(el => { const v = R[el.dataset.p]; el.textContent = typeof v === 'string' && v ? v : el.dataset.p; });
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s === 'object') putNames(s); } catch (e) {}
 fetch(API + '?t=' + Date.now(), { cache: 'no-store' })
   .then(r => r.json())
-  .then(j => { const R = (j.ok && j.data && j.data.roster) || {}; document.querySelectorAll('[data-p]').forEach(el => { if (R[el.dataset.p]) el.textContent = R[el.dataset.p]; }); })
+  .then(j => { const R = j && j.ok && j.data && j.data.roster; if (!R || typeof R !== 'object') return; putNames(R); try { localStorage.setItem(KEY, JSON.stringify(R)); } catch (e) {} })
   .catch(() => {});
+// 「↑」は、下へ行ったときだけ出す（一番上では本文に重ねない）
+addEventListener('scroll', () => { const b = document.querySelector('.top'); if (b) b.classList.toggle('on', scrollY > innerHeight / 2); }, { passive: true });
 </script>
 <a class="top" href="#" title="上へ">↑</a>
 </body>
