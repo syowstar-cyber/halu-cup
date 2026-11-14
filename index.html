@@ -5,12 +5,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#7a1a1a">
-<meta http-equiv="refresh" content="0; url=kuji/">
-<title>第20回 Halu杯 結果</title>
+<title>Halu杯 過去成績</title>
 <!-- 2026-11-01 に順位表（kuji/）だけ残して片付けた。トップは順位表へ移るだけ（もとの幹部用ページは 1857c3a） -->
-<style>html,body{margin:0;background:#f7f7f5;color:#1c1c1c;font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}p{max-width:640px;margin:48px auto;padding:0 16px}a{color:#7a1a1a}</style>
+<!-- 2026-11-15 に、Halu杯の過去成績のトップページにした（主催）。三麻・四麻と、記念大会・普段の回をまとめて並べる。
+     1大会＝1行（日付・正式名・優勝者・結果詳細へのリンク）。日付の新しい順で、年ごとに見出しを置く。大会が終わったら、その年の見出しの下の一番上に1行足す。
+     優勝者はファイルに P番号だけ置き、名前はその大会の受け口の名簿から読む（data-api。第20回は halu-cup の受け口、普段の回は mahjong の kai の受け口に ?kai=<回>） -->
+<style>
+:root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--card:#ffffff;--focus:#1a56db}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",sans-serif;font-size:17px;line-height:1.7;-webkit-text-size-adjust:100%}
+a{color:var(--accent)}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 48px}
+header{border-bottom:3px solid var(--accent);margin-bottom:14px;padding-bottom:8px}
+header h1{font-size:1.3rem;margin:0}
+header .sub{color:var(--muted);font-size:.9rem}
+h2{font-size:1rem;margin:18px 0 6px;padding-left:10px;border-left:5px solid var(--accent)}
+.list{list-style:none;margin:0;padding:0}
+/* 1大会＝1つの箱。狭い画面は「日付／大会／優勝者と結果詳細」の3段、広い画面（640px以上）は1行 */
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"d d" "t t" "w go";column-gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:8px 0}
+.item .d{grid-area:d;color:var(--muted);font-size:.9rem}
+.item .t{grid-area:t;font-weight:700;font-size:1.05rem}
+.item .w{grid-area:w;overflow-wrap:anywhere}
+.item .go{grid-area:go;padding:8px 14px;border:2px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:700;font-size:.95rem;line-height:1.4;white-space:nowrap}
+@media (min-width:640px){.item{grid-template-columns:5.5em minmax(0,1fr) minmax(0,12em) auto;grid-template-areas:"d t w go"}.item .d{color:var(--fg);font-size:1rem}}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+</style>
 </head>
 <body>
-<p><a href="kuji/">第20回 Halu杯 結果へ</a></p>
+<div class="wrap">
+  <header>
+    <h1>Halu杯 過去成績</h1>
+    <div class="sub">新しい大会から順に並べています。</div>
+  </header>
+
+<h2>2026年</h2>
+<ul class="list">
+<li class="item">
+  <time class="d" datetime="2026-11-14">11月14日</time>
+  <span class="t">第5回 三麻Halu杯</span>
+  <span class="w">優勝者 <b data-w="halu-2026-11-14" data-p="P6" data-api="https://script.google.com/macros/s/AKfycbzxCQFEJTYpjSEUdVEb5AdZyCeMWLagpyvnV7CuKXsHYbnAu34PV7PEQSKqoauxAzsC/exec?kai=halu-2026-11-14">P6</b></span>
+  <a class="go" href="https://syowstar-cyber.github.io/mahjong/kai/" aria-label="第5回 三麻Halu杯の結果詳細">結果詳細</a>
+</li>
+<li class="item">
+  <time class="d" datetime="2026-10-24">10月24日</time>
+  <span class="t">第20回 四麻Halu杯</span>
+  <span class="w">優勝者 <b data-w="halu-2026-10-24" data-p="P22" data-api="https://script.google.com/macros/s/AKfycbzvf1cx3Ro0q__l9HD3lPRgWyb--BykCrPvftfZM7xtgcIZunNjbvdET59kn_7RAgsH/exec">P22</b></span>
+  <a class="go" href="kuji/" aria-label="第20回 四麻Halu杯の結果詳細">結果詳細</a>
+</li>
+</ul>
+</div>
+
+<script>
+// 優勝者の名前は、それぞれの大会の受け口の名簿（roster）から出す（名前はファイルに置かない決まり）。読めないときは P番号のまま。
+// 読めた優勝者の名前だけをこの端末に覚え（halu:kako:winners）、次に開いたときは受け口を待たずに出す。受け口を読めなかったときは覚えた名前のまま。
+const KEY = 'halu:kako:winners';
+const els = [...document.querySelectorAll('[data-w]')];
+let memo = {};
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s === 'object') memo = s; } catch (e) {}
+const show = () => els.forEach(el => { const v = memo[el.dataset.w]; el.textContent = typeof v === 'string' && v ? v : el.dataset.p; });
+show();
+els.forEach(el => {
+  const u = el.dataset.api;
+  fetch(u + (u.includes('?') ? '&' : '?') + 't=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.json())
+    .then(j => {
+      const R = j && j.ok && j.data && j.data.roster;
+      if (!R || typeof R !== 'object') return;
+      const v = R[el.dataset.p];
+      if (typeof v === 'string' && v) memo[el.dataset.w] = v; else delete memo[el.dataset.w];
+      show();
+      try { localStorage.setItem(KEY, JSON.stringify(memo)); } catch (e) {}
+    })
+    .catch(() => {});
+});
+</script>
 </body>
 </html>
