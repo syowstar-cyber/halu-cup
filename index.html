@@ -10,6 +10,9 @@
 <!-- 2026-11-15 に、Halu杯の過去成績のトップページにした（主催）。三麻・四麻と、記念大会・普段の回をまとめて並べる。
      1大会＝1行（日付・正式名・優勝者・結果詳細へのリンク）。日付の新しい順で、年ごとに見出しを置く。大会が終わったら、その年の見出しの下の一番上に1行足す。
      優勝者はファイルに P番号だけ置き、名前はその大会の受け口の名簿から読む（data-api。第20回は halu-cup の受け口、普段の回は mahjong の kai の受け口に ?kai=<回>） -->
+<!-- 2026-11-16 に、LINE などに貼ったときの題名と説明（og:title・og:description）を足した（主催）。og が無いと LINE は <title> と本文の文字を出す（LINE Developers の FAQ）。大会を足したら og:description にもその大会を足す -->
+<meta property="og:title" content="Halu杯 過去成績">
+<meta property="og:description" content="第5回 三麻Halu杯と第20回 四麻Halu杯の結果">
 <style>
 :root{--bg:#f7f7f5;--fg:#1c1c1c;--muted:#4f4f4f;--line:#d6d6d2;--accent:#7a1a1a;--card:#ffffff;--focus:#1a56db}
 *{box-sizing:border-box}
